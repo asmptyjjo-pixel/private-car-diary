@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>Private Car Diary</title>
-<meta name="pcd-version" content="2026-08-26-manual-gps-v9">
+<meta name="pcd-version" content="2026-08-26-ui-same-font-v11">
 
 <style>
 :root{
@@ -604,6 +604,73 @@ input,select{
   #distanceList .distance-gps-btn{min-width:68px!important;font-size:9.5px!important;min-height:30px!important}
 }
 
+
+/* Hide secondary controls until needed */
+.status-compact{padding:6px 8px!important}
+.status-toggle{
+  width:100%;
+  border:0;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:2px 0;
+  min-height:28px;
+  color:var(--text);
+  cursor:pointer;
+}
+.status-toggle>span:first-child{font-size:11px;font-weight:750}
+.status-toggle .badge{font-size:10px!important}
+.status-chevron{margin-left:auto;font-size:9px!important;color:var(--muted)}
+.status-controls{padding-top:7px;border-top:1px solid var(--line);margin-top:5px}
+.status-controls.hidden{display:none!important}
+@media(max-width:640px){
+ .status-compact{padding:5px 7px!important}
+ .status-toggle{min-height:26px}
+ .status-toggle>span:first-child{font-size:10.5px}
+}
+
+
+/* v11: typography only — layout/UI unchanged */
+body{font-size:14px!important;line-height:1.42!important}
+.brand{font-size:18px!important}
+h2{font-size:15px!important}
+h3{font-size:13px!important}
+label{font-size:11.5px!important}
+.tiny{font-size:11px!important}
+input,select{font-size:13px!important}
+.btn{font-size:12.5px!important}
+.btn.small{font-size:11px!important}
+.tab{font-size:12px!important}
+.metric{font-size:11px!important}
+.metric strong{font-size:16px!important}
+.path{font-size:13px!important}
+.notice,.detectbox{font-size:12px!important}
+.badge{font-size:10.5px!important}
+#distanceList .distance-name{font-size:11px!important}
+#distanceList .distance-area-input{font-size:11px!important}
+#distanceList .distance-km{font-size:11px!important}
+#distanceList .distance-gps-btn{font-size:10px!important}
+@media(max-width:640px){
+ body{font-size:13.5px!important}
+ .brand{font-size:17px!important}
+ h2{font-size:14.5px!important}
+ h3{font-size:12.5px!important}
+ label{font-size:11px!important}
+ .tiny{font-size:10.5px!important}
+ input,select{font-size:12.5px!important}
+ .btn{font-size:12px!important}
+ .btn.small{font-size:10.5px!important}
+ .tab{font-size:11.5px!important}
+ .metric strong{font-size:15px!important}
+ .path{font-size:12.5px!important}
+ .notice,.detectbox{font-size:11.5px!important}
+ #distanceList .distance-name{font-size:10.5px!important}
+ #distanceList .distance-area-input{font-size:10.5px!important}
+ #distanceList .distance-km{font-size:10.5px!important}
+ #distanceList .distance-gps-btn{font-size:9.5px!important}
+}
+
 </style>
 
 </head>
@@ -689,8 +756,13 @@ input,select{
 
 
 <section id="today" class="view active">
- <div class="card">
-  <div class="row"><h2 class="grow" style="margin:0">오늘 상태</h2><span id="todayStatusBadge" class="badge"></span></div><div class="tiny" style="margin-top:3px">평일은 근무가 기본값입니다. 휴가·개인 일정만 바꾸면 됩니다.</div>
+ <div class="card status-compact">
+  <button id="todayStatusToggle" class="status-toggle" type="button">
+    <span>오늘</span>
+    <strong id="todayStatusBadge" class="badge"></strong>
+    <span class="status-chevron">변경</span>
+  </button>
+  <div id="todayStatusControls" class="status-controls hidden"><div class="tiny" style="margin-top:3px">평일은 근무가 기본값입니다. 휴가·개인 일정만 바꾸면 됩니다.</div>
   <div class="work-status">
     <button id="statusWork" class="btn secondary">근무</button>
     <button id="statusLeave" class="btn secondary">휴가/개인</button>
@@ -701,8 +773,8 @@ input,select{
     <div id="smartDetectSub" class="smart-sub">근무일에는 앱을 열 때 현재 위치를 확인합니다.</div>
   </div>
  </div>
-
- <div class="card">
+</div>
+<div class="card">
   <div class="tiny">오늘</div><div id="todayDate" class="big"></div>
   <div class="metricgrid" style="margin-top:10px"><div class="metric"><span class="tiny">거리</span><strong id="todayKm">0 km</strong></div><div class="metric"><span class="tiny">정산</span><strong id="todayCost">₩0</strong></div><div class="metric"><span class="tiny">행</span><strong id="todayRows">0</strong></div></div>
  </div>
@@ -1401,9 +1473,12 @@ $("unfinishedHome").onclick=goHome;
 $("unfinishedHotel").onclick=goHotel;
 
 
-$("statusWork").onclick=()=>setDayStatus("work");
-$("statusLeave").onclick=()=>setDayStatus("leave");
-$("statusOff").onclick=()=>setDayStatus("off");
+$("todayStatusToggle").onclick=()=>{
+  $("todayStatusControls").classList.toggle("hidden");
+};
+$("statusWork").onclick=()=>{setDayStatus("work");$("todayStatusControls").classList.add("hidden")};
+$("statusLeave").onclick=()=>{setDayStatus("leave");$("todayStatusControls").classList.add("hidden")};
+$("statusOff").onclick=()=>{setDayStatus("off");$("todayStatusControls").classList.add("hidden")};
 
 $("custSearch").oninput=renderCustomerSelect;$("distSearch").oninput=renderDistances;$("autoDetectCustomer").onclick=autoDetectCustomer;
 $("distanceSave").onclick=()=>{let n=db._pendingCustomer,k=parseFloat($("distanceKm").value);if(!n||!isFinite(k)||k<=0)return alert("편도거리를 입력하세요.");customerObj(n).km=k;db._pendingCustomer=null;$("distanceOverlay").classList.add("hidden");save();enterCustomer(n)};
