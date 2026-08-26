@@ -1060,7 +1060,6 @@ function showSmart(title,sub,type=""){
   $("smartDetectTitle").textContent=title;
   $("smartDetectSub").innerHTML=sub||"";
 }
-async 
 function gpsDiagnosticText(){
   if(location.protocol!=="https:" && location.hostname!=="localhost"){
     return "현재 주소가 HTTPS가 아닙니다.";
@@ -1241,7 +1240,6 @@ $("backup").onclick=()=>dl(`Private_Car_Diary_backup_${today()}.json`,JSON.strin
 $("restore").onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);if(!db.settings.radius)db.settings.radius=500;db.customers=db.customers.map(c=>({lat:null,lng:null,place:"",...c})).sort(customerSort);save();alert("복원 완료")}catch(x){alert("복원 실패")}};r.readAsText(f)};
 $("firstSave").onclick=()=>{db.settings.name=$("firstName").value.trim();db.settings.car=$("firstCar").value.trim();db.settings.home=$("firstHome").value.trim();db.settings.rate=+$("firstRate").value||168;db.settings.hotelKm=+$("firstHotelKm").value||20;if(!db.settings.home)return alert("집 Area를 입력하세요.");db.setup=true;$("firstOverlay").classList.add("hidden");save()};
 if(!db.setup)$("firstOverlay").classList.remove("hidden");
-migrateStoredTripAreas();
 migrateStoredTripAreas();
 render();
 if(db.setup)setTimeout(()=>smartAutoCheck(),700);
