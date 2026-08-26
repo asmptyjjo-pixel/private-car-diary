@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>Private Car Diary</title>
+<style>
+:root{--bg:#f4f5f7;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#111827;--green:#166534;--red:#991b1b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select{font:inherit}.wrap{max-width:760px;margin:auto;padding:14px 14px 90px}
+header{position:sticky;top:0;background:#fffffff4;backdrop-filter:blur(10px);border-bottom:1px solid var(--line);z-index:20}
+header .in{max-width:760px;margin:auto;padding:13px 14px;display:flex;align-items:center;gap:9px}
+.brand{font-weight:850;font-size:18px}.tiny{font-size:11px;color:var(--muted)}.status{margin-left:auto;font-size:11px;padding:6px 9px;border-radius:999px;background:#eef2f7}.status.ok{background:#dcfce7;color:#166534;font-weight:750}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}.tab{border:0;border-radius:11px;padding:10px;background:#e5e7eb}.tab.active{background:#111827;color:#fff;font-weight:800}
+.view{display:none}.view.active{display:block}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:11px}
+h2{font-size:16px;margin:0 0 10px}h3{font-size:13px;margin:12px 0 7px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1}
+.btn{border:0;border-radius:11px;padding:10px 12px;background:#111827;color:white;font-weight:760}.btn.secondary{background:#e5e7eb;color:#111827}.btn.outline{background:#fff;color:#111827;border:1px solid #d1d5db}.btn.danger{background:#fee2e2;color:#991b1b}.btn.small{padding:7px 9px;font-size:11px}
+label{display:block;font-size:11px;color:var(--muted);margin:8px 0 4px}input,select{width:100%;border:1px solid #d1d5db;border-radius:10px;padding:10px;background:#fff}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.metricgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.metric{background:#f9fafb;border:1px solid var(--line);border-radius:12px;padding:10px}.metric strong{display:block;font-size:18px;margin-top:2px}
+.path{font-weight:800}.item{border:1px solid var(--line);border-radius:12px;padding:10px;margin:7px 0}.pill{font-size:10px;padding:3px 7px;border-radius:999px;background:#eef2ff;color:#3730a3}
+.notice{font-size:12px;line-height:1.5;padding:11px;border-radius:11px;background:#f9fafb;border:1px solid var(--line)}.warn{background:#fffbeb;border-color:#fde68a}.okbox{background:#f0fdf4;border-color:#bbf7d0}
+table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px 5px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}.scroll{overflow:auto}
+.overlay{position:fixed;inset:0;background:#f4f5f7;z-index:100;padding:18px;overflow:auto}.overlay .box{max-width:620px;margin:18px auto;background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px}
+.step{display:flex;gap:10px;margin:12px 0}.num{width:28px;height:28px;border-radius:50%;background:#111827;color:white;display:flex;align-items:center;justify-content:center;font-weight:800;flex:0 0 auto}
+.big{font-size:26px;font-weight:850}.hidden{display:none!important}.footer{position:fixed;left:0;right:0;bottom:0;background:#fffffff4;border-top:1px solid var(--line);padding:9px 12px calc(9px + env(safe-area-inset-bottom));z-index:25}.footer .in{max-width:760px;margin:auto;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:560px){.grid2{grid-template-columns:1fr}.metricgrid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+
+<div id="deployOverlay" class="overlay hidden">
+ <div class="box">
+  <div class="big">Private Car Diary 시작하기</div>
+  <p class="tiny" style="font-size:13px">GPS 자동화를 사용하려면 이 HTML을 한 번만 GitHub Pages에 올려 HTTPS 웹주소를 만들어야 합니다.</p>
+
+  <div class="notice okbox">
+    <b>여러 명이 사용해도 한 명만 배포하면 됩니다.</b><br>
+    관리자가 한 번 만든 HTTPS 주소를 다른 사용자에게 공유하면 됩니다. 각 사용자의 이름·차량번호·출장기록은 각자의 휴대폰 브라우저에 별도로 저장됩니다.
+  </div>
+
+  <h2 style="margin-top:18px">1. GitHub 계정</h2>
+  <div class="row">
+    <a class="btn grow" href="https://github.com/login" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">GitHub 로그인</a>
+    <a class="btn secondary grow" href="https://github.com/signup" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">GitHub 가입</a>
+  </div>
+
+  <h2 style="margin-top:18px">2. 저장소 만들기</h2>
+  <a class="btn" href="https://github.com/new" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none">+ 새 저장소 만들기</a>
+  <div class="notice" style="margin-top:8px">Repository name은 <b>private-car-diary</b> 권장. Public으로 만들면 가장 간단합니다.</div>
+
+  <h2 style="margin-top:18px">3. GitHub 사용자명 입력</h2>
+  <label>GitHub username</label>
+  <div class="row">
+    <input id="ghUser" class="grow" placeholder="예: vivian123" autocomplete="off">
+    <button id="ghSave" class="btn secondary">저장</button>
+  </div>
+
+  <div id="ghAutoLinks" class="hidden">
+    <h2 style="margin-top:18px">4. index.html 업로드</h2>
+    <div class="row">
+      <button id="downloadIndex" class="btn secondary grow">index.html 다시 받기</button>
+      <a id="ghUpload" class="btn grow" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">GitHub 업로드 열기</a>
+    </div>
+    <div class="notice" style="margin-top:8px">GitHub 업로드 화면이 열리면 방금 받은 <b>index.html</b>을 선택하고 <b>Commit changes</b>만 누르면 됩니다.</div>
+
+    <h2 style="margin-top:18px">5. Pages 켜기</h2>
+    <a id="ghPages" class="btn" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none">Pages 설정 바로 열기</a>
+    <div class="notice" style="margin-top:8px"><b>Source</b> → Deploy from a branch → <b>main</b> / <b>root</b> → Save</div>
+
+    <h2 style="margin-top:18px">6. 완성된 웹앱 주소</h2>
+    <div class="row">
+      <input id="ghSite" readonly class="grow">
+      <button id="copySite" class="btn secondary">복사</button>
+      <a id="openSite" class="btn" target="_blank" rel="noopener" style="text-decoration:none">열기</a>
+    </div>
+    <div class="notice okbox" style="margin-top:8px">이 주소 하나만 다른 사용자에게 보내면 됩니다. 다른 사용자는 GitHub 계정이 필요 없습니다.</div>
+  </div>
+
+  <div class="row" style="margin-top:18px">
+    <button id="copyGuide" class="btn secondary grow">전체 설치순서 복사</button>
+    <button id="demoBtn" class="btn outline grow">GPS 없이 먼저 보기</button>
+  </div>
+ </div>
+</div>
+
+<div id="setupOverlay" class="overlay hidden">
+ <div class="box">
+  <div class="big">처음 한 번만 설정</div>
+  <p class="tiny" style="font-size:13px">이름, 차량번호, 집만 등록하면 됩니다.</p>
+  <label>Name</label><input id="setupName" placeholder="회사 양식에 들어갈 이름">
+  <label>Car No.</label><input id="setupCar" placeholder="차량번호">
+  <label>집 Area</label><input id="setupHomeArea" value="화성 오산동" placeholder="예: 화성 오산동">
+  <label>마일리지 단가</label><input id="setupRate" type="number" value="168">
+  <button id="setupSave" class="btn" style="width:100%;margin-top:12px">시작하기</button>
+ </div>
+</div>
+
+<header><div class="in"><div><div class="brand">Private Car Diary</div><div class="tiny">자동 출장거리 기록</div></div><div id="status" class="status">준비</div></div></header>
+
+<div class="wrap">
+ <div class="tabs"><button class="tab active" data-v="today">오늘</button><button class="tab" data-v="history">기록</button><button class="tab" data-v="settings">설정</button></div>
+
+ <section id="today" class="view active">
+  <div class="card">
+   <div class="row"><div class="grow"><div class="tiny">오늘</div><div id="todayDate" class="big"></div></div><span id="lastPlace" class="pill">현재 장소 없음</span></div>
+   <div class="metricgrid" style="margin-top:10px"><div class="metric"><span class="tiny">거리</span><strong id="todayKm">0 km</strong></div><div class="metric"><span class="tiny">정산</span><strong id="todayCost">₩0</strong></div><div class="metric"><span class="tiny">행</span><strong id="todayRows">0</strong></div></div>
+  </div>
+
+  <div id="pendingCard" class="card hidden">
+   <h2>새로운 이동구간</h2><div id="pendingPath" class="path"></div>
+   <label>회사에 올릴 거리 (km)</label><input id="pendingKm" inputmode="decimal">
+   <label class="row"><input id="pendingRev" type="checkbox" checked style="width:auto"> 반대 방향도 같은 거리로 기억</label>
+   <button id="pendingSave" class="btn" style="width:100%;margin-top:8px">한 번 저장하고 계속</button>
+  </div>
+
+  <div class="card">
+   <h2>자동 기록</h2>
+   <div class="row"><button id="detect" class="btn grow">현재 위치 자동처리</button><button id="homeBtn" class="btn secondary grow">집 도착 처리</button></div>
+   <div id="gpsMsg" class="tiny" style="margin-top:8px">등록된 장소를 기준으로 이동을 자동 기록합니다.</div>
+  </div>
+
+  <div class="card">
+   <h2>오늘 기록</h2><div id="todayList"></div>
+  </div>
+
+  <div class="card">
+   <h2>빠른 수동 추가</h2>
+   <label>Customer</label><select id="mCust"></select>
+   <div class="grid2"><div><label>Departure</label><select id="mFrom"></select></div><div><label>Arrival</label><select id="mTo"></select></div></div>
+   <label>Mileage (km)</label><input id="mKm" inputmode="decimal" placeholder="거리 DB가 있으면 자동">
+   <button id="mAdd" class="btn" style="width:100%;margin-top:8px">1행 추가</button>
+  </div>
+ </section>
+
+ <section id="history" class="view">
+  <div class="card">
+   <h2>월별 회사 폼</h2>
+   <label>월</label><input id="month" type="month">
+   <div class="metricgrid" style="margin-top:10px"><div class="metric"><span class="tiny">거리</span><strong id="monthKm">0</strong></div><div class="metric"><span class="tiny">정산</span><strong id="monthCost">₩0</strong></div><div class="metric"><span class="tiny">행</span><strong id="monthRows">0</strong></div></div>
+   <button id="csv" class="btn" style="width:100%;margin-top:10px">회사 형식 CSV 만들기</button>
+  </div>
+  <div class="card scroll"><table><thead><tr><th>No.</th><th>Date</th><th>Customer</th><th>Departure</th><th>Arrival</th><th>Km</th><th></th></tr></thead><tbody id="histBody"></tbody></table></div>
+ </section>
+
+ <section id="settings" class="view">
+  <div class="card"><h2>내 정보</h2>
+   <div class="grid2"><div><label>Name</label><input id="sName"></div><div><label>Car No.</label><input id="sCar"></div></div>
+   <div class="grid2"><div><label>단가 (원/km)</label><input id="sRate" type="number"></div><div><label>자동감지 반경(m)</label><input id="sRadius" type="number" value="500"></div></div>
+   <button id="saveSettings" class="btn">저장</button>
+  </div>
+
+  <div class="card"><h2>장소</h2>
+   <div id="placeList"></div>
+   <h3>장소 추가</h3>
+   <div class="grid2"><div><label>장소명</label><input id="pName" placeholder="예: 신라스테이 천안"></div><div><label>Area</label><input id="pArea" placeholder="예: 천안 서북구"></div></div>
+   <div class="grid2"><div><label>유형</label><select id="pType"><option value="customer">고객사</option><option value="hotel">호텔</option><option value="home">집</option><option value="other">기타</option></select></div><div><label>Customer 열</label><input id="pCustomer" placeholder="고객사면 비워도 됨"></div></div>
+   <div class="row"><button id="pGps" class="btn secondary grow">현재 GPS 넣기</button><button id="pSave" class="btn grow">장소 저장</button></div>
+  </div>
+
+  <div class="card"><h2>거리 DB</h2>
+   <div class="grid2"><div><label>Departure Area</label><select id="rFrom"></select></div><div><label>Arrival Area</label><select id="rTo"></select></div></div>
+   <label>Mileage (km)</label><input id="rKm" inputmode="decimal">
+   <label class="row"><input id="rRev" type="checkbox" checked style="width:auto"> 반대 방향도 동일</label>
+   <button id="rSave" class="btn">거리 저장</button>
+   <div id="routeList" style="margin-top:9px"></div>
+  </div>
+
+  <div class="card"><h2>백업</h2><div class="row"><button id="backup" class="btn secondary grow">백업 파일</button><label class="btn outline grow" style="text-align:center">복원<input id="restore" type="file" accept=".json" hidden></label></div></div>
+ </section>
+</div>
+
+<div class="footer"><div class="in"><button id="footerDetect" class="btn">현재 위치</button><button id="footerHome" class="btn secondary">집 도착</button></div></div>
+
+<script>
+const SEED={"places": [{"id": "home", "name": "집", "area": "화성 오산동", "type": "home", "customer": "", "lat": null, "lng": null}, {"id": "samsung-cheonan", "name": "Samsung Electronics, Cheonan", "area": "천안 서북구", "type": "customer", "customer": "Samsung Electronics, Cheonan", "lat": null, "lng": null}, {"id": "sk-cheongju", "name": "SK Hynix, Cheonju", "area": "청주 흥덕구", "type": "customer", "customer": "SK Hynix, Cheonju", "lat": null, "lng": null}, {"id": "lg-energy-daejeon", "name": "LG Energy Solution, Daejeon", "area": "대전 유성구", "type": "customer", "customer": "LG Energy Solution, Daejeon", "lat": null, "lng": null}], "routes": [{"from": "화성 오산동", "to": "천안 서북구", "km": 75}, {"from": "천안 서북구", "to": "화성 오산동", "km": 75}, {"from": "화성 오산동", "to": "청주 흥덕구", "km": 130}, {"from": "청주 흥덕구", "to": "화성 오산동", "km": 130}, {"from": "화성 오산동", "to": "대전 유성구", "km": 150}, {"from": "대전 유성구", "to": "화성 오산동", "km": 150}, {"from": "천안 서북구", "to": "청주 흥덕구", "km": 60}, {"from": "청주 흥덕구", "to": "대전 유성구", "km": 60}]};
+const KEY="pcd_simple_v2";
+const $=id=>document.getElementById(id), today=()=>{let d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const money=n=>"₩"+Math.round(n||0).toLocaleString("ko-KR"), uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+function fresh(){return {setup:false,places:JSON.parse(JSON.stringify(SEED.places)),routes:JSON.parse(JSON.stringify(SEED.routes)),trips:[],settings:{name:"",car:"",rate:168,radius:500,division:"MIC",allowance:"Yes"},state:{lastPlaceId:null,activeCustomer:"",pending:null}}}
+let db;try{db=JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){db=fresh()}
+function save(){localStorage.setItem(KEY,JSON.stringify(db));render()}
+function place(id){return db.places.find(p=>p.id===id)}
+function rkm(a,b){let r=db.routes.find(x=>x.from===a&&x.to===b);return r?Number(r.km):null}
+function setRoute(a,b,km,rev){db.routes=db.routes.filter(r=>!(r.from===a&&r.to===b));db.routes.push({from:a,to:b,km:Number(km)});if(rev&&a!==b){db.routes=db.routes.filter(r=>!(r.from===b&&r.to===a));db.routes.push({from:b,to:a,km:Number(km)})}}
+function custFor(to){let p=place(to);if(p?.type==="customer")return p.customer||p.name;return db.state.activeCustomer||""}
+function addTrip(from,to,km,cust,source="manual"){let f=place(from),t=place(to);db.trips.push({id:uid(),date:today(),customer:cust||custFor(to),fromArea:f.area,toArea:t.area,km:Number(km),source,createdAt:Date.now()});db.state.lastPlaceId=to;if(t.type==="customer")db.state.activeCustomer=t.customer||t.name;if(t.type==="home")db.state.activeCustomer=""}
+function move(from,to,source="auto"){if(!from||!to||from===to)return;let f=place(from),t=place(to),km=rkm(f.area,t.area);if(km==null){db.state.pending={from,to,source,customer:custFor(to)};save();return}addTrip(from,to,km,custFor(to),source);save()}
+function dist(lat1,lon1,lat2,lon2){const R=6371000,rad=x=>x*Math.PI/180,p1=rad(lat1),p2=rad(lat2),dp=rad(lat2-lat1),dl=rad(lon2-lon1),a=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))}
+function detect(){
+ if(!(location.protocol==="https:"||location.hostname==="localhost"))return alert("GPS는 HTTPS 주소에서만 사용할 수 있습니다.");
+ navigator.geolocation.getCurrentPosition(pos=>{
+  let {latitude:lat,longitude:lng}=pos.coords, c=db.places.filter(p=>p.lat!=null&&p.lng!=null).map(p=>({...p,d:dist(lat,lng,p.lat,p.lng)})).sort((a,b)=>a.d-b.d),n=c[0];
+  if(!n)return $("gpsMsg").textContent="GPS가 등록된 장소가 없습니다.";
+  $("gpsMsg").textContent=`가장 가까운 장소: ${n.name} (${Math.round(n.d)}m)`;
+  if(n.d>Number(db.settings.radius||500))return;
+  if(!db.state.lastPlaceId){db.state.lastPlaceId=n.id;save();return}
+  if(db.state.lastPlaceId!==n.id)move(db.state.lastPlaceId,n.id,"auto");
+ },e=>alert("위치 확인 실패: "+e.message),{enableHighAccuracy:false,timeout:12000,maximumAge:300000});
+}
+function optionsPlaces(blank=false){return (blank?'<option value="">- 선택 -</option>':'')+db.places.map(p=>`<option value="${p.id}">${esc(p.name)} · ${esc(p.area)}</option>`).join("")}
+function optionsCust(){return '<option value="">- Customer 선택 -</option>'+db.places.filter(p=>p.type==="customer").map(p=>`<option value="${esc(p.customer||p.name)}">${esc(p.customer||p.name)}</option>`).join("")}
+function optionsArea(){return [...new Set(db.places.map(p=>p.area))].map(a=>`<option>${esc(a)}</option>`).join("")}
+function render(){
+ $("todayDate").textContent=new Date().toLocaleDateString("ko-KR",{month:"long",day:"numeric",weekday:"short"});
+ let tr=db.trips.filter(t=>t.date===today()),km=tr.reduce((s,t)=>s+Number(t.km),0);$("todayKm").textContent=km+" km";$("todayCost").textContent=money(km*db.settings.rate);$("todayRows").textContent=tr.length;
+ let lp=place(db.state.lastPlaceId);$("lastPlace").textContent=lp?lp.name:"현재 장소 없음";
+ $("todayList").innerHTML=tr.length?tr.map(t=>`<div class="item"><div class="tiny">${esc(t.customer||"")}</div><div class="path">${esc(t.fromArea)} → ${esc(t.toArea)}</div><div class="row"><b>${t.km} km</b><button class="btn danger small" style="margin-left:auto" onclick="delTrip('${t.id}')">삭제</button></div></div>`).join(""):'<div class="tiny">기록이 없습니다.</div>';
+ let p=db.state.pending;$("pendingCard").classList.toggle("hidden",!p);if(p)$("pendingPath").textContent=`${place(p.from)?.name} → ${place(p.to)?.name}`;
+ $("mCust").innerHTML=optionsCust();$("mFrom").innerHTML=optionsPlaces();$("mTo").innerHTML=optionsPlaces();
+ $("sName").value=db.settings.name;$("sCar").value=db.settings.car;$("sRate").value=db.settings.rate;$("sRadius").value=db.settings.radius;
+ $("rFrom").innerHTML=optionsArea();$("rTo").innerHTML=optionsArea();
+ $("placeList").innerHTML=db.places.map(p=>`<div class="item"><div class="row"><b>${esc(p.name)}</b><span class="pill">${esc(p.type)}</span><button class="btn danger small" style="margin-left:auto" onclick="delPlace('${p.id}')">삭제</button></div><div class="tiny">${esc(p.area)} · ${p.lat!=null?"GPS 등록":"GPS 미등록"}</div><div class="row" style="margin-top:6px"><button class="btn outline small" onclick="anchor('${p.id}')">현재 장소로 설정</button>${p.lat==null?`<button class="btn secondary small" onclick="gpsTo('${p.id}')">여기서 GPS 저장</button>`:""}</div></div>`).join("");
+ $("routeList").innerHTML=db.routes.map(r=>`<div class="item row"><div class="grow"><b>${esc(r.from)} → ${esc(r.to)}</b><div class="tiny">${r.km} km</div></div></div>`).join("");
+ renderHist();
+ let secure=(location.protocol==="https:"||location.hostname==="localhost");
+ $("status").textContent=secure?"GPS 사용 가능":"GPS 제한";$("status").className="status"+(secure?" ok":"");
+}
+function renderHist(){let m=$("month").value||today().slice(0,7),a=db.trips.filter(t=>t.date.startsWith(m)).sort((x,y)=>x.date.localeCompare(y.date)||x.createdAt-y.createdAt),km=a.reduce((s,t)=>s+Number(t.km),0);$("monthKm").textContent=km+" km";$("monthCost").textContent=money(km*db.settings.rate);$("monthRows").textContent=a.length;$("histBody").innerHTML=a.map((t,i)=>`<tr><td>${i+1}</td><td>${t.date.slice(5).replace("-","/")}</td><td>${esc(t.customer)}</td><td>${esc(t.fromArea)}</td><td>${esc(t.toArea)}</td><td>${t.km}</td><td><button class="btn danger small" onclick="delTrip('${t.id}')">삭제</button></td></tr>`).join("")}
+function selected(){let m=$("month").value||today().slice(0,7);return db.trips.filter(t=>t.date.startsWith(m)).sort((x,y)=>x.date.localeCompare(y.date)||x.createdAt-y.createdAt)}
+function c(v){let s=String(v??"");return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+function dl(name,text,type="text/csv;charset=utf-8"){let b=new Blob(["\ufeff",text],{type}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;a.click()}
+function makeCsv(){let m=$("month").value||today().slice(0,7),[yy,mm]=m.split("-"),a=selected(),tot=a.reduce((s,t)=>s+Number(t.km),0),mon=new Date(+yy,+mm-1,1).toLocaleString("en-US",{month:"short"}),rows=[["Private Car Drive Diary","","","","","","Expense period",mon,yy],["","","","","","","Division","MIC",""],["","","","","","","Name",db.settings.name,""],["","","","","","","Car No.",db.settings.car,""],["","","","","","","","",""],["","","","","","","","",""],["No.","Date\n(mm/dd)","","","Customer","Area (지역)","","","Mileage(Km)\n총 마일리지"],["","","","","","Departure\n(출발지)","Stopover\n(경유지)","Arrival\n(도착지)",""]];a.forEach((t,i)=>{let [y,mo,d]=t.date.split("-");rows.push([i+1,+mo,"/",+d,t.customer,t.fromArea,"",t.toArea,t.km])});rows.push(["S - TOTAL","","","","","총 주행거리 Total mileage(km)(A)","","",tot]);rows.push(["","","","","","마일리지단가 Unit(B)","","",db.settings.rate]);rows.push(["","","","","","Total mileage KRW(AxB)","","",tot*db.settings.rate]);rows.push(["개인차량수당지원여부 (Yes or No)","","","","","","","","Yes"]);dl(`Private_Car_Diary_${m}.csv`,rows.map(r=>r.map(c).join(",")).join("\r\n"))}
+window.delTrip=id=>{db.trips=db.trips.filter(t=>t.id!==id);save()}
+window.delPlace=id=>{db.places=db.places.filter(p=>p.id!==id);if(db.state.lastPlaceId===id)db.state.lastPlaceId=null;save()}
+window.anchor=id=>{db.state.lastPlaceId=id;let p=place(id);if(p.type==="customer")db.state.activeCustomer=p.customer||p.name;if(p.type==="home")db.state.activeCustomer="";save()}
+window.gpsTo=id=>{if(!(location.protocol==="https:"||location.hostname==="localhost"))return alert("HTTPS 주소에서 사용하세요.");navigator.geolocation.getCurrentPosition(pos=>{let p=place(id);p.lat=pos.coords.latitude;p.lng=pos.coords.longitude;save();alert("GPS 위치 저장 완료")},e=>alert(e.message),{enableHighAccuracy:true,timeout:15000})}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab,.view").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.v).classList.add("active");renderHist()});
+$("month").value=today().slice(0,7);$("month").onchange=renderHist;
+$("detect").onclick=$("footerDetect").onclick=detect;
+$("homeBtn").onclick=$("footerHome").onclick=()=>{let h=db.places.find(p=>p.type==="home");if(!h)return alert("집을 등록하세요.");if(!db.state.lastPlaceId){db.state.lastPlaceId=h.id;save();return}move(db.state.lastPlaceId,h.id,"manual")};
+$("pendingSave").onclick=()=>{let p=db.state.pending,km=parseFloat($("pendingKm").value);if(!p||!isFinite(km))return alert("거리를 입력하세요.");let f=place(p.from),t=place(p.to);setRoute(f.area,t.area,km,$("pendingRev").checked);addTrip(p.from,p.to,km,p.customer,p.source);db.state.pending=null;$("pendingKm").value="";save()};
+$("mFrom").onchange=$("mTo").onchange=()=>{let f=place($("mFrom").value),t=place($("mTo").value);if(f&&t)$("mKm").value=rkm(f.area,t.area)??""};
+$("mAdd").onclick=()=>{let f=$("mFrom").value,t=$("mTo").value,km=parseFloat($("mKm").value);if(!f||!t||!isFinite(km))return alert("출발/도착/거리를 확인하세요.");addTrip(f,t,km,$("mCust").value||custFor(t),"manual");if(rkm(place(f).area,place(t).area)==null)setRoute(place(f).area,place(t).area,km,false);save()};
+$("saveSettings").onclick=()=>{db.settings.name=$("sName").value.trim();db.settings.car=$("sCar").value.trim();db.settings.rate=+$("sRate").value||0;db.settings.radius=+$("sRadius").value||500;save()};
+$("pGps").onclick=()=>{if(!(location.protocol==="https:"||location.hostname==="localhost"))return alert("HTTPS에서 GPS를 사용할 수 있습니다.");navigator.geolocation.getCurrentPosition(pos=>{window._newLat=pos.coords.latitude;window._newLng=pos.coords.longitude;alert("현재 GPS를 임시 저장했습니다. 장소 저장을 누르세요.")},e=>alert(e.message),{enableHighAccuracy:true,timeout:15000})}
+$("pSave").onclick=()=>{let n=$("pName").value.trim(),a=$("pArea").value.trim(),t=$("pType").value;if(!n||!a)return alert("장소명과 Area를 입력하세요.");db.places.push({id:uid(),name:n,area:a,type:t,customer:$("pCustomer").value.trim()||(t==="customer"?n:""),lat:window._newLat??null,lng:window._newLng??null});window._newLat=window._newLng=null;["pName","pArea","pCustomer"].forEach(x=>$(x).value="");save()};
+$("rSave").onclick=()=>{let a=$("rFrom").value,b=$("rTo").value,k=parseFloat($("rKm").value);if(!a||!b||!isFinite(k))return alert("구간과 거리를 확인하세요.");setRoute(a,b,k,$("rRev").checked);$("rKm").value="";save()};
+$("csv").onclick=makeCsv;
+$("backup").onclick=()=>dl(`Private_Car_Diary_backup_${today()}.json`,JSON.stringify(db,null,2),"application/json;charset=utf-8");
+$("restore").onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);save();alert("복원 완료")}catch(x){alert("복원 실패")}};r.readAsText(f)};
+$("setupSave").onclick=()=>{db.settings.name=$("setupName").value.trim();db.settings.car=$("setupCar").value.trim();db.settings.rate=+$("setupRate").value||168;let h=db.places.find(p=>p.type==="home");h.area=$("setupHomeArea").value.trim()||"집";db.setup=true;save();$("setupOverlay").classList.add("hidden")};
+$("demoBtn").onclick=()=>{
+  $("deployOverlay").classList.add("hidden");
+  if(!db.setup)$("setupOverlay").classList.remove("hidden");
+};
+
+function githubLinks(){
+  const user = ($("ghUser")?.value || localStorage.getItem("pcd_github_user") || "").trim();
+  if(!$("ghAutoLinks")) return;
+  if(!user){
+    $("ghAutoLinks").classList.add("hidden");
+    return;
+  }
+  localStorage.setItem("pcd_github_user", user);
+  const repo = "private-car-diary";
+  const base = `https://github.com/${encodeURIComponent(user)}/${repo}`;
+  $("ghUpload").href = `${base}/upload/main`;
+  $("ghPages").href = `${base}/settings/pages`;
+  const site = `https://${user}.github.io/${repo}/`;
+  $("ghSite").value = site;
+  $("openSite").href = site;
+  $("ghAutoLinks").classList.remove("hidden");
+}
+$("ghSave").onclick = githubLinks;
+$("ghUser").addEventListener("keydown", e=>{if(e.key==="Enter") githubLinks();});
+const savedGh = localStorage.getItem("pcd_github_user");
+if(savedGh){ $("ghUser").value=savedGh; githubLinks(); }
+
+$("copySite").onclick=()=>navigator.clipboard?.writeText($("ghSite").value).then(()=>alert("웹앱 주소를 복사했습니다."));
+$("downloadIndex").onclick=()=>{
+  const blob = new Blob([document.documentElement.outerHTML], {type:"text/html;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "index.html";
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+};
+
+$("copyGuide").onclick=()=>{
+ const u=($("ghUser")?.value||"내GitHub아이디").trim();
+ const guide=`Private Car Diary 배포 순서
+1. GitHub 로그인: https://github.com/login
+2. 새 저장소: https://github.com/new
+   Repository name: private-car-diary
+3. index.html 업로드:
+   https://github.com/${u}/private-car-diary/upload/main
+4. Pages 설정:
+   https://github.com/${u}/private-car-diary/settings/pages
+   Source → Deploy from a branch → main / root → Save
+5. 완성 주소:
+   https://${u}.github.io/private-car-diary/
+6. 완성 주소를 다른 사용자에게 공유`;
+ navigator.clipboard?.writeText(guide).then(()=>alert("설치 순서를 복사했습니다."));
+};
+let secure=(location.protocol==="https:"||location.hostname==="localhost");
+
+// Always begin with both overlays closed, then deliberately open only one.
+$("deployOverlay").classList.add("hidden");
+$("setupOverlay").classList.add("hidden");
+
+if(!secure){
+  // Local file/content:// execution: deployment instructions must be the first screen.
+  $("deployOverlay").classList.remove("hidden");
+}else if(!db.setup){
+  // Real HTTPS deployment: skip GitHub guide and go directly to one-time user setup.
+  $("setupOverlay").classList.remove("hidden");
+}
+render();
+</script>
+</body></html>
