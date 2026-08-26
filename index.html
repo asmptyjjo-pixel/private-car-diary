@@ -5,26 +5,466 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>Private Car Diary</title>
+<meta name="pcd-version" content="2026-08-26-securecontext-v6">
+
 <style>
-:root{--bg:#f4f5f7;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text)}
-button,input,select{font:inherit}.wrap{max-width:720px;margin:auto;padding:14px 14px 85px}
-header{position:sticky;top:0;z-index:20;background:#fffffff2;border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
-header .in{max-width:720px;margin:auto;padding:13px 14px}.brand{font-size:18px;font-weight:850}.tiny{font-size:11px;color:var(--muted)}
-.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:11px}
-h2{font-size:16px;margin:0 0 10px}label{display:block;font-size:11px;color:var(--muted);margin:8px 0 4px}
-input,select{width:100%;padding:11px;border:1px solid #d1d5db;border-radius:11px;background:#fff}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grow{flex:1}
-.btn{border:0;border-radius:11px;padding:11px 12px;background:#111827;color:#fff;font-weight:760}.btn.secondary{background:#e5e7eb;color:#111827}.btn.outline{background:#fff;color:#111827;border:1px solid #d1d5db}.btn.danger{background:#fee2e2;color:#991b1b}.btn.small{padding:7px 9px;font-size:11px}
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}.tab{border:0;border-radius:11px;padding:10px;background:#e5e7eb}.tab.active{background:#111827;color:#fff;font-weight:800}
-.view{display:none}.view.active{display:block}.big{font-size:26px;font-weight:850}.metricgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.metric{background:#f9fafb;border:1px solid var(--line);border-radius:12px;padding:10px}.metric strong{display:block;font-size:18px}
-.item{border:1px solid var(--line);border-radius:12px;padding:10px;margin:7px 0}.path{font-weight:800}.pill{font-size:10px;padding:3px 7px;border-radius:999px;background:#eef2ff;color:#3730a3}
-.notice{font-size:12px;line-height:1.5;padding:11px;border-radius:11px;background:#f9fafb;border:1px solid var(--line)}.warn{background:#fffbeb;border-color:#fde68a}
-.hidden{display:none!important}.overlay{position:fixed;inset:0;z-index:100;background:#f4f5f7;padding:18px;overflow:auto}.overlay .box{max-width:620px;margin:20px auto;background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px}
-table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px 5px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}.scroll{overflow:auto}
-.choice{display:grid;grid-template-columns:1fr 1fr;gap:8px}.choice button{padding:16px 10px}.detectbox{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:11px;margin-top:9px}.detectbox.warn{background:#fffbeb;border-color:#fde68a}
-.footer{position:fixed;left:0;right:0;bottom:0;background:#fffffff2;border-top:1px solid var(--line);padding:9px 12px calc(9px + env(safe-area-inset-bottom));z-index:25}.footer .in{max-width:720px;margin:auto;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+:root{
+  --bg:#f6f7f9;
+  --card:#ffffff;
+  --text:#111827;
+  --muted:#6b7280;
+  --line:#e5e7eb;
+  --soft:#f3f4f6;
+  --accent:#111827;
+  --accent2:#2563eb;
+  --green:#15803d;
+  --green-bg:#ecfdf3;
+  --amber:#92400e;
+  --amber-bg:#fff7ed;
+  --red:#b91c1c;
+  --red-bg:#fef2f2;
+  --radius:14px;
+  --shadow:0 1px 2px rgba(0,0,0,.03),0 6px 18px rgba(0,0,0,.03);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;
+  font-size:13px;
+  line-height:1.35;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.wrap{max-width:760px;margin:auto;padding:10px 10px 76px}
+header{
+  position:sticky;top:0;z-index:20;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+header .in{
+  max-width:760px;margin:auto;
+  padding:10px 12px 9px;
+}
+.brand{
+  font-size:17px;
+  font-weight:850;
+  letter-spacing:-.02em;
+}
+.tiny{font-size:10.5px;color:var(--muted)}
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:11px;
+  margin-bottom:8px;
+  box-shadow:var(--shadow);
+}
+h2{
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:-.015em;
+  margin:0 0 8px;
+}
+h3{font-size:12px;margin:10px 0 6px}
+label{
+  display:block;
+  font-size:10px;
+  font-weight:650;
+  color:var(--muted);
+  margin:6px 0 3px;
+}
+input,select{
+  width:100%;
+  min-height:38px;
+  padding:8px 10px;
+  border:1px solid #d7dbe2;
+  border-radius:10px;
+  background:#fff;
+  color:var(--text);
+  outline:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+input:focus,select:focus{
+  border-color:#9ca3af;
+  box-shadow:0 0 0 3px rgba(17,24,39,.05);
+}
+.row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.grow{flex:1;min-width:0}
+.btn{
+  border:0;
+  border-radius:10px;
+  min-height:38px;
+  padding:8px 11px;
+  background:var(--accent);
+  color:#fff;
+  font-weight:760;
+  font-size:12px;
+  transition:transform .08s,opacity .15s;
+}
+.btn:active{transform:scale(.985)}
+.btn.secondary{background:var(--soft);color:var(--text)}
+.btn.outline{background:#fff;color:var(--text);border:1px solid #d7dbe2}
+.btn.danger{background:var(--red-bg);color:var(--red)}
+.btn.small{min-height:31px;padding:6px 8px;font-size:10.5px}
+.tabs{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:5px;
+  margin-bottom:8px;
+  padding:3px;
+  border-radius:12px;
+  background:#e9ebef;
+}
+.tab{
+  border:0;
+  border-radius:9px;
+  min-height:34px;
+  padding:7px 5px;
+  background:transparent;
+  color:#4b5563;
+  font-size:11.5px;
+  font-weight:720;
+}
+.tab.active{
+  background:#fff;
+  color:#111827;
+  box-shadow:0 1px 3px rgba(0,0,0,.08);
+}
+.view{display:none}.view.active{display:block}
+.big{
+  font-size:22px;
+  font-weight:850;
+  letter-spacing:-.03em;
+}
+.metricgrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:5px;
+}
+.metric{
+  background:#fafafa;
+  border:1px solid var(--line);
+  border-radius:11px;
+  padding:8px;
+}
+.metric strong{
+  display:block;
+  margin-top:1px;
+  font-size:15px;
+  letter-spacing:-.02em;
+}
+.item{
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:8px 9px;
+  margin:5px 0;
+  background:#fff;
+}
+.path{font-weight:760;font-size:12px;letter-spacing:-.01em}
+.pill,.badge{
+  display:inline-flex;
+  align-items:center;
+  padding:3px 6px;
+  border-radius:999px;
+  font-size:9.5px;
+  font-weight:700;
+  background:#eef2ff;
+  color:#3730a3;
+}
+.badge.warn{background:#fef3c7;color:#92400e}
+.badge.ok{background:#dcfce7;color:#166534}
+.notice{
+  font-size:11px;
+  line-height:1.45;
+  padding:9px 10px;
+  border-radius:10px;
+  background:#fafafa;
+  border:1px solid var(--line);
+}
+.notice.warn{background:var(--amber-bg);border-color:#fed7aa;color:#7c2d12}
+.detectbox{
+  background:var(--green-bg);
+  border:1px solid #bbf7d0;
+  border-radius:11px;
+  padding:9px 10px;
+}
+.detectbox.warn{background:var(--amber-bg);border-color:#fed7aa}
+.hidden{display:none!important}
+.overlay{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(246,247,249,.98);
+  padding:12px;
+  overflow:auto;
+}
+.overlay .box{
+  max-width:600px;
+  margin:10px auto;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px;
+  box-shadow:0 18px 50px rgba(0,0,0,.10);
+}
+.choice{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+.choice button{min-height:42px;padding:9px 7px}
+table{width:100%;border-collapse:collapse;font-size:10px}
+th,td{
+  padding:6px 4px;
+  border-bottom:1px solid var(--line);
+  text-align:left;
+  white-space:nowrap;
+}
+th{
+  color:var(--muted);
+  font-weight:750;
+  background:#fafafa;
+}
+.scroll{overflow:auto;-webkit-overflow-scrolling:touch}
+.footer{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  z-index:25;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);
+  padding:7px 10px calc(7px + env(safe-area-inset-bottom));
+}
+.footer .in{
+  max-width:760px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+.section-title{font-size:11px;font-weight:800;margin:8px 0 5px}
+.validation{display:grid;gap:5px}
+.validation .item{margin:0}
+#distanceList .item{
+  padding:6px 8px;
+  margin:3px 0;
+}
+#distanceList .item .row{
+  flex-wrap:nowrap;
+}
+#distanceList input{
+  width:78px!important;
+  min-width:78px;
+  min-height:32px;
+  padding:5px 7px;
+  text-align:right;
+  font-size:11px;
+}
+#distanceList b{
+  display:block;
+  font-size:11px;
+  line-height:1.25;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#distanceList .tiny{font-size:9px}
+#searchResults .btn,
+#pastResults .btn{
+  min-height:35px;
+  margin-bottom:4px!important;
+  padding:7px 9px;
+  font-size:11px;
+}
+#recentCustomers .btn{
+  min-height:29px;
+  padding:5px 7px;
+  font-size:10px;
+}
+#todayList .item{padding:7px 8px}
+#todayList .tiny{font-size:9.5px}
+#todayList .path{font-size:11.5px}
+#missingDays .btn{margin:4px 4px 0 0!important}
+#validation .item{font-size:10.5px}
+@media(max-width:560px){
+  body{font-size:12px}
+  .wrap{padding:8px 8px 72px}
+  header .in{padding:8px 10px}
+  .brand{font-size:15px}
+  .card{padding:9px;margin-bottom:6px;border-radius:12px}
+  h2{font-size:13px;margin-bottom:6px}
+  .big{font-size:19px}
+  .metric{padding:7px}
+  .metric strong{font-size:13px}
+  .tabs{margin-bottom:6px}
+  .tab{min-height:32px;font-size:10.5px}
+  input,select{min-height:35px;padding:7px 9px;font-size:11px}
+  .btn{min-height:35px;padding:7px 9px;font-size:11px}
+  .btn.small{min-height:28px;font-size:9.5px}
+  .notice{font-size:10.5px;padding:8px}
+  .choice{gap:5px}
+  .footer{padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+}
+
+/* Compact mobile layout */
+@media(max-width:640px){
+  body{font-size:11px;line-height:1.22}
+  .wrap{padding:6px 6px 62px!important}
+  header .in{padding:7px 8px!important}
+  .brand{font-size:14px!important}
+  .tiny{font-size:8.8px!important}
+  .tabs{gap:3px!important;margin-bottom:5px!important;padding:2px!important}
+  .tab{min-height:29px!important;padding:5px 3px!important;font-size:10px!important}
+  .card{padding:7px!important;margin-bottom:5px!important;border-radius:10px!important}
+  h2{font-size:12px!important;margin:0 0 5px!important}
+  h3{font-size:10px!important;margin:6px 0 4px!important}
+  label{font-size:8.8px!important;margin:4px 0 2px!important}
+  input,select{min-height:30px!important;padding:5px 7px!important;font-size:9.8px!important;border-radius:8px!important}
+  .btn{min-height:30px!important;padding:5px 8px!important;font-size:9.8px!important;border-radius:8px!important}
+  .btn.small{min-height:24px!important;padding:3px 6px!important;font-size:8.8px!important}
+  .row{gap:4px!important}
+  .metricgrid{gap:3px!important}
+  .metric{padding:5px!important;border-radius:8px!important}
+  .metric strong{font-size:12px!important;margin-top:0!important}
+  .item{padding:5px 6px!important;margin:3px 0!important;border-radius:8px!important}
+  .path{font-size:10px!important}
+  .notice,.detectbox{padding:6px 7px!important;font-size:9.3px!important;line-height:1.3!important}
+  .choice{gap:4px!important}
+  .choice button{min-height:32px!important;padding:5px!important}
+  table{font-size:8.5px!important}
+  th,td{padding:4px 3px!important}
+  .footer{padding:4px 6px calc(4px + env(safe-area-inset-bottom))!important}
+  .footer .in{gap:4px!important}
+  #distanceList .item{padding:4px 5px!important;margin:2px 0!important}
+  #distanceList .item .row{display:grid!important;grid-template-columns:minmax(0,1fr) 58px;gap:4px!important;align-items:center!important}
+  #distanceList .item .row + .row{grid-template-columns:minmax(0,1fr) auto!important;margin-top:3px!important}
+  #distanceList b{font-size:9.2px!important;line-height:1.1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  #distanceList .tiny{font-size:7.8px!important}
+  #distanceList input{width:100%!important;min-width:0!important;min-height:26px!important;padding:3px 5px!important;font-size:9px!important}
+  #distanceList .btn{min-height:26px!important;padding:3px 5px!important;font-size:8px!important}
+  #searchResults .btn,#pastResults .btn{min-height:28px!important;padding:4px 6px!important;margin-bottom:2px!important;font-size:9.2px!important}
+  #recentCustomers .btn{min-height:24px!important;padding:3px 5px!important;font-size:8.3px!important}
+}
+
+
+/* Ultra compact one-line customer distance list */
+#distanceList .distance-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 42px 58px 64px!important;
+  align-items:center!important;
+  gap:4px!important;
+  padding:4px 5px!important;
+  margin:2px 0!important;
+}
+#distanceList .distance-name{
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size:9.5px;
+  font-weight:750;
+}
+#distanceList .distance-gps{
+  font-size:8px;
+  color:var(--muted);
+  text-align:center;
+  white-space:nowrap;
+}
+#distanceList .distance-km{
+  width:58px!important;
+  min-width:58px!important;
+  min-height:26px!important;
+  padding:3px 4px!important;
+  font-size:9px!important;
+  text-align:right;
+}
+#distanceList .distance-gps-btn{
+  min-width:64px!important;
+  min-height:26px!important;
+  padding:3px 4px!important;
+  font-size:8.5px!important;
+  white-space:nowrap;
+}
+
+
+#distanceList .distance-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) 54px 46px!important;
+  align-items:center!important;
+  gap:3px!important;
+  padding:3px 4px!important;
+  margin:2px 0!important;
+}
+#distanceList .distance-place{
+  min-width:0!important;
+  width:100%!important;
+  min-height:25px!important;
+  padding:3px 4px!important;
+  font-size:8.8px!important;
+}
+#distanceList .distance-km{
+  width:54px!important;
+  min-width:54px!important;
+  min-height:25px!important;
+  padding:3px 4px!important;
+  font-size:8.8px!important;
+}
+#distanceList .distance-gps-btn{
+  min-width:46px!important;
+  min-height:25px!important;
+  padding:3px 4px!important;
+  font-size:8.2px!important;
+}
+
+
+/* Smart work/trip automation */
+.work-status{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:4px;
+  margin-top:6px;
+}
+.work-status .btn.active{
+  background:#111827!important;
+  color:#fff!important;
+}
+.smart-box{
+  border:1px solid var(--line);
+  background:#fafafa;
+  border-radius:9px;
+  padding:6px 7px;
+  margin-top:6px;
+  font-size:9.5px;
+}
+.smart-box.ok{background:#ecfdf3;border-color:#bbf7d0}
+.smart-box.warn{background:#fff7ed;border-color:#fed7aa}
+.smart-box .smart-title{font-weight:800;font-size:10px}
+.smart-box .smart-sub{font-size:8.7px;color:var(--muted);margin-top:2px}
+@media(max-width:640px){
+  .work-status{gap:3px}
+  .work-status .btn{min-height:28px!important;font-size:8.8px!important;padding:3px 5px!important}
+  .smart-box{padding:5px 6px;font-size:9px}
+  .smart-box .smart-title{font-size:9.5px}
+  .smart-box .smart-sub{font-size:8px}
+}
+
+
+/* Intuitive hierarchy without hiding features */
+.card > .row:first-child h2{margin-bottom:0}
+#today .card,#history .card,#settings .card{scroll-margin-top:70px}
+#recentWrap{margin-top:8px!important}
+#activeTripActions .notice{margin-bottom:6px}
+#missingDaysCard .btn{white-space:nowrap}
+#historyBody .btn{white-space:nowrap}
+@media(max-width:640px){
+  #history .scroll{border-radius:10px}
+  #history table{min-width:690px}
+  #distanceList .item{margin:2px 0!important}
+}
+
 </style>
+
 </head>
 <body>
 
@@ -61,19 +501,78 @@ table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px 5px;b
  </div>
 </div>
 
-<header><div class="in"><div class="brand">Private Car Diary</div><div class="tiny">고객사 선택만 하면 출장거리 자동 입력</div></div></header>
+
+<div id="pastOverlay" class="overlay hidden">
+ <div class="box">
+  <div class="big">지난 출장 추가</div>
+  <label>날짜</label><input id="pastDate" type="date">
+  <label>고객사 검색</label><input id="pastSearch" placeholder="예: 천안, hynix, 이노텍">
+  <div id="pastResults" style="margin-top:7px"></div>
+  <div id="pastSelectedWrap" class="hidden">
+    <div class="notice" style="margin-top:10px"><b id="pastSelected"></b></div>
+    <label>출장 패턴</label>
+    <div class="choice">
+      <button class="btn outline pastPattern" data-pattern="home-home">집 → 고객사 → 집</button>
+      <button class="btn outline pastPattern" data-pattern="home-hotel">집 → 고객사 → 호텔</button>
+      <button class="btn outline pastPattern" data-pattern="hotel-hotel">호텔 → 고객사 → 호텔</button>
+      <button class="btn outline pastPattern" data-pattern="hotel-home">호텔 → 고객사 → 집</button>
+    </div>
+    <div id="pastPreview" class="notice hidden" style="margin-top:10px"></div>
+    <button id="pastSave" class="btn" style="width:100%;margin-top:10px">지난 출장 저장</button>
+  </div>
+  <button id="pastClose" class="btn secondary" style="width:100%;margin-top:8px">닫기</button>
+ </div>
+</div>
+
+<div id="editOverlay" class="overlay hidden">
+ <div class="box">
+  <div class="big">출장 기록 수정</div>
+  <input id="editId" type="hidden">
+  <label>날짜</label><input id="editDate" type="date">
+  <label>Customer</label><input id="editCustomer">
+  <label>Departure</label><input id="editFrom">
+  <label>Arrival</label><input id="editTo">
+  <label>Mileage (km)</label><input id="editKm" type="number" inputmode="decimal"><div class="tiny" style="margin-top:3px">호텔 기본 20km도 이 화면에서 필요 시 수정할 수 있습니다.</div>
+  <div class="row" style="margin-top:10px">
+    <button id="editSave" class="btn grow">저장</button>
+    <button id="editDelete" class="btn danger grow">삭제</button>
+  </div>
+  <button id="editClose" class="btn secondary" style="width:100%;margin-top:8px">닫기</button>
+ </div>
+</div>
+
+<header><div class="in"><div class="brand">Private Car Diary</div><div class="tiny">Mileage · Visits · Monthly Export</div></div></header>
 
 <div class="wrap">
 <div class="tabs"><button class="tab active" data-v="today">오늘</button><button class="tab" data-v="history">기록</button><button class="tab" data-v="settings">설정</button></div>
 
+
 <section id="today" class="view active">
+ <div class="card">
+  <div class="row"><h2 class="grow" style="margin:0">오늘 상태</h2><span id="todayStatusBadge" class="badge"></span></div><div class="tiny" style="margin-top:3px">평일은 근무가 기본값입니다. 휴가·개인 일정만 바꾸면 됩니다.</div>
+  <div class="work-status">
+    <button id="statusWork" class="btn secondary">근무</button>
+    <button id="statusLeave" class="btn secondary">휴가/개인</button>
+    <button id="statusOff" class="btn secondary">비근무</button>
+  </div>
+  <div id="smartDetectBox" class="smart-box">
+    <div id="smartDetectTitle" class="smart-title">자동 확인 준비</div>
+    <div id="smartDetectSub" class="smart-sub">근무일에는 앱을 열 때 현재 위치를 확인합니다.</div>
+  </div>
+ </div>
+
  <div class="card">
   <div class="tiny">오늘</div><div id="todayDate" class="big"></div>
   <div class="metricgrid" style="margin-top:10px"><div class="metric"><span class="tiny">거리</span><strong id="todayKm">0 km</strong></div><div class="metric"><span class="tiny">정산</span><strong id="todayCost">₩0</strong></div><div class="metric"><span class="tiny">행</span><strong id="todayRows">0</strong></div></div>
  </div>
 
+ <div id="missingDaysCard" class="card hidden">
+  <div class="row"><h2 style="margin:0" class="grow">최근 기록 없는 평일</h2><button id="openPastFromToday" class="btn small">지난 출장 입력</button></div>
+  <div id="missingDays"></div>
+ </div>
+
  <div class="card">
-  <h2>오늘 고객사 방문</h2>
+  <div class="row"><h2 class="grow" style="margin:0">오늘 고객사 방문</h2><span class="tiny">자동감지 또는 검색</span></div>
 
   <div id="autoState" class="detectbox">
     <div class="row">
@@ -81,7 +580,7 @@ table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px 5px;b
         <b id="autoStateTitle">현재 위치 확인 준비</b>
         <div id="autoStateSub" class="tiny">위치가 등록된 고객사가 있으면 자동으로 찾습니다.</div>
       </div>
-      <button id="autoDetectCustomer" class="btn small">다시 확인</button>
+      <button id="autoDetectCustomer" class="btn small">위치 다시 확인</button>
     </div>
   </div>
 
@@ -91,7 +590,7 @@ table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px 5px;b
   </div>
 
   <div style="margin-top:12px">
-    <input id="custSearch" placeholder="고객사 검색  예: 천안, hynix, 이노텍">
+    <input id="custSearch" placeholder="고객사 검색 · 예: 천안, hynix, 이노텍">
     <div id="searchResults" style="margin-top:7px"></div>
   </div>
 
@@ -107,37 +606,54 @@ table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:7px 5px;b
   </div>
  </div>
 
+ <div id="unfinishedCard" class="card hidden">
+  <h2>미완료 출장</h2>
+  <div id="unfinishedText" class="notice warn"></div>
+  <div class="choice" style="margin-top:8px">
+    <button id="unfinishedHome" class="btn">집으로 완료</button>
+    <button id="unfinishedHotel" class="btn secondary">호텔로 완료</button>
+  </div>
+ </div>
+
  <div id="hotelReturnCard" class="card hidden">
   <h2>호텔에서 출발</h2>
   <div id="hotelReturnText" class="path"></div>
   <button id="hotelToCustomer" class="btn" style="width:100%;margin-top:8px">호텔 → 고객사 자동 추가</button>
  </div>
 
- <div class="card"><h2>오늘 회사 폼 행</h2><div id="todayList"></div></div>
+ <div class="card"><div class="row"><h2 class="grow" style="margin:0">오늘 이동 기록</h2><span class="tiny">자동 저장된 정산 행</span></div><div id="todayList"></div></div>
 </section>
 
 <section id="history" class="view">
  <div class="card">
-  <h2>월별 정산</h2>
+  <div class="row"><h2 class="grow" style="margin:0">월별 정산</h2><span class="tiny">지난 출장 추가 · 수정 · 회사 파일</span></div>
   <label>월</label><input id="month" type="month">
   <div class="metricgrid" style="margin-top:10px"><div class="metric"><span class="tiny">거리</span><strong id="monthKm">0 km</strong></div><div class="metric"><span class="tiny">정산</span><strong id="monthCost">₩0</strong></div><div class="metric"><span class="tiny">행</span><strong id="monthRows">0</strong></div></div>
-  <button id="csv" class="btn" style="width:100%;margin-top:10px">회사 형식 CSV 만들기</button>
+  <div class="row" style="margin-top:10px">
+    <button id="openPast" class="btn secondary grow">지난 출장 추가</button>
+    <button id="csv" class="btn grow">회사 파일 만들기</button>
+  </div>
+ </div>
+ <div class="card">
+   <div class="row"><h2 class="grow" style="margin:0">월말 검증</h2><span class="tiny">누락 · 중복 · 미완료 확인</span></div>
+   <div id="validation" class="validation"></div>
  </div>
  <div class="card scroll"><table><thead><tr><th>No.</th><th>Date</th><th>Customer</th><th>Departure</th><th>Arrival</th><th>Km</th><th></th></tr></thead><tbody id="histBody"></tbody></table></div>
 </section>
 
 <section id="settings" class="view">
+<div class="card"><div class="tiny">처음 한 번만 고객사 지역명과 편도거리를 저장하면 이후 출장 입력은 자동으로 재사용됩니다.</div></div>
  <div class="card">
   <h2>내 정보</h2>
   <label>Name</label><input id="sName">
   <label>Car No.</label><input id="sCar">
-  <label>집 Area</label><input id="sHome">
-  <div class="row"><div class="grow"><label>단가</label><input id="sRate" type="number"></div><div class="grow"><label>호텔 편도거리</label><input id="sHotelKm" type="number"></div></div><label>고객사 자동 인식 반경 (m)</label><input id="sRadius" type="number" value="500">
+  <label>집 Area</label><input id="sHome"><label>집 기준 시/군</label><input id="sHomeCity" placeholder="예: 화성시">
+  <div class="row"><div class="grow"><label>단가</label><input id="sRate" type="number"></div><div class="grow"><label>호텔 근거리 기본거리</label><input id="sHotelKm" type="number"><div class="tiny" style="margin-top:3px">호텔은 고객사 근처로 처리하며 고객사와 같은 지역명으로 기록됩니다.</div></div></div><label>고객사 자동 인식 반경 (m)</label><input id="sRadius" type="number" value="500">
   <button id="saveSettings" class="btn" style="margin-top:9px">저장</button>
  </div>
 
  <div class="card">
-  <h2>고객사별 편도거리</h2>
+  <div class="row"><h2 class="grow" style="margin:0">고객사별 설정</h2><span class="tiny">고객사 · 지역명 · km</span></div><div class="tiny" style="margin-bottom:7px">영문 A→Z · 한글 가나다 · 숫자 자연 정렬</div>
   <input id="distSearch" placeholder="고객사 검색">
   <div id="distanceList"></div>
  </div>
@@ -172,25 +688,82 @@ const today=()=>{let d=new Date();return d.getFullYear()+"-"+String(d.getMonth()
 const money=n=>"₩"+Math.round(n||0).toLocaleString("ko-KR");
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-function fresh(){return {setup:false,settings:{name:"",car:"",home:"",rate:168,hotelKm:20,radius:500},customers:CUSTOMER_NAMES.map(n=>({name:n,km:null,lat:null,lng:null})),trips:[],state:{current:"home",activeCustomer:"",hotelCustomer:""}}}
+function fresh(){return {setup:false,settings:{name:"",car:"",home:"",homeCity:"화성시",rate:168,hotelKm:20,radius:500},customers:CUSTOMER_NAMES.map(n=>({name:n,km:null,lat:null,lng:null,place:""})),trips:[],state:{current:"home",activeCustomer:"",hotelCustomer:""}}}
 let db;try{db=JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){db=fresh()}
+if(!db.settings.homeCity) db.settings.homeCity="화성시";
+if(!db.dayStatus) db.dayStatus={};
+
 if(!db.settings.radius) db.settings.radius=500;
+db.customers.sort(customerSort);
 db.customers=db.customers.map(c=>({lat:null,lng:null,...c}));
 function save(){localStorage.setItem(KEY,JSON.stringify(db));render()}
 function customerObj(name){return db.customers.find(c=>c.name===name)}
+function customerSort(a,b){
+  const norm=s=>String(s||"").trim().replace(/[_\s]+/g," ");
+  const first=s=>norm(s).charAt(0);
+  const group=s=>{
+    const c=first(s);
+    if(/[A-Za-z]/.test(c)) return 0;
+    if(/[가-힣ㄱ-ㅎㅏ-ㅣ]/.test(c)) return 1;
+    return 2;
+  };
+  const ga=group(a.name), gb=group(b.name);
+  if(ga!==gb) return ga-gb;
+  const locale=ga===0?"en":"ko";
+  return new Intl.Collator(locale,{numeric:true,sensitivity:"base"}).compare(norm(a.name),norm(b.name));
+}
+function isDuplicateTrip(date,customer,from,to,km,ignoreId=null){
+ return db.trips.some(t=>t.id!==ignoreId && t.date===date && t.customer===customer && t.from===from && t.to===to && Number(t.km)===Number(km));
+}
 function geoDist(lat1,lon1,lat2,lon2){
  const R=6371000,rad=x=>x*Math.PI/180,p1=rad(lat1),p2=rad(lat2),dp=rad(lat2-lat1),dl=rad(lon2-lon1);
  const a=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;
  return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
-function secureGps(){return location.protocol==="https:"||location.hostname==="localhost"}
+function secureGps(){return window.isSecureContext===true && !!navigator.geolocation}
+
+async function reverseGeocodeKorean(lat,lng){
+  const url=`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&accept-language=ko&zoom=18&addressdetails=1`;
+  const res=await fetch(url,{headers:{"Accept":"application/json"}});
+  if(!res.ok) throw new Error("주소 조회 실패");
+  const data=await res.json();
+  const a=data.address||{};
+  const city=a.city||a.municipality||a.county||a.state_district||"";
+  const district=a.borough||a.city_district||"";
+  const dong=a.suburb||a.quarter||a.neighbourhood||a.village||a.town||a.hamlet||"";
+  const parts=[];
+  if(city) parts.push(city);
+  if(dong && !parts.includes(dong)) parts.push(dong);
+  else if(district && !parts.includes(district)) parts.push(district);
+  let label=parts.join(" ").trim();
+  if(!label){
+    const display=(data.display_name||"").split(",").map(x=>x.trim()).filter(Boolean);
+    label=display.slice(0,2).join(" ");
+  }
+  return label||"";
+}
+function normalizeAreaLabel(label){
+  return String(label||"")
+    .replace(/\s+/g," ")
+    .replace(/대한민국|South Korea/gi,"")
+    .trim();
+}
 function saveCurrentLocationToCustomer(name, thenEnter=false){
  if(!secureGps()) return alert("고객사 위치 저장은 GitHub Pages HTTPS 주소에서 사용하세요.");
- navigator.geolocation.getCurrentPosition(pos=>{
+ navigator.geolocation.getCurrentPosition(async pos=>{
    const c=customerObj(name); if(!c)return;
-   c.lat=pos.coords.latitude;c.lng=pos.coords.longitude;
+   c.lat=pos.coords.latitude;
+   c.lng=pos.coords.longitude;
+   try{
+     const label=normalizeAreaLabel(await reverseGeocodeKorean(c.lat,c.lng));
+     if(label) c.place=label;
+   }catch(err){
+     console.warn("Reverse geocoding failed",err);
+   }
    save();
-   alert(`${name}의 현재 위치를 저장했습니다. 다음 방문부터 자동 인식할 수 있습니다.`);
+   alert(`${name}
+위치 저장 완료${c.place?`
+지역: ${c.place}`:""}`);
    if(thenEnter) selectCustomer(name);
  },e=>alert("위치 확인 실패: "+e.message),{enableHighAccuracy:true,timeout:15000,maximumAge:0});
 }
@@ -211,7 +784,20 @@ function autoDetectCustomer(){
    box.classList.remove("warn");$("autoStateTitle").textContent=`${n.name} 도착 감지`;$("autoStateSub").innerHTML=`약 ${Math.round(n.d)}m · <button id="confirmDetected" class="btn small" style="margin-left:6px">방문 등록</button>`;setTimeout(()=>{const b=$("confirmDetected");if(b)b.onclick=()=>selectCustomer(n.name)},0);
  },e=>{box.classList.add("warn");$("autoStateTitle").textContent="위치 확인 실패";$("autoStateSub").textContent=e.message},{enableHighAccuracy:false,timeout:12000,maximumAge:300000});
 }
-function addTrip(customer,from,to,km,source){db.trips.push({id:uid(),date:today(),customer,from,to,km:Number(km),source,createdAt:Date.now()})}
+function addTrip(customer,from,to,km,source,date=today(),skipDuplicatePrompt=false){
+ if(isDuplicateTrip(date,customer,from,to,km)){
+   if(skipDuplicatePrompt) return false;
+   if(!confirm(`같은 날짜에 동일한 이동 기록이 이미 있습니다.
+
+${date}
+${customer}
+${from} → ${to} · ${km} km
+
+그래도 추가할까요?`)) return false;
+ }
+ db.trips.push({id:uid(),date,customer,from,to,km:Number(km),source,createdAt:Date.now()});
+ return true;
+}
 function selectCustomer(name){
  let c=customerObj(name); if(!c)return;
  db.state.activeCustomer=name;
@@ -231,7 +817,7 @@ function enterCustomer(name){
    addTrip(name,from,name,db.settings.hotelKm,"hotel-return");
  }else{
    from=db.settings.home||"집";
-   addTrip(name,from,name,c.km,"outbound");
+   addTrip(name,from,c.place||name,c.km,"outbound");
  }
  db.state.current="customer";
  db.state.activeCustomer=name;
@@ -242,13 +828,13 @@ function enterCustomer(name){
 function goHome(){
  let name=db.state.activeCustomer;if(!name)return alert("먼저 고객사를 선택하세요.");
  let c=customerObj(name); if(!c||c.km==null)return;
- addTrip(name,name,db.settings.home||"집",c.km,"return-home");
+ addTrip(name,c.place||name,db.settings.home||"집",c.km,"return-home");
  db.state.current="home";db.state.activeCustomer="";db.state.hotelCustomer="";
  $("afterOverlay").classList.add("hidden");save()
 }
 function goHotel(){
  let name=db.state.activeCustomer;if(!name)return alert("먼저 고객사를 선택하세요.");
- addTrip(name,name,"호텔",db.settings.hotelKm,"to-hotel");
+ addTrip(name,(customerObj(name)?.place||name),(customerObj(name)?.place||name),db.settings.hotelKm,"to-hotel");
  db.state.current="hotel";db.state.hotelCustomer=name;db.state.activeCustomer=name;
  $("afterOverlay").classList.add("hidden");save()
 }
@@ -270,8 +856,14 @@ window.manualVisit=n=>{
  if(!c)return;
  if((c.lat==null||c.lng==null) && secureGps()){
    if(confirm(`${n}\n\n현재 위치를 이 고객사 위치로 저장할까요?\n저장하면 다음 방문부터 자동 인식됩니다.`)){
-     navigator.geolocation.getCurrentPosition(pos=>{
-       c.lat=pos.coords.latitude;c.lng=pos.coords.longitude;save();selectCustomer(n);
+     navigator.geolocation.getCurrentPosition(async pos=>{
+       c.lat=pos.coords.latitude;
+       c.lng=pos.coords.longitude;
+       try{
+         const label=normalizeAreaLabel(await reverseGeocodeKorean(c.lat,c.lng));
+         if(label)c.place=label;
+       }catch(err){console.warn("Reverse geocoding failed",err);}
+       save();selectCustomer(n);
      },e=>{selectCustomer(n)},{enableHighAccuracy:true,timeout:15000});
      return;
    }
@@ -282,32 +874,317 @@ function renderCustomerSelect(){
  const q=$("custSearch").value.trim().toLowerCase();
  const box=$("searchResults");
  if(!q){box.innerHTML="";return;}
- const arr=db.customers.filter(c=>c.name.toLowerCase().includes(q)).slice(0,8);
+ const arr=db.customers.filter(c=>c.name.toLowerCase().includes(q)).sort(customerSort).slice(0,8);
  box.innerHTML=arr.length?arr.map(c=>`<button class="btn outline" style="width:100%;text-align:left;margin-bottom:6px" onclick="manualVisit('${encodeURIComponent(c.name)}')">${esc(c.name)}${c.km!=null?` · ${c.km} km`:" · 거리 미등록"}</button>`).join(""):`<div class="tiny">검색 결과가 없습니다.</div>`;
 }
 function renderDistances(){
  const q=$("distSearch").value.trim().toLowerCase();
- const arr=db.customers.filter(c=>c.name.toLowerCase().includes(q));
- $("distanceList").innerHTML=arr.map(c=>`<div class="item"><div class="row"><div class="grow"><b>${esc(c.name)}</b><div class="tiny">집 ↔ 고객사 편도 · ${c.lat!=null?"위치 등록됨":"위치 미등록"}</div></div><input style="width:100px" type="number" value="${c.km??""}" placeholder="km" onchange="setCustKm('${encodeURIComponent(c.name)}',this.value)"></div>${c.lat==null?`<button class="btn outline small" style="margin-top:7px" onclick="saveLoc('${encodeURIComponent(c.name)}')">현재 위치를 고객사 위치로 저장</button>`:""}</div>`).join("");
+ const arr=db.customers.filter(c=>c.name.toLowerCase().includes(q)).sort(customerSort);
+ $("distanceList").innerHTML=arr.map(c=>`<div class="item distance-row">
+  <div class="distance-name" title="${esc(c.name)}">${esc(c.name)}</div>
+  <input class="distance-place" value="${esc(c.place||"")}" placeholder="지역명" onchange="setCustPlace('${encodeURIComponent(c.name)}',this.value)">
+  <input class="distance-km" type="number" value="${c.km??""}" placeholder="km" onchange="setCustKm('${encodeURIComponent(c.name)}',this.value)">
+  <button class="btn outline small distance-gps-btn" onclick="saveLoc('${encodeURIComponent(c.name)}')">GPS</button>
+</div>`).join("");
+}
+
+function missingWeekdays(daysBack=14){
+ const result=[], seenDates=new Set(db.trips.map(t=>t.date));
+ let d=new Date(); d.setHours(12,0,0,0);
+ for(let i=1;i<=daysBack;i++){
+   const x=new Date(d); x.setDate(d.getDate()-i);
+   const dow=x.getDay();
+   if(dow===0||dow===6) continue;
+   const ds=x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0");
+   if(!seenDates.has(ds)) result.push(ds);
+ }
+ return result;
+}
+function renderMissingDays(){
+ const arr=missingWeekdays(14).slice(0,6);
+ $("missingDaysCard").classList.toggle("hidden",!arr.length);
+ $("missingDays").innerHTML=arr.map(d=>`<button class="btn outline small" style="margin:6px 6px 0 0" onclick="openPastTrip('${d}')">${d.slice(5).replace("-","/")} 기록 없음</button>`).join("");
+}
+function monthValidation(){
+ const m=$("month").value||today().slice(0,7);
+ const a=db.trips.filter(t=>t.date.startsWith(m));
+ const issues=[];
+ const unfinished = (db.state.current==="customer" && db.state.activeCustomer);
+ if(unfinished) issues.push({type:"warn",text:`미완료 출장: ${db.state.activeCustomer}`});
+ const missingKm=[...new Set(a.map(t=>t.customer))].filter(n=>customerObj(n)?.km==null);
+ if(missingKm.length) issues.push({type:"warn",text:`편도거리 미등록 고객사 ${missingKm.length}곳`});
+ const dup=[];
+ const keyCount={};
+ a.forEach(t=>{const k=[t.date,t.customer,t.from,t.to,t.km].join("|");keyCount[k]=(keyCount[k]||0)+1});
+ Object.entries(keyCount).forEach(([k,v])=>{if(v>1)dup.push(k)});
+ if(dup.length) issues.push({type:"warn",text:`중복 가능 기록 ${dup.length}건`});
+ const workdays=[];
+ const [y,mo]=m.split("-").map(Number);
+ const last=new Date(y,mo,0).getDate();
+ for(let day=1;day<=last;day++){
+   const d=new Date(y,mo-1,day), dow=d.getDay();
+   if(dow===0||dow===6) continue;
+   const ds=`${y}-${String(mo).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+   if(new Date(ds)>new Date(today())) continue;
+   if(!a.some(t=>t.date===ds)) workdays.push(ds);
+ }
+ if(workdays.length) issues.push({type:"warn",text:`기록 없는 평일 ${workdays.length}일`});
+ if(!issues.length) issues.push({type:"ok",text:"현재 확인된 이상 항목이 없습니다."});
+ $("validation").innerHTML=issues.map(i=>`<div class="item"><span class="badge ${i.type}">${i.type==="ok"?"OK":"확인"}</span> ${esc(i.text)}</div>`).join("");
+}
+function openPastTrip(date=today()){
+ window._pastCustomer="";
+ window._pastPattern="";
+ $("pastDate").value=date;
+ $("pastSearch").value="";
+ $("pastResults").innerHTML="";
+ $("pastSelectedWrap").classList.add("hidden");
+ $("pastPreview").classList.add("hidden");
+ $("pastOverlay").classList.remove("hidden");
+}
+window.openPastTrip=openPastTrip;
+function renderPastSearch(){
+ const q=$("pastSearch").value.trim().toLowerCase();
+ if(!q){$("pastResults").innerHTML="";return}
+ const arr=db.customers.filter(c=>c.name.toLowerCase().includes(q)).sort(customerSort).slice(0,8);
+ $("pastResults").innerHTML=arr.map(c=>`<button class="btn outline" style="width:100%;text-align:left;margin-bottom:6px" onclick="selectPastCustomer('${encodeURIComponent(c.name)}')">${esc(c.name)}${c.km!=null?` · ${c.km} km`:" · 거리 미등록"}</button>`).join("");
+}
+window.selectPastCustomer=n=>{
+ n=decodeURIComponent(n); window._pastCustomer=n;
+ $("pastSelected").textContent=n;
+ $("pastSelectedWrap").classList.remove("hidden");
+ $("pastPreview").classList.add("hidden");
+};
+function previewPast(){
+ const n=window._pastCustomer, pat=window._pastPattern, c=customerObj(n), hotel=Number(db.settings.hotelKm||20), home=db.settings.home||"집", place=c?.place||n;
+ if(!n||!pat)return;
+ if(!c||c.km==null){
+   $("pastPreview").classList.remove("hidden");
+   $("pastPreview").innerHTML=`${esc(n)}의 집↔고객사 편도거리가 없습니다. 설정에서 편도거리를 먼저 입력하세요.`;
+   return;
+ }
+ let legs=[];
+ if(pat==="home-home") legs=[[home,place,c.km],[place,home,c.km]];
+ if(pat==="home-hotel") legs=[[home,place,c.km],[place,place,hotel]];
+ if(pat==="hotel-hotel") legs=[[place,place,hotel],[place,place,hotel]];
+ if(pat==="hotel-home") legs=[[place,place,hotel],[place,home,c.km]];
+ $("pastPreview").classList.remove("hidden");
+ $("pastPreview").innerHTML=legs.map(x=>`${esc(x[0])} → ${esc(x[1])} · <b>${x[2]} km</b>`).join("<br>")+`<br><b>총 ${legs.reduce((s,x)=>s+Number(x[2]),0)} km</b>`;
+}
+function savePast(){
+ const date=$("pastDate").value,n=window._pastCustomer,pat=window._pastPattern,c=customerObj(n),hotel=Number(db.settings.hotelKm||20),home=db.settings.home||"집",place=c?.place||n;
+ if(!date||!n||!pat)return alert("날짜, 고객사, 출장 패턴을 선택하세요.");
+ if(!c||c.km==null)return alert("이 고객사의 편도거리를 먼저 등록하세요.");
+ let legs=[];
+ if(pat==="home-home") legs=[[home,place,c.km],[place,home,c.km]];
+ if(pat==="home-hotel") legs=[[home,place,c.km],[place,place,hotel]];
+ if(pat==="hotel-hotel") legs=[[place,place,hotel],[place,place,hotel]];
+ if(pat==="hotel-home") legs=[[place,place,hotel],[place,home,c.km]];
+ let added=0;
+ for(const leg of legs){
+   if(addTrip(n,leg[0],leg[1],leg[2],"past",date,false)) added++;
+ }
+ save();
+ $("pastOverlay").classList.add("hidden");
+ alert(`${date} 출장 ${added}행을 저장했습니다.`);
+}
+function openEdit(id){
+ const t=db.trips.find(x=>x.id===id); if(!t)return;
+ $("editId").value=t.id;$("editDate").value=t.date;$("editCustomer").value=t.customer;$("editFrom").value=t.from;$("editTo").value=t.to;$("editKm").value=t.km;
+ $("editOverlay").classList.remove("hidden");
+}
+window.openEdit=openEdit;
+
+function migrateStoredTripAreas(){
+ let changed=false;
+ for(const c of db.customers){
+   if(!c.place) continue;
+   for(const t of db.trips){
+     if(t.customer!==c.name) continue;
+     if(t.from===c.name){t.from=c.place;changed=true;}
+     if(t.to===c.name){t.to=c.place;changed=true;}
+   }
+ }
+ if(changed)localStorage.setItem(KEY,JSON.stringify(db));
+}
+
+function defaultDayStatus(dateStr=today()){
+  const d=new Date(dateStr+"T12:00:00");
+  const dow=d.getDay();
+  return (dow===0||dow===6) ? "off" : "work";
+}
+function getDayStatus(dateStr=today()){
+  return db.dayStatus?.[dateStr] || defaultDayStatus(dateStr);
+}
+function setDayStatus(status,dateStr=today()){
+  if(!db.dayStatus) db.dayStatus={};
+  db.dayStatus[dateStr]=status;
+  save();
+  if(dateStr===today() && status==="work") setTimeout(()=>smartAutoCheck(),150);
+}
+function statusLabel(s){
+  return s==="work"?"근무":s==="leave"?"휴가/개인":"비근무";
+}
+function normalizeCityName(s){
+  return String(s||"").replace(/\s+/g,"").replace(/특별자치시|광역시|특별시/g,"시");
+}
+function cityMatches(a,b){
+  const x=normalizeCityName(a),y=normalizeCityName(b);
+  if(!x||!y)return false;
+  return x===y || x.includes(y) || y.includes(x);
+}
+async function reverseGeocodeCity(lat,lng){
+  try{
+    const url=`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&accept-language=ko&zoom=12&addressdetails=1`;
+    const r=await fetch(url,{headers:{"Accept":"application/json"}});
+    if(!r.ok)throw new Error("address");
+    const d=await r.json(),a=d.address||{};
+    return a.city||a.municipality||a.county||a.state_district||a.town||"";
+  }catch(e){return "";}
+}
+function customerDistanceFrom(lat,lng,c){
+  if(c.lat==null||c.lng==null)return Infinity;
+  const R=6371000,rad=x=>x*Math.PI/180;
+  const p1=rad(lat),p2=rad(Number(c.lat)),dp=rad(Number(c.lat)-lat),dl=rad(Number(c.lng)-lng);
+  const a=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;
+  return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function alreadyVisitedToday(name){
+  return db.trips.some(t=>t.date===today() && t.customer===name);
+}
+function showSmart(title,sub,type=""){
+  const box=$("smartDetectBox");
+  if(!box)return;
+  box.classList.remove("ok","warn");
+  if(type)box.classList.add(type);
+  $("smartDetectTitle").textContent=title;
+  $("smartDetectSub").innerHTML=sub||"";
+}
+async 
+function gpsDiagnosticText(){
+  if(location.protocol!=="https:" && location.hostname!=="localhost"){
+    return "현재 주소가 HTTPS가 아닙니다.";
+  }
+  if(window.isSecureContext!==true){
+    return "브라우저가 현재 페이지를 안전한 페이지로 인식하지 않습니다.";
+  }
+  if(!navigator.geolocation){
+    return "이 브라우저에서 위치 기능을 사용할 수 없습니다.";
+  }
+  return "위치 기능 사용 가능";
+}
+function smartAutoCheck(){
+  if(getDayStatus(today())!=="work"){
+    showSmart("자동 감지 중지",`${statusLabel(getDayStatus(today()))} 상태입니다.`,"warn");
+    return;
+  }
+  if(!(window.isSecureContext===true)){
+    showSmart(
+      "위치 자동 확인 불가",
+      location.protocol==="https:"
+        ? "브라우저의 위치 권한을 확인하세요."
+        : "다운로드한 HTML이 아니라 GitHub Pages 웹주소에서 열어야 합니다.",
+      "warn"
+    );
+    return;
+  }
+  if(!navigator.geolocation){
+    showSmart("위치 기능 없음","이 브라우저에서 위치정보를 사용할 수 없습니다.","warn");
+    return;
+  }
+  showSmart("현재 위치 확인 중","등록 고객사 또는 타 시/군 이동을 확인합니다.");
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const lat=pos.coords.latitude,lng=pos.coords.longitude;
+    const radius=Number(db.settings.radius||500);
+    const candidates=db.customers
+      .filter(c=>c.lat!=null&&c.lng!=null)
+      .map(c=>({c,d:customerDistanceFrom(lat,lng,c)}))
+      .sort((a,b)=>a.d-b.d);
+
+    const near=candidates[0];
+    if(near && near.d<=radius){
+      const c=near.c;
+      if(alreadyVisitedToday(c.name)){
+        showSmart(`${c.name} 근처`,`오늘 이미 방문 기록이 있습니다. 약 ${Math.round(near.d)}m`,"ok");
+        return;
+      }
+      showSmart(
+        `${c.name} 방문 감지`,
+        `약 ${Math.round(near.d)}m · <button id="smartVisitBtn" class="btn small" style="margin-left:5px">방문 등록</button>`,
+        "ok"
+      );
+      setTimeout(()=>{
+        const b=$("smartVisitBtn");
+        if(b)b.onclick=()=>selectCustomer(c.name);
+      },0);
+      return;
+    }
+
+    const currentCity=await reverseGeocodeCity(lat,lng);
+    const homeCity=db.settings.homeCity||"화성시";
+    if(currentCity && !cityMatches(currentCity,homeCity)){
+      showSmart(
+        `${currentCity} 이동 감지`,
+        `집 기준 ${homeCity} 밖입니다. 고객사 검색에서 방문처만 선택하면 됩니다.`,
+        "warn"
+      );
+      return;
+    }
+
+    if(currentCity){
+      showSmart("출장 자동 후보 없음",`${currentCity} · 등록 고객사 반경 밖`,"");
+    }else{
+      showSmart("현재 위치 확인 완료","등록 고객사 반경 밖입니다.","");
+    }
+  },e=>{
+    showSmart(
+      "위치 확인 실패",
+      `${e.message||"위치 권한을 확인하세요."}<br>${gpsDiagnosticText()}`,
+      "warn"
+    );
+  },{enableHighAccuracy:false,timeout:12000,maximumAge:300000});
+}
+function renderWorkStatus(){
+  const s=getDayStatus(today());
+  $("todayStatusBadge").textContent=statusLabel(s);
+  ["Work","Leave","Off"].forEach(k=>{
+    const b=$("status"+k);
+    if(b)b.classList.remove("active");
+  });
+  const map={work:"Work",leave:"Leave",off:"Off"};
+  const active=$("status"+map[s]);
+  if(active)active.classList.add("active");
+}
+
+function updateFooterVisibility(){
+  const todayActive=$("today")?.classList.contains("active");
+  const hasActive=db.state.current==="customer" && !!db.state.activeCustomer;
+  const bar=$("footerBar");
+  if(bar)bar.classList.toggle("hidden",!(todayActive&&hasActive));
 }
 function render(){
+ renderWorkStatus();
  $("todayDate").textContent=new Date().toLocaleDateString("ko-KR",{month:"long",day:"numeric",weekday:"short"});
  let t=db.trips.filter(x=>x.date===today()),km=t.reduce((s,x)=>s+Number(x.km),0);
  $("todayKm").textContent=km+" km";$("todayCost").textContent=money(km*db.settings.rate);$("todayRows").textContent=t.length;
  $("todayList").innerHTML=t.length?t.map(x=>`<div class="item"><div class="tiny">${esc(x.customer)}</div><div class="path">${esc(x.from)} → ${esc(x.to)}</div><div class="row"><b>${x.km} km</b><button class="btn danger small" style="margin-left:auto" onclick="delTrip('${x.id}')">삭제</button></div></div>`).join(""):'<div class="tiny">기록이 없습니다.</div>';
  $("hotelReturnCard").classList.toggle("hidden",db.state.current!=="hotel");
- if(db.state.current==="hotel")$("hotelReturnText").textContent=`호텔 → ${db.state.hotelCustomer||db.state.activeCustomer} · ${db.settings.hotelKm} km`;
- $("sName").value=db.settings.name;$("sCar").value=db.settings.car;$("sHome").value=db.settings.home;$("sRate").value=db.settings.rate;$("sHotelKm").value=db.settings.hotelKm;$("sRadius").value=db.settings.radius||500;
- renderCustomerSelect();renderRecent();renderDistances();renderHist();
+ if(db.state.current==="hotel")$("hotelReturnText").textContent=`호텔 근거리 이동 · ${db.settings.hotelKm} km`;
+ $("sName").value=db.settings.name;$("sCar").value=db.settings.car;$("sHome").value=db.settings.home;$("sHomeCity").value=db.settings.homeCity||"화성시";$("sRate").value=db.settings.rate;$("sHotelKm").value=db.settings.hotelKm;$("sRadius").value=db.settings.radius||500;
+ renderCustomerSelect();renderRecent();renderDistances();renderHist();renderMissingDays();
  const hasActive=db.state.current==="customer" && !!db.state.activeCustomer;
  $("activeTripActions").classList.toggle("hidden",!hasActive);
- $("footerBar").classList.toggle("hidden",!hasActive);
+ updateFooterVisibility();
  if(hasActive)$("activeCustomerText").textContent=db.state.activeCustomer;
+ const unfinished=hasActive;
+ $("unfinishedCard").classList.toggle("hidden",!unfinished);
+ if(unfinished)$("unfinishedText").innerHTML=`${esc(db.state.activeCustomer)} 방문 후 귀가/호텔 이동이 아직 선택되지 않았습니다.`;
 }
 function renderHist(){
  let m=$("month").value||today().slice(0,7),a=db.trips.filter(x=>x.date.startsWith(m)).sort((x,y)=>x.date.localeCompare(y.date)||x.createdAt-y.createdAt),km=a.reduce((s,x)=>s+Number(x.km),0);
  $("monthKm").textContent=km+" km";$("monthCost").textContent=money(km*db.settings.rate);$("monthRows").textContent=a.length;
- $("histBody").innerHTML=a.map((x,i)=>`<tr><td>${i+1}</td><td>${x.date.slice(5).replace("-","/")}</td><td>${esc(x.customer)}</td><td>${esc(x.from)}</td><td>${esc(x.to)}</td><td>${x.km}</td><td><button class="btn danger small" onclick="delTrip('${x.id}')">삭제</button></td></tr>`).join("");
+ $("histBody").innerHTML=a.map((x,i)=>`<tr><td>${i+1}</td><td>${x.date.slice(5).replace("-","/")}</td><td>${esc(x.customer)}</td><td>${esc(x.from)}</td><td>${esc(x.to)}</td><td>${x.km}</td><td><button class="btn outline small" onclick="openEdit('${x.id}')">수정</button></td></tr>`).join("");
+ monthValidation();
 }
 function c(v){let s=String(v??"");return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
 function dl(name,text,type="text/csv;charset=utf-8"){let b=new Blob(["\ufeff",text],{type}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;a.click()}
@@ -320,22 +1197,54 @@ function makeCsv(){
 }
 window.delTrip=id=>{db.trips=db.trips.filter(x=>x.id!==id);save()}
 window.setCustKm=(n,v)=>{let c=customerObj(decodeURIComponent(n)),k=parseFloat(v);c.km=isFinite(k)?k:null;save()}
+window.setCustPlace=(n,v)=>{let c=customerObj(decodeURIComponent(n));if(c){c.place=String(v||"").trim();save()}}
 window.saveLoc=n=>saveCurrentLocationToCustomer(decodeURIComponent(n),false)
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab,.view").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.v).classList.add("active");renderHist()});
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab,.view").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.v).classList.add("active");renderHist();updateFooterVisibility()});
+
+$("openPast").onclick=()=>openPastTrip(today());
+$("openPastFromToday").onclick=()=>openPastTrip(today());
+$("pastClose").onclick=()=>$("pastOverlay").classList.add("hidden");
+$("pastSearch").oninput=renderPastSearch;
+document.querySelectorAll(".pastPattern").forEach(b=>b.onclick=()=>{window._pastPattern=b.dataset.pattern;document.querySelectorAll(".pastPattern").forEach(x=>x.style.fontWeight="");b.style.fontWeight="850";previewPast()});
+$("pastSave").onclick=savePast;
+$("editClose").onclick=()=>$("editOverlay").classList.add("hidden");
+$("editSave").onclick=()=>{
+ const id=$("editId").value,t=db.trips.find(x=>x.id===id);if(!t)return;
+ const date=$("editDate").value,customer=$("editCustomer").value.trim(),from=$("editFrom").value.trim(),to=$("editTo").value.trim(),km=parseFloat($("editKm").value);
+ if(!date||!customer||!from||!to||!isFinite(km))return alert("모든 값을 확인하세요.");
+ if(isDuplicateTrip(date,customer,from,to,km,id) && !confirm("동일한 기록이 이미 있습니다. 그래도 저장할까요?"))return;
+ t.date=date;t.customer=customer;t.from=from;t.to=to;t.km=km;t.editedAt=Date.now();
+ $("editOverlay").classList.add("hidden");save();
+};
+$("editDelete").onclick=()=>{
+ const id=$("editId").value;
+ if(confirm("이 출장 기록을 삭제할까요?")){db.trips=db.trips.filter(x=>x.id!==id);$("editOverlay").classList.add("hidden");save();}
+};
+$("unfinishedHome").onclick=goHome;
+$("unfinishedHotel").onclick=goHotel;
+
+
+$("statusWork").onclick=()=>setDayStatus("work");
+$("statusLeave").onclick=()=>setDayStatus("leave");
+$("statusOff").onclick=()=>setDayStatus("off");
+
 $("custSearch").oninput=renderCustomerSelect;$("distSearch").oninput=renderDistances;$("autoDetectCustomer").onclick=autoDetectCustomer;
 $("distanceSave").onclick=()=>{let n=db._pendingCustomer,k=parseFloat($("distanceKm").value);if(!n||!isFinite(k)||k<=0)return alert("편도거리를 입력하세요.");customerObj(n).km=k;db._pendingCustomer=null;$("distanceOverlay").classList.add("hidden");save();enterCustomer(n)};
 $("goHome").onclick=goHome;$("goHotel").onclick=goHotel;$("goHomeInline").onclick=goHome;$("goHotelInline").onclick=goHotel;$("stayCustomer").onclick=()=>$("afterOverlay").classList.add("hidden");
 $("quickHome").onclick=goHome;$("quickHotel").onclick=goHotel;
-$("hotelToCustomer").onclick=()=>{let n=db.state.hotelCustomer||db.state.activeCustomer;if(!n)return;addTrip(n,"호텔",n,db.settings.hotelKm,"hotel-return");db.state.current="customer";db.state.activeCustomer=n;save();$("afterCustomer").textContent=n;$("afterOverlay").classList.remove("hidden")};
-$("saveSettings").onclick=()=>{db.settings.name=$("sName").value.trim();db.settings.car=$("sCar").value.trim();db.settings.home=$("sHome").value.trim();db.settings.rate=+$("sRate").value||0;db.settings.hotelKm=+$("sHotelKm").value||20;db.settings.radius=+$("sRadius").value||500;save()};
-$("addCustomer").onclick=()=>{let n=$("newCustomer").value.trim(),k=parseFloat($("newCustomerKm").value);if(!n)return alert("고객사명을 입력하세요.");if(db.customers.some(c=>c.name===n))return alert("이미 있는 고객사입니다.");db.customers.push({name:n,km:isFinite(k)?k:null});$("newCustomer").value="";$("newCustomerKm").value="";save()};
+$("hotelToCustomer").onclick=()=>{let n=db.state.hotelCustomer||db.state.activeCustomer;if(!n)return;addTrip(n,(customerObj(n)?.place||n),(customerObj(n)?.place||n),db.settings.hotelKm,"hotel-return");db.state.current="customer";db.state.activeCustomer=n;save();$("afterCustomer").textContent=n;$("afterOverlay").classList.remove("hidden")};
+$("saveSettings").onclick=()=>{db.settings.name=$("sName").value.trim();db.settings.car=$("sCar").value.trim();db.settings.home=$("sHome").value.trim();db.settings.homeCity=$("sHomeCity").value.trim()||"화성시";db.settings.rate=+$("sRate").value||0;db.settings.hotelKm=+$("sHotelKm").value||20;db.settings.radius=+$("sRadius").value||500;save()};
+$("addCustomer").onclick=()=>{let n=$("newCustomer").value.trim(),k=parseFloat($("newCustomerKm").value);if(!n)return alert("고객사명을 입력하세요.");if(db.customers.some(c=>c.name===n))return alert("이미 있는 고객사입니다.");db.customers.push({name:n,km:isFinite(k)?k:null,lat:null,lng:null,place:""});db.customers.sort(customerSort);$("newCustomer").value="";$("newCustomerKm").value="";save()};
 $("month").value=today().slice(0,7);$("month").onchange=renderHist;$("csv").onclick=makeCsv;
 $("clearTrips").onclick=()=>{if(confirm("출장 기록을 모두 삭제할까요?")){db.trips=[];db.state.current="home";db.state.activeCustomer="";db.state.hotelCustomer="";save()}};
 $("backup").onclick=()=>dl(`Private_Car_Diary_backup_${today()}.json`,JSON.stringify(db,null,2),"application/json;charset=utf-8");
-$("restore").onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);save();alert("복원 완료")}catch(x){alert("복원 실패")}};r.readAsText(f)};
+$("restore").onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);if(!db.settings.radius)db.settings.radius=500;db.customers=db.customers.map(c=>({lat:null,lng:null,place:"",...c})).sort(customerSort);save();alert("복원 완료")}catch(x){alert("복원 실패")}};r.readAsText(f)};
 $("firstSave").onclick=()=>{db.settings.name=$("firstName").value.trim();db.settings.car=$("firstCar").value.trim();db.settings.home=$("firstHome").value.trim();db.settings.rate=+$("firstRate").value||168;db.settings.hotelKm=+$("firstHotelKm").value||20;if(!db.settings.home)return alert("집 Area를 입력하세요.");db.setup=true;$("firstOverlay").classList.add("hidden");save()};
 if(!db.setup)$("firstOverlay").classList.remove("hidden");
+migrateStoredTripAreas();
+migrateStoredTripAreas();
 render();
+if(db.setup)setTimeout(()=>smartAutoCheck(),700);
 if(db.setup){setTimeout(()=>autoDetectCustomer(),700);}
 </script>
 </body>
