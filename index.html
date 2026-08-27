@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>Private Car Diary</title>
-<meta name="pcd-version" content="2026-08-27-first-use-guide-v38">
+<meta name="pcd-version" content="2026-08-27-reorder-history-fix-v39">
 
 <style>
 :root{
@@ -2865,7 +2865,8 @@ window.moveTrip=(id,dir)=>{
   const i=arr.findIndex(t=>t.id===id), j=i+dir;
   if(i<0||j<0||j>=arr.length)return;
   [arr[i].order,arr[j].order]=[arr[j].order,arr[i].order];
-  save();
+  localStorage.setItem(KEY,JSON.stringify(db));
+  render();
 };
 
 function updateSimpleGpsState(){
@@ -2912,7 +2913,7 @@ function render(){setTimeout(updateSimpleGpsState,0);renderMyInfoSummary();
  if(unfinished)$("unfinishedText").innerHTML=`${esc(db.state.activeCustomer)} 방문 후 귀가/호텔 이동이 아직 선택되지 않았습니다.`;
 }
 function renderHist(){
- let m=$("month").value||today().slice(0,7),a=db.trips.filter(x=>x.date.startsWith(m)).sort((x,y)=>x.date.localeCompare(y.date)||x.createdAt-y.createdAt),km=a.reduce((s,x)=>s+Number(x.km),0);
+ let m=$("month").value||today().slice(0,7),a=db.trips.filter(x=>x.date.startsWith(m)).sort((x,y)=>x.date.localeCompare(y.date)||((Number(x.order)||9999)-(Number(y.order)||9999))||(x.createdAt||0)-(y.createdAt||0)),km=a.reduce((s,x)=>s+Number(x.km),0);
  $("monthKm").textContent=km+" km";$("monthCost").textContent=money(km*db.settings.rate);$("monthRows").textContent=a.length;
  $("histBody").innerHTML=a.map((x,i)=>`<tr><td>${i+1}</td><td>${x.date.slice(5).replace("-","/")}</td><td>${esc(x.customer)}</td><td>${esc(x.from)}</td><td>${esc(x.to)}</td><td>${x.km}</td><td><button class="btn outline small" onclick="openEdit('${x.id}')">수정</button></td></tr>`).join("");
  monthValidation();
