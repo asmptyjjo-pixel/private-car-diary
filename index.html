@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>Private Car Diary</title>
-<meta name="pcd-version" content="2026-08-27-collapsed-info-v15">
+<meta name="pcd-version" content="2026-08-27-context-line-v16">
 
 <style>
 :root{
@@ -780,6 +780,78 @@ table th,table td{padding-top:4px!important;padding-bottom:4px!important}
  .myinfo-edit{font-size:9px}
 }
 
+
+/* v16: same-kind items share one line */
+.today-summary-line{
+ display:grid!important;
+ grid-template-columns:minmax(0,1.35fr) .8fr 1fr .5fr;
+ align-items:center;
+ gap:3px;
+ padding:6px 7px!important;
+}
+.today-date-box{min-width:0;display:flex;align-items:baseline;gap:5px}
+.today-date-box strong{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini-stat{
+ display:flex;align-items:baseline;justify-content:center;gap:4px;
+ min-width:0;border-left:1px solid var(--line);padding-left:4px;
+}
+.mini-stat span{font-size:9px;color:var(--muted);white-space:nowrap}
+.mini-stat strong{font-size:12px;white-space:nowrap}
+
+.missing-compact{padding:4px 7px!important}
+.missing-toggle{
+ width:100%;border:0;background:transparent;display:flex;align-items:center;gap:6px;
+ min-height:27px;padding:1px 0;color:var(--text);cursor:pointer;text-align:left;
+}
+.missing-toggle strong{font-size:11px}
+.missing-toggle>span:last-child{font-size:9px;color:var(--muted)}
+#missingPanel{border-top:1px solid var(--line);margin-top:3px;padding-top:4px}
+#missingPanel.hidden{display:none!important}
+#missingDays .btn{margin:1px 2px 1px 0!important;min-height:25px!important;padding:3px 5px!important}
+
+.next-destination{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) auto;
+ align-items:center;
+ gap:5px;
+ margin-top:6px!important;
+ padding-top:6px;
+ border-top:1px solid var(--line);
+}
+.next-current{min-width:0;display:flex;align-items:center;gap:5px}
+.next-current b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+.next-actions{display:grid;grid-template-columns:auto auto auto;gap:3px}
+.next-actions .btn{min-height:30px!important;padding:4px 8px!important;font-size:10px!important;white-space:nowrap}
+
+#unfinishedCard{display:none!important}
+#footerBar{display:none!important}
+
+/* Customer visit section tighter */
+#autoState{margin-top:5px!important}
+#recentWrap{margin-top:6px!important}
+#recentWrap .tiny{margin-bottom:3px!important}
+#today #custSearch{margin-top:5px!important}
+#searchResults{margin-top:3px!important}
+
+/* History: month and summary compact */
+#history .metricgrid{margin-top:5px!important}
+#history .card>.row{margin-top:5px!important}
+#history #openPast,#history #pdf,#history #csv{min-height:31px!important;padding:4px 7px!important}
+
+/* Similar controls in one row */
+.work-status{grid-template-columns:repeat(3,1fr)!important;gap:3px!important}
+.choice{grid-template-columns:repeat(2,1fr)!important;gap:3px!important}
+
+@media(max-width:640px){
+ .today-summary-line{grid-template-columns:minmax(0,1.35fr) .8fr 1fr .45fr;gap:2px!important}
+ .today-date-box strong{font-size:11.5px}
+ .mini-stat{gap:2px;padding-left:3px}
+ .mini-stat span{font-size:8px}
+ .mini-stat strong{font-size:10.5px}
+ .next-destination{grid-template-columns:minmax(0,1fr) auto}
+ .next-actions .btn{padding:3px 6px!important;font-size:9.2px!important}
+}
+
 </style>
 
 </head>
@@ -883,14 +955,23 @@ table th,table td{padding-top:4px!important;padding-bottom:4px!important}
   </div>
  </div>
 </div>
-<div class="card">
-  <div class="tiny">오늘</div><div id="todayDate" class="big"></div>
-  <div class="metricgrid" style="margin-top:10px"><div class="metric"><span class="tiny">거리</span><strong id="todayKm">0 km</strong></div><div class="metric"><span class="tiny">정산</span><strong id="todayCost">₩0</strong></div><div class="metric"><span class="tiny">행</span><strong id="todayRows">0</strong></div></div>
+<div class="card today-summary-line">
+  <div class="today-date-box"><span class="tiny">오늘</span><strong id="todayDate"></strong></div>
+  <div class="mini-stat"><span>거리</span><strong id="todayKm">0 km</strong></div>
+  <div class="mini-stat"><span>정산</span><strong id="todayCost">₩0</strong></div>
+  <div class="mini-stat"><span>행</span><strong id="todayRows">0</strong></div>
  </div>
 
- <div id="missingDaysCard" class="card hidden">
-  <div class="row"><h2 style="margin:0" class="grow">최근 기록 없는 평일</h2><button id="openPastFromToday" class="btn small">지난 출장 입력</button></div>
-  <div id="missingDays"></div>
+ <div id="missingDaysCard" class="card hidden missing-compact">
+  <button id="missingToggle" class="missing-toggle" type="button">
+    <strong>기록 없는 평일</strong>
+    <span id="missingCount" class="badge"></span>
+    <span class="grow"></span>
+    <span>보기</span>
+  </button>
+  <div id="missingPanel" class="hidden">
+    <div class="row" style="margin-top:5px"><div id="missingDays" class="grow"></div><button id="openPastFromToday" class="btn small">지난 출장 입력</button></div>
+  </div>
  </div>
 
  <div class="card">
@@ -916,14 +997,12 @@ table th,table td{padding-top:4px!important;padding-bottom:4px!important}
     <div id="searchResults" style="margin-top:7px"></div>
   </div>
 
-  <div id="activeTripActions" class="hidden" style="margin-top:12px">
-    <div class="notice">
-      <b id="activeCustomerText"></b><br>
-      다음 이동을 선택하세요.
-    </div>
-    <div class="choice" style="margin-top:8px">
-      <button id="goHomeInline" class="btn">집으로 이동</button>
-      <button id="goHotelInline" class="btn secondary">호텔로 이동</button>
+  <div id="activeTripActions" class="hidden next-destination">
+    <div class="next-current"><span class="tiny">현재</span><b id="activeCustomerText"></b></div>
+    <div class="next-actions">
+      <button id="nextCustomerBtn" class="btn secondary">다른 고객사</button>
+      <button id="goHomeInline" class="btn">집</button>
+      <button id="goHotelInline" class="btn secondary">호텔</button>
     </div>
   </div>
  </div>
@@ -1276,7 +1355,8 @@ function missingWeekdays(daysBack=14){
 function renderMissingDays(){
  const arr=missingWeekdays(14).slice(0,6);
  $("missingDaysCard").classList.toggle("hidden",!arr.length);
- $("missingDays").innerHTML=arr.map(d=>`<button class="btn outline small" style="margin:6px 6px 0 0" onclick="openPastTrip('${d}')">${d.slice(5).replace("-","/")} 기록 없음</button>`).join("");
+ if($("missingCount"))$("missingCount").textContent=arr.length+"일";
+ $("missingDays").innerHTML=arr.map(d=>`<button class="btn outline small" onclick="openPastTrip('${d}')">${d.slice(5).replace("-","/")}</button>`).join("");
 }
 function monthValidation(){
  const m=$("month").value||today().slice(0,7);
@@ -1655,6 +1735,7 @@ window.saveLoc=n=>saveCurrentLocationToCustomer(decodeURIComponent(n),false)
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab,.view").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.v).classList.add("active");renderHist();updateFooterVisibility()});
 
 $("openPast").onclick=()=>openPastTrip(today());
+$("missingToggle").onclick=()=>$("missingPanel").classList.toggle("hidden");
 $("openPastFromToday").onclick=()=>openPastTrip(today());
 $("pastClose").onclick=()=>$("pastOverlay").classList.add("hidden");
 $("pastSearch").oninput=renderPastSearch;
@@ -1686,7 +1767,11 @@ $("statusOff").onclick=()=>{setDayStatus("off");$("todayStatusControls").classLi
 
 $("custSearch").oninput=renderCustomerSelect;$("distSearch").oninput=renderDistances;$("autoDetectCustomer").onclick=autoDetectCustomer;
 $("distanceSave").onclick=()=>{let n=db._pendingCustomer,k=parseFloat($("distanceKm").value);if(!n||!isFinite(k)||k<=0)return alert("편도거리를 입력하세요.");customerObj(n).km=k;db._pendingCustomer=null;$("distanceOverlay").classList.add("hidden");save();enterCustomer(n)};
-$("goHome").onclick=goHome;$("goHotel").onclick=goHotel;$("goHomeInline").onclick=goHome;$("goHotelInline").onclick=goHotel;$("stayCustomer").onclick=()=>$("afterOverlay").classList.add("hidden");
+$("goHome").onclick=goHome;$("goHotel").onclick=goHotel;$("nextCustomerBtn").onclick=()=>{
+  $("custSearch").focus();
+  $("custSearch").scrollIntoView({behavior:"smooth",block:"center"});
+};
+$("goHomeInline").onclick=goHome;$("goHotelInline").onclick=goHotel;$("stayCustomer").onclick=()=>$("afterOverlay").classList.add("hidden");
 $("quickHome").onclick=goHome;$("quickHotel").onclick=goHotel;
 $("hotelToCustomer").onclick=()=>{let n=db.state.hotelCustomer||db.state.activeCustomer;if(!n)return;addTrip(n,(customerObj(n)?.place||n),(customerObj(n)?.place||n),db.settings.hotelKm,"hotel-return");db.state.current="customer";db.state.activeCustomer=n;save();$("afterCustomer").textContent=n;$("afterOverlay").classList.remove("hidden")};
 $("myInfoToggle").onclick=()=>{
