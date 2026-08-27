@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>Private Car Diary</title>
-<meta name="pcd-version" content="2026-08-27-home-gps-visible-v44">
+<meta name="pcd-version" content="2026-08-27-auto-first-v45">
 
 <style>
 :root{
@@ -2103,6 +2103,115 @@ header{
   .home-gps-state{font-size:9.5px!important}
 }
 
+
+/* v45: automatic-first, beginner-friendly Today flow */
+.drive-simple{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 11px;
+  border-radius:13px;
+  background:linear-gradient(135deg,#eef8fc,#f8fcfe);
+  border:1px solid #cfe7f1;
+}
+.drive-main{
+  min-width:0;
+  flex:1;
+}
+.drive-title{
+  font-size:18px;
+  font-weight:900;
+  color:#17324d;
+  line-height:1.2;
+}
+.drive-sub{
+  margin-top:3px;
+  font-size:11.5px;
+  color:#617687;
+  line-height:1.35;
+}
+.drive-check{
+  min-width:84px!important;
+  white-space:nowrap!important;
+}
+.drive-status{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-top:6px;
+  padding:6px 8px;
+  min-height:32px;
+  border-radius:9px;
+  background:#fff;
+  border:1px solid #e1e9ee;
+}
+.drive-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#8da0ae;
+  flex:0 0 auto;
+}
+.drive-status b{
+  font-size:11.5px!important;
+  white-space:nowrap;
+}
+.drive-status span:last-child{
+  min-width:0;
+  flex:1;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:10px!important;
+  color:#738493;
+}
+.manual-toggle{
+  width:100%;
+  margin-top:6px;
+  min-height:32px;
+  border:1px dashed #cfdbe2;
+  border-radius:9px;
+  background:#fafcfd;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:5px 9px;
+  color:#5d6f7d;
+  font-size:11px;
+  font-weight:750;
+}
+.manual-panel{
+  margin-top:5px;
+  padding:8px;
+  border-radius:10px;
+  border:1px solid #dfe8ed;
+  background:#fbfdfe;
+}
+.manual-panel.hidden{display:none!important}
+.manual-question{
+  font-size:13px;
+  font-weight:850;
+  margin-bottom:6px;
+}
+.manual-actions{
+  display:grid;
+  grid-template-columns:1.25fr .8fr .9fr;
+  gap:4px;
+}
+.manual-actions .btn{
+  min-height:36px!important;
+  font-size:12px!important;
+  padding:5px 8px!important;
+}
+@media(max-width:640px){
+  .drive-simple{padding:9px 10px;gap:7px}
+  .drive-title{font-size:17px}
+  .drive-sub{font-size:10.8px}
+  .drive-check{min-width:76px!important;font-size:11px!important}
+  .manual-actions{gap:3px}
+  .manual-actions .btn{font-size:11.5px!important;padding:4px 7px!important}
+}
+
 </style>
 
 </head>
@@ -2268,41 +2377,48 @@ header{
  </div>
 
  <div class="card">
-  <div class="simple-trip-head">
-  <div class="simple-trip-title">
-    <h2>오늘 이동</h2>
-    <span id="simpleGpsState">GPS 자동 확인</span>
+  
+<div class="drive-simple">
+  <div class="drive-main">
+    <div class="drive-title">그냥 이동하세요</div>
+    <div class="drive-sub">등록된 고객사에 도착하면 자동으로 기록됩니다.</div>
   </div>
-  <button id="autoDetectCustomer" class="btn small">현재 위치 확인</button>
+  <button id="autoDetectCustomer" class="btn small drive-check">위치 확인</button>
 </div>
 
-<div id="autoState" class="detectbox simple-auto-state">
-  <b id="autoStateTitle">현재 위치 확인 준비</b>
-  <span id="autoStateSub">등록 고객사 도착 시 자동 기록</span>
+<div id="autoState" class="drive-status">
+  <span class="drive-dot"></span>
+  <b id="autoStateTitle">GPS 확인 준비</b>
+  <span id="autoStateSub">고객사 도착 여부를 확인합니다.</span>
 </div>
 
-<div class="simple-destination">
-  <span class="simple-dest-label">어디로 갈까요?</span>
-  <div class="simple-dest-actions">
-    <button id="nextCustomerBtn" class="btn">고객사</button>
-    <button id="goHomeInline" class="btn secondary">집</button>
-    <button id="goHotelInline" class="btn secondary">호텔</button>
+<button id="manualToggle" class="manual-toggle" type="button">
+  <span>수동으로 입력하기</span>
+  <span>▼</span>
+</button>
+
+<div id="manualPanel" class="hidden manual-panel">
+  <div class="manual-question">어디로 이동했나요?</div>
+  <div class="manual-actions">
+    <button id="nextCustomerBtn" class="btn">고객사 선택</button>
+    <button id="goHomeInline" class="btn secondary">집 도착</button>
+    <button id="goHotelInline" class="btn secondary">호텔 도착</button>
   </div>
-</div>
 
-<div id="customerPicker" class="hidden customer-picker">
-  <div id="recentWrap" class="hidden recent-compact">
-    <button id="recentToggle" class="recent-toggle" type="button">
-      <span class="recent-label">최근 방문</span>
-      <span id="recentPrimary" class="recent-primary"></span>
-      <span class="recent-more">보기</span>
-    </button>
-    <div id="recentPanel" class="hidden">
-      <div id="recentCustomers" class="row"></div>
+  <div id="customerPicker" class="hidden customer-picker">
+    <div id="recentWrap" class="hidden recent-compact">
+      <button id="recentToggle" class="recent-toggle" type="button">
+        <span class="recent-label">최근 방문</span>
+        <span id="recentPrimary" class="recent-primary"></span>
+        <span class="recent-more">보기</span>
+      </button>
+      <div id="recentPanel" class="hidden">
+        <div id="recentCustomers" class="row"></div>
+      </div>
     </div>
+    <input id="custSearch" placeholder="고객사 검색">
+    <div id="searchResults"></div>
   </div>
-  <input id="custSearch" placeholder="고객사 검색">
-  <div id="searchResults"></div>
 </div>
 <div id="activeTripActions" class="hidden next-destination">
     <div class="next-current"><span class="next-label">다음 목적지</span></div>
@@ -2667,7 +2783,7 @@ function enterCustomer(name){
  addTrip(name,from,c.place||name,km,source);
  db.state.current="customer";
  db.state.activeCustomer=name;
- if($("customerPicker"))$("customerPicker").classList.add("hidden");
+ if($("customerPicker"))$("customerPicker").classList.add("hidden"); if($("manualPanel"))$("manualPanel").classList.add("hidden");
  save();
  $("afterCustomer").textContent=name;
  $("afterOverlay").classList.remove("hidden");
@@ -3195,6 +3311,32 @@ async function saveHomeGpsNow(){
   },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
 }
 
+
+function simplifyAutoState(){
+  const title=$("autoStateTitle");
+  const sub=$("autoStateSub");
+  const dot=document.querySelector(".drive-dot");
+  if(!title||!sub)return;
+  const t=(title.textContent||"").trim();
+
+  if(/도착.*자동 기록|자동 기록 완료/.test(t)){
+    title.textContent="고객사 도착 · 자동 기록 완료";
+    sub.textContent="오늘 기록에 추가되었습니다.";
+    if(dot)dot.style.background="#008f78";
+  }else if(/근처가 아닙니다|후보 없음|반경 밖/.test(t)){
+    title.textContent="고객사 미감지";
+    sub.textContent="이동 중이면 그대로 두시면 됩니다.";
+    if(dot)dot.style.background="#8da0ae";
+  }else if(/실패|불가/.test(t)){
+    title.textContent="GPS 확인 필요";
+    sub.textContent="위치 권한을 확인하거나 수동 입력을 사용하세요.";
+    if(dot)dot.style.background="#d38a35";
+  }else if(/확인 중/.test(t)){
+    title.textContent="GPS 확인 중";
+    sub.textContent="고객사 도착 여부를 확인하고 있습니다.";
+    if(dot)dot.style.background="#00a6d6";
+  }
+}
 function render(){setTimeout(updateSimpleGpsState,0);renderMyInfoSummary();
  renderWorkStatus();
  $("todayDate") && ($("todayDate").textContent=new Date().toLocaleDateString("ko-KR",{month:"long",day:"numeric",weekday:"short"}));
@@ -3358,7 +3500,8 @@ $("statusOff").onclick=()=>{setDayStatus("off");$("todayStatusControls").classLi
 $("recentToggle").onclick=()=>$("recentPanel").classList.toggle("hidden");
 $("custSearch").oninput=renderCustomerSelect;$("distSearch").oninput=renderDistances;$("autoDetectCustomer").onclick=autoDetectCustomer;
 $("distanceSave").onclick=()=>{let n=db._pendingCustomer,k=parseFloat($("distanceKm").value);if(!n||!isFinite(k)||k<=0)return alert("편도거리를 입력하세요.");customerObj(n).km=k;db._pendingCustomer=null;$("distanceOverlay").classList.add("hidden");save();enterCustomer(n)};
-$("goHome").onclick=goHome;$("goHotel").onclick=goHotel;$("nextCustomerBtn").onclick=()=>{
+$("goHome").onclick=goHome;$("goHotel").onclick=goHotel;$("manualToggle").onclick=()=>$("manualPanel").classList.toggle("hidden");
+$("nextCustomerBtn").onclick=()=>{
   const p=$("customerPicker");
   p.classList.toggle("hidden");
   if(!p.classList.contains("hidden")){
@@ -3402,6 +3545,13 @@ $("closeGuide").onclick=closeGuide;
 $("closeGuideX").onclick=closeGuide;
 $("guideOverlay").onclick=e=>{if(e.target===$("guideOverlay"))closeGuide()};
 if(!localStorage.getItem(GUIDE_KEY)) setTimeout(openGuide,250);
+
+
+if($("autoStateTitle")){
+  new MutationObserver(()=>setTimeout(simplifyAutoState,0))
+    .observe($("autoStateTitle"),{childList:true,subtree:true,characterData:true});
+}
+setTimeout(simplifyAutoState,0);
 
 </script>
 </body>
