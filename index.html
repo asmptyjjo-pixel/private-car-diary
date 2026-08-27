@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>Private Car Diary</title>
-<meta name="pcd-version" content="2026-08-26-company-pdf-v12">
+<meta name="pcd-version" content="2026-08-27-compact-all-v13">
 
 <style>
 :root{
@@ -671,6 +671,43 @@ input,select{font-size:13px!important}
  #distanceList .distance-gps-btn{font-size:9.5px!important}
 }
 
+
+/* v13 compact-all: same functions, tighter layout */
+.wrap{max-width:760px!important;padding:8px 8px 70px!important}
+.card{padding:9px!important;margin-bottom:6px!important;border-radius:12px!important}
+h2{margin:0 0 6px!important}
+label{margin:4px 0 2px!important}
+.row{gap:5px!important}
+.tabs{margin-bottom:6px!important}
+.metricgrid{gap:4px!important}
+.metric{padding:6px!important}
+.notice,.detectbox{padding:7px 8px!important}
+.item{padding:6px 7px!important;margin:3px 0!important}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px}
+.form-grid-2 .field{min-width:0}
+.form-grid-2 label{display:block}
+.form-grid-2 input,.form-grid-2 select{width:100%}
+.form-grid-2 .full{grid-column:1/-1}
+.settings-save-row{display:flex;justify-content:flex-end;margin-top:7px}
+.settings-save-row .btn{min-width:96px}
+#settings input,#settings select{min-height:36px!important}
+#settings .btn{min-height:34px!important}
+#history .btn{min-height:34px!important}
+#validation .item{padding:5px 6px!important}
+#distanceList .distance-row{padding:4px 5px!important;margin:2px 0!important;gap:3px!important}
+#distanceList .distance-area-input,#distanceList .distance-km,#distanceList .distance-gps-btn{min-height:29px!important}
+.inline-help{font-size:9.5px;color:var(--muted);margin-top:3px}
+@media(max-width:640px){
+  .wrap{padding:6px 6px 66px!important}
+  .card{padding:8px!important;margin-bottom:5px!important}
+  .form-grid-2{gap:5px 6px}
+  input,select{min-height:35px!important}
+  .btn{min-height:34px!important}
+  .metric{padding:5px!important}
+  .notice,.detectbox{padding:6px 7px!important}
+  #distanceList .distance-row{padding:3px 4px!important}
+}
+
 </style>
 
 </head>
@@ -858,31 +895,38 @@ input,select{font-size:13px!important}
 <div class="card"><div class="tiny">처음 한 번만 고객사 지역명과 편도거리를 저장하면 이후 출장 입력은 자동으로 재사용됩니다.</div></div>
  <div class="card">
   <h2>내 정보</h2>
-  <label>Name</label><input id="sName">
-  <label>Division</label><input id="sDivision" placeholder="MIC">
-  <label>Car No.</label><input id="sCar">
-  <label>집 Area</label><input id="sHome"><label>집 기준 시/군</label><input id="sHomeCity" placeholder="예: 화성시">
-  <div class="row"><div class="grow"><label>단가</label><input id="sRate" type="number"></div><div class="grow"><label>호텔 근거리 기본거리</label><input id="sHotelKm" type="number"><div class="tiny" style="margin-top:3px">호텔은 고객사 근처로 처리하며 고객사와 같은 지역명으로 기록됩니다.</div></div></div><label>고객사 자동 인식 반경 (m)</label><input id="sRadius" type="number" value="500">
-  <button id="saveSettings" class="btn" style="margin-top:9px">저장</button>
+  <div class="form-grid-2">
+    <div class="field"><label>Name</label><input id="sName"></div>
+    <div class="field"><label>Division</label><input id="sDivision" placeholder="MIC"></div>
+    <div class="field"><label>Car No.</label><input id="sCar"></div>
+    <div class="field"><label>단가</label><input id="sRate" type="number"></div>
+    <div class="field"><label>집 Area</label><input id="sHome"></div>
+    <div class="field"><label>집 기준 시/군</label><input id="sHomeCity" placeholder="예: 화성시"></div>
+    <div class="field"><label>호텔 근거리 기본거리</label><input id="sHotelKm" type="number"></div>
+    <div class="field"><label>고객사 자동 인식 반경 (m)</label><input id="sRadius" type="number" value="500"></div>
+  </div>
+  <div class="inline-help">호텔은 고객사 근처로 처리하며 같은 지역명으로 기록됩니다.</div>
+  <div class="settings-save-row"><button id="saveSettings" class="btn">저장</button></div>
  </div>
 
  <div class="card">
-  <div class="row"><h2 class="grow" style="margin:0">고객사별 설정</h2><span class="tiny">고객사 · 지역명 · km</span></div><div class="tiny" style="margin-bottom:7px">영문 A→Z · 한글 가나다 · 숫자 자연 정렬</div>
+  <div class="row"><h2 class="grow" style="margin:0">고객사 설정</h2><span class="tiny">지역명 · km · GPS</span></div>
   <input id="distSearch" placeholder="고객사 검색">
   <div id="distanceList"></div>
  </div>
 
  <div class="card">
   <h2>고객사 추가</h2>
-  <label>고객사명</label><input id="newCustomer">
-  <label>편도거리 (선택)</label><input id="newCustomerKm" type="number">
-  <button id="addCustomer" class="btn" style="margin-top:9px">추가</button>
+  <div class="form-grid-2">
+    <div class="field"><label>고객사명</label><input id="newCustomer"></div>
+    <div class="field"><label>편도거리 (선택)</label><input id="newCustomerKm" type="number"></div>
+  </div>
+  <div class="settings-save-row"><button id="addCustomer" class="btn">추가</button></div>
  </div>
 
  <div class="card">
-  <h2>데이터 관리</h2>
-  <button id="clearTrips" class="btn danger" style="width:100%">출장 기록 전체 삭제</button>
-  <div class="tiny" style="margin-top:6px">고객사/거리 설정은 유지하고 출장 기록만 삭제합니다.</div>
+  <div class="row"><h2 class="grow" style="margin:0">데이터 관리</h2><button id="clearTrips" class="btn danger small">출장 기록 삭제</button></div>
+  <div class="tiny" style="margin-top:4px">고객사/거리 설정은 유지됩니다.</div>
  </div>
 
  <div class="card">
