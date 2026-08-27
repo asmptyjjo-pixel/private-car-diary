@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>Private Car Diary</title>
-<meta name="pcd-version" content="2026-08-27-context-line-v16">
+<meta name="pcd-version" content="2026-08-27-recent-one-line-v23">
 
 <style>
 :root{
@@ -852,6 +852,377 @@ table th,table td{padding-top:4px!important;padding-bottom:4px!important}
  .next-actions .btn{padding:3px 6px!important;font-size:9.2px!important}
 }
 
+
+/* v17: tighter history table columns */
+#history table{
+  width:100%!important;
+  table-layout:fixed!important;
+}
+#history th,#history td{
+  padding-left:3px!important;
+  padding-right:3px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+#history th:nth-child(1),#history td:nth-child(1){width:5%!important;text-align:center}
+#history th:nth-child(2),#history td:nth-child(2){width:9%!important;text-align:center}
+#history th:nth-child(3),#history td:nth-child(3){width:25%!important}
+#history th:nth-child(4),#history td:nth-child(4){width:21%!important}
+#history th:nth-child(5),#history td:nth-child(5){width:21%!important}
+#history th:nth-child(6),#history td:nth-child(6){width:8%!important;text-align:right}
+#history th:nth-child(7),#history td:nth-child(7){width:11%!important;text-align:center}
+
+@media(max-width:640px){
+  #history table{min-width:0!important}
+  #history th,#history td{
+    padding-left:2px!important;
+    padding-right:2px!important;
+    font-size:9px!important;
+  }
+  #history th:nth-child(1),#history td:nth-child(1){width:5%!important}
+  #history th:nth-child(2),#history td:nth-child(2){width:9%!important}
+  #history th:nth-child(3),#history td:nth-child(3){width:24%!important}
+  #history th:nth-child(4),#history td:nth-child(4){width:21%!important}
+  #history th:nth-child(5),#history td:nth-child(5){width:21%!important}
+  #history th:nth-child(6),#history td:nth-child(6){width:8%!important}
+  #history th:nth-child(7),#history td:nth-child(7){width:12%!important}
+}
+
+
+/* v18 readability-first: same compact layout, stronger hierarchy */
+
+/* Base typography */
+body{
+  font-size:15px!important;
+  line-height:1.42!important;
+  letter-spacing:-0.01em;
+}
+.brand{
+  font-size:20px!important;
+  font-weight:850!important;
+}
+header .tiny{
+  font-size:12px!important;
+}
+h2{
+  font-size:17px!important;
+  font-weight:850!important;
+  letter-spacing:-0.02em;
+}
+h3{
+  font-size:14px!important;
+}
+.tiny{
+  font-size:11.5px!important;
+  line-height:1.35!important;
+}
+label{
+  font-size:12px!important;
+}
+
+/* Tabs */
+.tab{
+  font-size:14px!important;
+  font-weight:800!important;
+  min-height:40px!important;
+}
+
+/* Buttons */
+.btn{
+  font-size:14px!important;
+  font-weight:800!important;
+  min-height:40px!important;
+}
+.btn.small{
+  font-size:12px!important;
+  min-height:32px!important;
+}
+
+/* Today's compact summary */
+.today-date-box strong{
+  font-size:15px!important;
+  font-weight:850!important;
+}
+.today-date-box .tiny{
+  font-size:11px!important;
+}
+.mini-stat span{
+  font-size:10.5px!important;
+}
+.mini-stat strong{
+  font-size:15px!important;
+  font-weight:850!important;
+}
+
+/* Work/status line */
+.status-toggle>span:first-child{
+  font-size:13px!important;
+}
+.status-toggle .badge{
+  font-size:12px!important;
+  padding:4px 7px!important;
+}
+.status-chevron{
+  font-size:11px!important;
+}
+
+/* Missing weekdays */
+.missing-toggle strong{
+  font-size:14px!important;
+}
+.missing-toggle .badge{
+  font-size:12px!important;
+}
+.missing-toggle>span:last-child{
+  font-size:11px!important;
+}
+
+/* Customer visit */
+#today .card h2{
+  font-size:18px!important;
+}
+#autoState{
+  font-size:14px!important;
+}
+#autoState b,
+.detectbox b{
+  font-size:16px!important;
+}
+#recentWrap>.tiny{
+  font-size:12px!important;
+}
+#recentCustomers .btn{
+  font-size:12px!important;
+  min-height:32px!important;
+}
+#custSearch{
+  font-size:15px!important;
+  min-height:44px!important;
+}
+#searchResults .btn{
+  font-size:13px!important;
+}
+
+/* Current customer / next destination */
+.next-current .tiny{
+  font-size:12px!important;
+}
+.next-current b{
+  font-size:15px!important;
+  font-weight:850!important;
+}
+.next-actions .btn{
+  font-size:13px!important;
+  min-height:36px!important;
+  padding:5px 10px!important;
+}
+#nextCustomerBtn{
+  min-width:92px!important;
+}
+
+/* Today's movement record */
+#todayList .item{
+  padding:9px 10px!important;
+}
+#todayList .item>.tiny{
+  font-size:12px!important;
+}
+#todayList .path{
+  font-size:16px!important;
+  font-weight:850!important;
+  line-height:1.35!important;
+}
+#todayList .item strong,
+#todayList .item .km{
+  font-size:17px!important;
+}
+#todayList .btn{
+  font-size:12px!important;
+}
+
+/* History */
+#history h2{
+  font-size:17px!important;
+}
+#history .metric strong{
+  font-size:16px!important;
+}
+#history table{
+  font-size:11px!important;
+}
+#history th{
+  font-size:10.5px!important;
+  font-weight:800!important;
+}
+#history td{
+  font-size:11px!important;
+}
+#history .btn{
+  font-size:12px!important;
+}
+
+/* Settings */
+#settings h2{
+  font-size:16px!important;
+}
+.myinfo-toggle strong{
+  font-size:14px!important;
+}
+.myinfo-summary{
+  font-size:12px!important;
+}
+.myinfo-edit{
+  font-size:11px!important;
+}
+#settings input,#settings select{
+  font-size:13px!important;
+}
+#distanceList .distance-name{
+  font-size:12px!important;
+}
+#distanceList .distance-area-input,
+#distanceList .distance-km{
+  font-size:12px!important;
+}
+#distanceList .distance-gps-btn{
+  font-size:11px!important;
+}
+
+/* Input clarity */
+input::placeholder{
+  font-size:13px!important;
+  color:#8a8f98!important;
+}
+
+/* Keep helper copy secondary */
+.inline-help,
+.section-head .hint{
+  font-size:10.5px!important;
+}
+
+/* Mobile tune */
+@media(max-width:640px){
+  body{font-size:14px!important}
+  .brand{font-size:19px!important}
+  header .tiny{font-size:11.5px!important}
+  h2{font-size:16px!important}
+  .tab{font-size:13.5px!important}
+  .btn{font-size:13.5px!important}
+  .today-date-box strong{font-size:14px!important}
+  .mini-stat strong{font-size:14px!important}
+  #today .card h2{font-size:17px!important}
+  #autoState b,.detectbox b{font-size:15px!important}
+  #custSearch{font-size:14px!important}
+  .next-current b{font-size:14px!important}
+  .next-actions .btn{font-size:12.5px!important}
+  #todayList .path{font-size:15px!important}
+  #todayList .item strong,#todayList .item .km{font-size:16px!important}
+  #history table{font-size:10px!important}
+  #history th{font-size:9.8px!important}
+  #history td{font-size:10.2px!important}
+}
+
+
+/* v19: Today work status at the absolute top of app content */
+.status-compact{margin-bottom:4px!important}
+#todayStatusToggle{min-height:38px!important;padding:4px 3px!important}
+#todayStatusToggle>span:first-child{font-size:15px!important;font-weight:850!important}
+#todayStatusBadge{font-size:14px!important;font-weight:850!important;padding:4px 8px!important}
+#todayStatusToggle .status-chevron{font-size:12px!important;font-weight:800!important}
+
+
+/* v20: today's date is the first and strongest daily context */
+.today-summary-line{margin-bottom:4px!important}
+.today-date-box strong{font-size:16px!important;font-weight:900!important}
+@media(max-width:640px){.today-date-box strong{font-size:15px!important}}
+
+
+/* v21: remove header subtitle */
+header .in{padding-top:8px!important;padding-bottom:8px!important}
+
+
+/* v22: customer heading/status/action in one line */
+.customer-one-line{
+ display:grid;
+ grid-template-columns:auto auto minmax(0,1fr) auto;
+ align-items:center;
+ gap:5px;
+ margin-bottom:5px;
+}
+.customer-one-line h2{margin:0!important;white-space:nowrap}
+.customer-one-line>.tiny{white-space:nowrap}
+#geoCompact{min-width:0;display:flex;gap:4px;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#geoCompact #autoStateTitle{font-size:11px!important;white-space:nowrap}
+#geoCompact #autoStateSub{font-size:10px!important;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.customer-one-line #autoDetectCustomer{white-space:nowrap;min-height:32px!important;padding:4px 7px!important;font-size:11px!important}
+#autoState.compact-auto-state{display:none!important}
+@media(max-width:640px){
+ .customer-one-line{gap:3px}
+ .customer-one-line h2{font-size:14px!important}
+ .customer-one-line>.tiny{font-size:9px!important}
+ #geoCompact #autoStateTitle{font-size:9.5px!important}
+ #geoCompact #autoStateSub{font-size:8.5px!important}
+ .customer-one-line #autoDetectCustomer{font-size:9.5px!important;padding:3px 5px!important}
+}
+
+
+/* v23: recent visits one-line by default */
+.recent-compact{
+  margin-top:5px!important;
+  border-top:1px solid var(--line);
+  padding-top:4px;
+}
+.recent-toggle{
+  width:100%;
+  border:0;
+  background:transparent;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:6px;
+  min-height:28px;
+  padding:1px 0;
+  color:var(--text);
+  cursor:pointer;
+  text-align:left;
+}
+.recent-label{
+  font-size:11px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.recent-primary{
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size:12px;
+  font-weight:750;
+}
+.recent-more{
+  font-size:9.5px;
+  color:var(--muted);
+  white-space:nowrap;
+}
+#recentPanel{
+  padding-top:4px;
+}
+#recentPanel.hidden{display:none!important}
+#recentCustomers{
+  gap:3px!important;
+}
+#recentCustomers .btn{
+  min-height:27px!important;
+  padding:3px 6px!important;
+  font-size:9.5px!important;
+}
+@media(max-width:640px){
+  .recent-label{font-size:10px}
+  .recent-primary{font-size:11px}
+  .recent-more{font-size:9px}
+}
+
 </style>
 
 </head>
@@ -930,14 +1301,18 @@ table th,table td{padding-top:4px!important;padding-bottom:4px!important}
  </div>
 </div>
 
-<header><div class="in"><div class="brand">Private Car Diary</div><div class="tiny">Mileage · Visits · Monthly Export</div></div></header>
+<header><div class="in"><div class="brand">Private Car Diary</div></div></header>
 
 <div class="wrap">
-<div class="tabs"><button class="tab active" data-v="today">오늘</button><button class="tab" data-v="history">기록</button><button class="tab" data-v="settings">설정</button></div>
+<div class="card today-summary-line">
+  <div class="today-date-box"><span class="tiny">오늘</span><strong id="todayDate"></strong></div>
+  <div class="mini-stat"><span>거리</span><strong id="todayKm">0 km</strong></div>
+  <div class="mini-stat"><span>정산</span><strong id="todayCost">₩0</strong></div>
+  <div class="mini-stat"><span>행</span><strong id="todayRows">0</strong></div>
+ </div>
 
-
-<section id="today" class="view active">
- <div class="card status-compact">
+ 
+<div class="card status-compact">
   <button id="todayStatusToggle" class="status-toggle" type="button">
     <span>오늘</span>
     <strong id="todayStatusBadge" class="badge"></strong>
@@ -955,13 +1330,11 @@ table th,table td{padding-top:4px!important;padding-bottom:4px!important}
   </div>
  </div>
 </div>
-<div class="card today-summary-line">
-  <div class="today-date-box"><span class="tiny">오늘</span><strong id="todayDate"></strong></div>
-  <div class="mini-stat"><span>거리</span><strong id="todayKm">0 km</strong></div>
-  <div class="mini-stat"><span>정산</span><strong id="todayCost">₩0</strong></div>
-  <div class="mini-stat"><span>행</span><strong id="todayRows">0</strong></div>
- </div>
 
+<div class="tabs"><button class="tab active" data-v="today">오늘</button><button class="tab" data-v="history">기록</button><button class="tab" data-v="settings">설정</button></div>
+
+
+<section id="today" class="view active">
  <div id="missingDaysCard" class="card hidden missing-compact">
   <button id="missingToggle" class="missing-toggle" type="button">
     <strong>기록 없는 평일</strong>
@@ -975,21 +1348,25 @@ table th,table td{padding-top:4px!important;padding-bottom:4px!important}
  </div>
 
  <div class="card">
-  <div class="row"><h2 class="grow" style="margin:0">오늘 고객사 방문</h2><span class="tiny">자동감지 또는 검색</span></div>
-
-  <div id="autoState" class="detectbox">
-    <div class="row">
-      <div class="grow">
-        <b id="autoStateTitle">현재 위치 확인 준비</b>
-        <div id="autoStateSub" class="tiny">위치가 등록된 고객사가 있으면 자동으로 찾습니다.</div>
-      </div>
-      <button id="autoDetectCustomer" class="btn small">위치 다시 확인</button>
-    </div>
+  <div class="customer-one-line">
+    <h2>오늘 고객사 방문</h2>
+    <span class="tiny">자동 감지 · 직접 검색</span>
+    <span id="geoCompact"><b id="autoStateTitle">현재 위치 확인 준비</b><span id="autoStateSub">위치가 등록된 고객사가 있으면 자동으로 찾습니다.</span></span>
+    <button id="autoDetectCustomer" class="btn small">현재 위치 확인</button>
   </div>
 
-  <div id="recentWrap" class="hidden" style="margin-top:12px">
-    <div class="tiny" style="margin-bottom:6px">최근 방문</div>
-    <div id="recentCustomers" class="row"></div>
+  <div id="autoState" class="detectbox compact-auto-state">
+  </div>
+
+  <div id="recentWrap" class="hidden recent-compact">
+    <button id="recentToggle" class="recent-toggle" type="button">
+      <span class="recent-label">최근 방문</span>
+      <span id="recentPrimary" class="recent-primary"></span>
+      <span class="recent-more">보기</span>
+    </button>
+    <div id="recentPanel" class="hidden">
+      <div id="recentCustomers" class="row"></div>
+    </div>
   </div>
 
   <div style="margin-top:12px">
@@ -998,9 +1375,9 @@ table th,table td{padding-top:4px!important;padding-bottom:4px!important}
   </div>
 
   <div id="activeTripActions" class="hidden next-destination">
-    <div class="next-current"><span class="tiny">현재</span><b id="activeCustomerText"></b></div>
+    <div class="next-current"><span class="tiny">현재 위치</span><b id="activeCustomerText"></b></div>
     <div class="next-actions">
-      <button id="nextCustomerBtn" class="btn secondary">다른 고객사</button>
+      <button id="nextCustomerBtn" class="btn secondary">고객사 이동</button>
       <button id="goHomeInline" class="btn">집</button>
       <button id="goHotelInline" class="btn secondary">호텔</button>
     </div>
@@ -1300,6 +1677,7 @@ function recentCustomerNames(){
 function renderRecent(){
  const names=recentCustomerNames();
  $("recentWrap").classList.toggle("hidden",!names.length);
+ if($("recentPrimary"))$("recentPrimary").textContent=names[0]||"";
  $("recentCustomers").innerHTML=names.map(n=>`<button class="btn outline small" onclick="manualVisit('${encodeURIComponent(n)}')">${esc(n)}</button>`).join("");
 }
 window.manualVisit=n=>{
@@ -1765,6 +2143,7 @@ $("statusWork").onclick=()=>{setDayStatus("work");$("todayStatusControls").class
 $("statusLeave").onclick=()=>{setDayStatus("leave");$("todayStatusControls").classList.add("hidden")};
 $("statusOff").onclick=()=>{setDayStatus("off");$("todayStatusControls").classList.add("hidden")};
 
+$("recentToggle").onclick=()=>$("recentPanel").classList.toggle("hidden");
 $("custSearch").oninput=renderCustomerSelect;$("distSearch").oninput=renderDistances;$("autoDetectCustomer").onclick=autoDetectCustomer;
 $("distanceSave").onclick=()=>{let n=db._pendingCustomer,k=parseFloat($("distanceKm").value);if(!n||!isFinite(k)||k<=0)return alert("편도거리를 입력하세요.");customerObj(n).km=k;db._pendingCustomer=null;$("distanceOverlay").classList.add("hidden");save();enterCustomer(n)};
 $("goHome").onclick=goHome;$("goHotel").onclick=goHotel;$("nextCustomerBtn").onclick=()=>{
