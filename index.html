@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>Private Car Diary</title>
-<meta name="pcd-version" content="2026-08-27-customer-delete-v41">
+<meta name="pcd-version" content="2026-08-27-home-gps-v43">
 
 <style>
 :root{
@@ -1995,6 +1995,67 @@ header{
   }
 }
 
+
+/* v42: fix km / GPS overlap */
+#distanceList .customer-admin-row{
+  grid-template-columns:minmax(0,1.00fr) minmax(0,.82fr) 56px 78px 44px!important;
+  column-gap:4px!important;
+}
+#distanceList .distance-km{
+  width:56px!important;
+  min-width:56px!important;
+  max-width:56px!important;
+  padding:4px 5px!important;
+  text-align:center!important;
+}
+#distanceList .distance-gps-btn{
+  width:78px!important;
+  min-width:78px!important;
+  max-width:78px!important;
+  padding:4px 5px!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+}
+@media(max-width:640px){
+  #distanceList .customer-admin-row{
+    grid-template-columns:minmax(0,.95fr) minmax(0,.78fr) 52px 72px 40px!important;
+    column-gap:3px!important;
+  }
+  #distanceList .distance-km{
+    width:52px!important;
+    min-width:52px!important;
+    max-width:52px!important;
+    font-size:10px!important;
+  }
+  #distanceList .distance-gps-btn{
+    width:72px!important;
+    min-width:72px!important;
+    max-width:72px!important;
+    font-size:9.5px!important;
+  }
+}
+
+
+/* v43: home GPS registration */
+.home-gps-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:2px;
+}
+#saveHomeGps{
+  min-height:34px!important;
+  padding:5px 10px!important;
+  white-space:nowrap;
+}
+#homeGpsState{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
 </style>
 
 </head>
@@ -2257,6 +2318,10 @@ header{
     <div class="field inline-field"><label>단가</label><input id="sRate" type="number"></div>
     <div class="field inline-field"><label>집 Area</label><input id="sHome"></div>
     <div class="field inline-field"><label>집 기준 시/군</label><input id="sHomeCity" placeholder="예: 화성시"></div>
+    <div class="field full home-gps-row">
+      <button id="saveHomeGps" class="btn secondary" type="button">GPS로 집 등록</button>
+      <span id="homeGpsState" class="tiny">집에서 한 번만 등록</span>
+    </div>
     <div class="field inline-field"><label>호텔 근거리 기본거리</label><input id="sHotelKm" type="number"></div>
     <div class="field inline-field"><label>고객사 자동 인식 반경 (m)</label><input id="sRadius" type="number" value="500"></div>
   </div>
@@ -2302,9 +2367,9 @@ const today=()=>{let d=new Date();return d.getFullYear()+"-"+String(d.getMonth()
 const money=n=>"₩"+Math.round(n||0).toLocaleString("ko-KR");
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-function fresh(){return {setup:false,settings:{name:"",car:"",home:"",homeCity:"화성시",rate:168,hotelKm:20,radius:500},customers:CUSTOMER_NAMES.map(n=>({name:n,km:null,lat:null,lng:null,place:""})),trips:[],state:{current:"home",activeCustomer:"",hotelCustomer:""}}}
+function fresh(){return {setup:false,settings:{name:"",car:"",home:"",homeCity:"화성시",homeLat:null,homeLng:null,rate:168,hotelKm:20,radius:500},customers:CUSTOMER_NAMES.map(n=>({name:n,km:null,lat:null,lng:null,place:""})),trips:[],state:{current:"home",activeCustomer:"",hotelCustomer:""}}}
 let db;try{db=JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){db=fresh()}
-if(!db.settings.homeCity) db.settings.homeCity="화성시";
+if(!db.settings.homeCity) db.settings.homeCity="화성시"; if(db.settings.homeLat===undefined)db.settings.homeLat=null; if(db.settings.homeLng===undefined)db.settings.homeLng=null;
 if(!db.dayStatus) db.dayStatus={};
 
 if(!db.settings.radius) db.settings.radius=500;if(!db.settings.division)db.settings.division="MIC";
@@ -3037,6 +3102,51 @@ function updateSimpleGpsState(){
   else if(/도착|완료|현재/.test(title)) el.textContent="GPS 자동 감지";
   else el.textContent="GPS 자동 확인";
 }
+
+async function saveHomeGpsNow(){
+  if(!navigator.geolocation){
+    alert("이 브라우저에서는 위치 기능을 사용할 수 없습니다.");
+    return;
+  }
+  if(!(window.isSecureContext===true)){
+    alert("GitHub Pages HTTPS 주소에서 실행해야 GPS를 사용할 수 있습니다.");
+    return;
+  }
+  $("homeGpsState").textContent="현재 위치 확인 중...";
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const lat=pos.coords.latitude, lng=pos.coords.longitude;
+    try{
+      let area="";
+      if(typeof getAreaFromGps==="function"){
+        area=await getAreaFromGps(lat,lng);
+      }else if(typeof reverseGeocodeKorean==="function"){
+        area=normalizeAreaLabel(await reverseGeocodeKorean(lat,lng));
+      }
+      db.settings.homeLat=lat;
+      db.settings.homeLng=lng;
+      if(area){
+        db.settings.home=area;
+        const cityMatch=String(area).match(/([가-힣]+(?:특별시|광역시|특별자치시|시|군))/);
+        if(cityMatch)db.settings.homeCity=cityMatch[1];
+      }
+      localStorage.setItem(KEY,JSON.stringify(db));
+      render();
+      $("homeGpsState").textContent=area?`등록 완료 · ${area}`:"GPS 등록 완료";
+      alert(area?`집 위치 등록 완료\n${area}`:"집 GPS 위치 등록 완료");
+    }catch(err){
+      db.settings.homeLat=lat;
+      db.settings.homeLng=lng;
+      localStorage.setItem(KEY,JSON.stringify(db));
+      render();
+      $("homeGpsState").textContent="GPS 좌표 등록 완료 · 지역명 확인 필요";
+      alert("집 GPS는 저장했습니다.\n지역명 자동 확인에 실패했습니다.");
+    }
+  },err=>{
+    $("homeGpsState").textContent="위치 확인 실패";
+    alert("집 위치를 확인하지 못했습니다.\n"+err.message);
+  },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+}
+
 function render(){setTimeout(updateSimpleGpsState,0);renderMyInfoSummary();
  renderWorkStatus();
  $("todayDate") && ($("todayDate").textContent=new Date().toLocaleDateString("ko-KR",{month:"long",day:"numeric",weekday:"short"}));
@@ -3062,7 +3172,7 @@ function render(){setTimeout(updateSimpleGpsState,0);renderMyInfoSummary();
 </div>`).join(""):'<div class="tiny">기록이 없습니다.</div>';
  $("hotelReturnCard").classList.toggle("hidden",db.state.current!=="hotel");
  if(db.state.current==="hotel")$("hotelReturnText").textContent=`호텔 근거리 이동 · ${db.settings.hotelKm} km`;
- $("sName").value=db.settings.name;$("sDivision").value=db.settings.division||"MIC";$("sCar").value=db.settings.car;$("sHome").value=db.settings.home;$("sHomeCity").value=db.settings.homeCity||"화성시";$("sRate").value=db.settings.rate;$("sHotelKm").value=db.settings.hotelKm;$("sRadius").value=db.settings.radius||500;
+ $("sName").value=db.settings.name;$("sDivision").value=db.settings.division||"MIC";$("sCar").value=db.settings.car;$("sHome").value=db.settings.home;$("sHomeCity").value=db.settings.homeCity||"화성시"; if($("homeGpsState"))$("homeGpsState").textContent=(db.settings.homeLat!=null&&db.settings.homeLng!=null)?`등록됨 · ${db.settings.home||"집 GPS"}`:"집에서 한 번만 등록";$("sRate").value=db.settings.rate;$("sHotelKm").value=db.settings.hotelKm;$("sRadius").value=db.settings.radius||500;
  renderCustomerSelect();renderRecent();renderDistances();renderHist();renderMissingDays();
  const hasActive=db.state.current==="customer" && !!db.state.activeCustomer;
  $("activeTripActions").classList.toggle("hidden",!hasActive);
@@ -3210,6 +3320,7 @@ $("goHome").onclick=goHome;$("goHotel").onclick=goHotel;$("nextCustomerBtn").onc
 $("goHomeInline").onclick=goHome;$("goHotelInline").onclick=goHotel;$("stayCustomer").onclick=()=>$("afterOverlay").classList.add("hidden");
 $("quickHome").onclick=goHome;$("quickHotel").onclick=goHotel;
 $("hotelToCustomer").onclick=()=>{let n=db.state.hotelCustomer||db.state.activeCustomer;if(!n)return;addTrip(n,(customerObj(n)?.place||n),(customerObj(n)?.place||n),db.settings.hotelKm,"hotel-return");db.state.current="customer";db.state.activeCustomer=n;save();$("afterCustomer").textContent=n;$("afterOverlay").classList.remove("hidden")};
+$("saveHomeGps").onclick=saveHomeGpsNow;
 $("myInfoToggle").onclick=()=>{
   $("myInfoEditor").classList.toggle("hidden");
 };
