@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>Private Car Diary</title>
-<meta name="pcd-version" content="2026-08-27-auto-arrival-v35">
+<meta name="pcd-version" content="2026-08-27-first-use-guide-v38">
 
 <style>
 :root{
@@ -1715,6 +1715,221 @@ header{
   }
 }
 
+
+.trip-order-row{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:7px!important}
+.trip-order-main{min-width:0}
+.trip-order-actions{display:grid;grid-template-columns:34px 34px auto;gap:4px;align-items:center}
+.order-btn{width:34px;height:34px;border:1px solid #cfe0e9;border-radius:9px;background:#eef8fc;color:#0069b4;font-size:18px;font-weight:900}
+.order-btn:disabled{opacity:.25}
+@media(max-width:640px){.trip-order-actions{grid-template-columns:31px 31px auto;gap:3px}.order-btn{width:31px;height:31px;font-size:17px}}
+
+
+/* v37: simplified first-use screen */
+.simple-trip-head{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:6px;
+}
+.simple-trip-title{
+  min-width:0;
+  flex:1;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.simple-trip-title h2{
+  margin:0!important;
+  font-size:18px!important;
+}
+#simpleGpsState{
+  font-size:11px;
+  color:var(--muted);
+  white-space:nowrap;
+}
+.simple-auto-state{
+  display:flex!important;
+  align-items:center;
+  gap:6px;
+  padding:6px 8px!important;
+  margin:0 0 7px!important;
+  min-height:34px;
+}
+.simple-auto-state b{
+  font-size:12px!important;
+  white-space:nowrap;
+}
+.simple-auto-state span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:10.5px!important;
+  color:var(--muted);
+}
+.simple-destination{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 8px;
+  border-radius:11px;
+  background:linear-gradient(90deg,#f5fbfe,#eef8fc);
+  border:1px solid rgba(0,105,180,.10);
+}
+.simple-dest-label{
+  font-size:14px;
+  font-weight:850;
+  white-space:nowrap;
+}
+.simple-dest-actions{
+  margin-left:auto;
+  display:grid;
+  grid-template-columns:1.25fr .72fr .82fr;
+  gap:4px;
+}
+.simple-dest-actions .btn{
+  min-height:36px!important;
+  font-size:13px!important;
+  padding:5px 10px!important;
+  white-space:nowrap;
+}
+.customer-picker{
+  margin-top:7px;
+  padding:7px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fbfdff;
+}
+.customer-picker.hidden{display:none!important}
+.customer-picker #custSearch{
+  margin-top:5px!important;
+  min-height:38px!important;
+}
+.customer-picker #searchResults{
+  margin-top:4px!important;
+}
+#activeTripActions{display:none!important}
+
+/* Keep secondary admin/status controls visually quiet */
+.status-compact,
+.missing-compact{
+  box-shadow:none!important;
+  border-color:#e7edf1!important;
+}
+.status-compact{background:#fff!important}
+.missing-compact{background:#fff!important}
+
+@media(max-width:640px){
+  .simple-trip-head{gap:5px}
+  .simple-trip-title h2{font-size:17px!important}
+  #simpleGpsState{font-size:9.5px}
+  .simple-dest-label{font-size:13px}
+  .simple-dest-actions{gap:3px}
+  .simple-dest-actions .btn{
+    min-height:34px!important;
+    font-size:12px!important;
+    padding:4px 8px!important;
+  }
+}
+
+
+/* v38: first-use guide */
+.guide-link{
+  border:1px solid #cfe1eb;
+  background:#fff;
+  color:#0069b4;
+  border-radius:999px;
+  min-height:28px;
+  padding:3px 8px;
+  font-size:10px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.guide-card{
+  width:min(92vw,420px);
+  background:#fff;
+  border-radius:18px;
+  padding:16px;
+  box-shadow:0 18px 60px rgba(20,45,70,.22);
+}
+.guide-top{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  margin-bottom:10px;
+}
+.guide-top h2{
+  margin:1px 0 0!important;
+  font-size:20px!important;
+}
+.guide-eyebrow{
+  font-size:10px;
+  color:#0077be;
+  font-weight:800;
+}
+.guide-x{
+  margin-left:auto;
+  border:0;
+  background:#eef6fa;
+  color:#537080;
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  font-size:20px;
+  line-height:1;
+}
+.guide-step{
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  gap:9px;
+  align-items:start;
+  padding:9px 0;
+  border-top:1px solid #edf1f4;
+}
+.guide-step:first-of-type{border-top:0}
+.guide-num{
+  width:30px;
+  height:30px;
+  border-radius:9px;
+  background:linear-gradient(135deg,#0077be,#00a6d6);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:14px;
+}
+.guide-step b{
+  display:block;
+  font-size:14px;
+  color:#172c3c;
+  margin-bottom:2px;
+}
+.guide-step p{
+  margin:0;
+  font-size:11.5px;
+  line-height:1.45;
+  color:#687887;
+}
+.guide-note{
+  margin-top:7px;
+  padding:8px 9px;
+  border-radius:10px;
+  background:#eef8fc;
+  color:#24627f;
+  font-size:11px;
+}
+.guide-start{
+  width:100%;
+  margin-top:10px;
+}
+@media(max-width:640px){
+  .guide-card{padding:14px}
+  .guide-top h2{font-size:18px!important}
+  .guide-step b{font-size:13px}
+  .guide-step p{font-size:11px}
+}
+
 </style>
 
 </head>
@@ -1793,7 +2008,47 @@ header{
  </div>
 </div>
 
-<header><div class="in header-one-line"><div class="brand">Private Car Diary</div><span class="header-today">오늘</span><strong id="headerTodayDate"></strong></div></header>
+
+<div id="guideOverlay" class="overlay hidden">
+  <div class="guide-card">
+    <div class="guide-top">
+      <div>
+        <div class="guide-eyebrow">Private Car Diary</div>
+        <h2>이렇게 사용합니다</h2>
+      </div>
+      <button id="closeGuideX" class="guide-x" type="button">×</button>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-num">1</div>
+      <div>
+        <b>집 또는 호텔에서 출발</b>
+        <p>아무것도 누르지 않아도 됩니다. 고객사에 도착하면 GPS로 자동 확인합니다.</p>
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-num">2</div>
+      <div>
+        <b>고객사 도착 → 자동 기록</b>
+        <p>등록된 고객사 근처에 도착하면 이동 1행이 자동 저장됩니다.</p>
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-num">3</div>
+      <div>
+        <b>다음 목적지만 선택</b>
+        <p><strong>고객사 / 집 / 호텔</strong> 중 다음 이동지만 선택하면 됩니다.</p>
+      </div>
+    </div>
+
+    <div class="guide-note">GPS가 안 될 때만 고객사를 직접 검색해서 선택하면 됩니다.</div>
+    <button id="closeGuide" class="btn guide-start">확인 · 시작하기</button>
+  </div>
+</div>
+
+<header><div class="in header-one-line"><div class="brand">Private Car Diary</div><span class="header-today">오늘</span><strong id="headerTodayDate"></strong><button id="openGuide" class="guide-link" type="button">사용법</button></div></header>
 
 <div class="wrap">
 <div class="card today-summary-line">
@@ -1840,16 +2095,29 @@ header{
  </div>
 
  <div class="card">
-  <div class="customer-one-line">
-    <h2>오늘 방문</h2>
-    <span class="tiny">도착 시 자동 기록 · 직접 검색</span>
-    <span id="geoCompact"><b id="autoStateTitle">현재 위치 확인 준비</b><span id="autoStateSub">위치가 등록된 고객사가 있으면 자동으로 찾습니다.</span></span>
-    <button id="autoDetectCustomer" class="btn small">현재 위치 확인</button>
+  <div class="simple-trip-head">
+  <div class="simple-trip-title">
+    <h2>오늘 이동</h2>
+    <span id="simpleGpsState">GPS 자동 확인</span>
   </div>
+  <button id="autoDetectCustomer" class="btn small">현재 위치 확인</button>
+</div>
 
-  <div id="autoState" class="detectbox compact-auto-state">
+<div id="autoState" class="detectbox simple-auto-state">
+  <b id="autoStateTitle">현재 위치 확인 준비</b>
+  <span id="autoStateSub">등록 고객사 도착 시 자동 기록</span>
+</div>
+
+<div class="simple-destination">
+  <span class="simple-dest-label">어디로 갈까요?</span>
+  <div class="simple-dest-actions">
+    <button id="nextCustomerBtn" class="btn">고객사</button>
+    <button id="goHomeInline" class="btn secondary">집</button>
+    <button id="goHotelInline" class="btn secondary">호텔</button>
   </div>
+</div>
 
+<div id="customerPicker" class="hidden customer-picker">
   <div id="recentWrap" class="hidden recent-compact">
     <button id="recentToggle" class="recent-toggle" type="button">
       <span class="recent-label">최근 방문</span>
@@ -1860,13 +2128,10 @@ header{
       <div id="recentCustomers" class="row"></div>
     </div>
   </div>
-
-  <div style="margin-top:12px">
-    <input id="custSearch" placeholder="고객사 검색 · 예: 천안, hynix, 이노텍">
-    <div id="searchResults" style="margin-top:7px"></div>
-  </div>
-
-  <div id="activeTripActions" class="hidden next-destination">
+  <input id="custSearch" placeholder="고객사 검색">
+  <div id="searchResults"></div>
+</div>
+<div id="activeTripActions" class="hidden next-destination">
     <div class="next-current"><span class="next-label">다음 목적지</span></div>
     <div class="next-actions">
       <button id="nextCustomerBtn" class="btn secondary" title="다른 고객사로 이동">고객사</button>
@@ -1891,7 +2156,7 @@ header{
   <button id="hotelToCustomer" class="btn" style="width:100%;margin-top:8px">호텔 → 고객사 자동 추가</button>
  </div>
 
- <div class="card"><div class="row"><h2 class="grow" style="margin:0">오늘 이동</h2><span class="tiny">자동 저장된 정산 행</span></div><div id="todayList"></div></div>
+ <div class="card"><div class="row"><h2 class="grow" style="margin:0">오늘 기록</h2><span class="tiny">자동 저장</span></div><div id="todayList"></div></div>
 </section>
 
 <section id="history" class="view">
@@ -2172,7 +2437,7 @@ ${from} → ${to} · ${km} km
 
 그래도 추가할까요?`)) return false;
  }
- db.trips.push({id:uid(),date,customer,from,to,km:Number(km),source,createdAt:Date.now()});
+ normalizeTripOrder(date); const nextOrder=tripsForDateOrdered(date).length+1; db.trips.push({id:uid(),date,customer,from,to,km:Number(km),source,order:nextOrder,createdAt:Date.now()});
  return true;
 }
 function selectCustomer(name){
@@ -2224,6 +2489,7 @@ function enterCustomer(name){
  addTrip(name,from,c.place||name,km,source);
  db.state.current="customer";
  db.state.activeCustomer=name;
+ if($("customerPicker"))$("customerPicker").classList.add("hidden");
  save();
  $("afterCustomer").textContent=name;
  $("afterOverlay").classList.remove("hidden");
@@ -2272,7 +2538,7 @@ window.manualVisit=n=>{
      return;
    }
  }
- selectCustomer(n);
+ selectCustomer(n); if($("customerPicker"))$("customerPicker").classList.add("hidden");
 };
 function renderCustomerSelect(){
  const q=$("custSearch").value.trim().toLowerCase();
@@ -2322,7 +2588,7 @@ function renderMissingDays(){
 }
 function monthValidation(){
  const m=$("month").value||today().slice(0,7);
- const a=db.trips.filter(t=>t.date.startsWith(m));
+ const a=db.trips.filter(t=>t.date.startsWith(m)).sort((x,y)=>x.date.localeCompare(y.date)||((Number(x.order)||9999)-(Number(y.order)||9999))||(x.createdAt||0)-(y.createdAt||0));
  const issues=[];
  const unfinished = (db.state.current==="customer" && db.state.activeCustomer);
  if(unfinished) issues.push({type:"warn",text:`미완료 출장: ${db.state.activeCustomer}`});
@@ -2581,18 +2847,58 @@ function renderMyInfoSummary(){
   const parts=[s.name,s.division,s.car,s.home].filter(Boolean);
   el.textContent=parts.length?parts.join(" · "):"처음 한 번 설정";
 }
-function render(){renderMyInfoSummary();
+
+function tripsForDateOrdered(date){
+  return db.trips.filter(t=>t.date===date).sort((a,b)=>{
+    const oa=Number.isFinite(Number(a.order))?Number(a.order):999999;
+    const ob=Number.isFinite(Number(b.order))?Number(b.order):999999;
+    return oa-ob || (a.createdAt||0)-(b.createdAt||0);
+  });
+}
+function normalizeTripOrder(date){
+  tripsForDateOrdered(date).forEach((t,i)=>t.order=i+1);
+}
+window.moveTrip=(id,dir)=>{
+  const trip=db.trips.find(t=>t.id===id); if(!trip)return;
+  normalizeTripOrder(trip.date);
+  const arr=tripsForDateOrdered(trip.date);
+  const i=arr.findIndex(t=>t.id===id), j=i+dir;
+  if(i<0||j<0||j>=arr.length)return;
+  [arr[i].order,arr[j].order]=[arr[j].order,arr[i].order];
+  save();
+};
+
+function updateSimpleGpsState(){
+  const el=$("simpleGpsState");
+  if(!el)return;
+  const title=$("autoStateTitle")?.textContent||"";
+  if(/실패|불가/.test(title)) el.textContent="GPS 확인 필요";
+  else if(/도착|완료|현재/.test(title)) el.textContent="GPS 자동 감지";
+  else el.textContent="GPS 자동 확인";
+}
+function render(){setTimeout(updateSimpleGpsState,0);renderMyInfoSummary();
  renderWorkStatus();
  $("todayDate") && ($("todayDate").textContent=new Date().toLocaleDateString("ko-KR",{month:"long",day:"numeric",weekday:"short"}));
  $("headerTodayDate").textContent=new Date().toLocaleDateString("ko-KR",{month:"long",day:"numeric",weekday:"short"});
- let t=db.trips.filter(x=>x.date===today());
+ let t=tripsForDateOrdered(today());
  const now=new Date(), monthKey=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
  const mt=db.trips.filter(x=>String(x.date||"").slice(0,7)===monthKey);
  const monthKm=mt.reduce((s,x)=>s+Number(x.km||0),0);
  $("todayKm").textContent=monthKm+" km";
  $("todayCost").textContent=money(monthKm*db.settings.rate);
  if($("todayRows"))$("todayRows").textContent=mt.length;
- $("todayList").innerHTML=t.length?t.map(x=>`<div class="item"><div class="tiny">${esc(x.customer)}</div><div class="path">${esc(x.from)} → ${esc(x.to)}</div><div class="row"><b>${x.km} km</b><button class="btn danger small" style="margin-left:auto" onclick="delTrip('${x.id}')">삭제</button></div></div>`).join(""):'<div class="tiny">기록이 없습니다.</div>';
+ $("todayList").innerHTML=t.length?t.map((x,i)=>`<div class="item trip-order-row">
+  <div class="trip-order-main">
+    <div class="tiny">${esc(x.customer)}</div>
+    <div class="path">${esc(x.from)} → ${esc(x.to)}</div>
+    <div><b>${x.km} km</b></div>
+  </div>
+  <div class="trip-order-actions">
+    <button class="order-btn" onclick="moveTrip('${x.id}',-1)" ${i===0?"disabled":""}>↑</button>
+    <button class="order-btn" onclick="moveTrip('${x.id}',1)" ${i===t.length-1?"disabled":""}>↓</button>
+    <button class="btn danger small" onclick="delTrip('${x.id}')">삭제</button>
+  </div>
+</div>`).join(""):'<div class="tiny">기록이 없습니다.</div>';
  $("hotelReturnCard").classList.toggle("hidden",db.state.current!=="hotel");
  if(db.state.current==="hotel")$("hotelReturnText").textContent=`호텔 근거리 이동 · ${db.settings.hotelKm} km`;
  $("sName").value=db.settings.name;$("sDivision").value=db.settings.division||"MIC";$("sCar").value=db.settings.car;$("sHome").value=db.settings.home;$("sHomeCity").value=db.settings.homeCity||"화성시";$("sRate").value=db.settings.rate;$("sHotelKm").value=db.settings.hotelKm;$("sRadius").value=db.settings.radius||500;
@@ -2619,7 +2925,7 @@ function makeCompanyPdf(){
   const monthName=new Date(yy,mm-1,1).toLocaleString("en-US",{month:"short"});
   const trips=db.trips
     .filter(x=>x.date.startsWith(m))
-    .sort((a,b)=>a.date.localeCompare(b.date)||(a.createdAt||0)-(b.createdAt||0));
+    .sort((a,b)=>a.date.localeCompare(b.date)||((Number(a.order)||9999)-(Number(b.order)||9999))||(a.createdAt||0)-(b.createdAt||0));
   const totalKm=trips.reduce((s,x)=>s+Number(x.km||0),0);
   const rate=Number(db.settings.rate||0);
   const totalKrw=Math.round(totalKm*rate);
@@ -2734,8 +3040,11 @@ $("recentToggle").onclick=()=>$("recentPanel").classList.toggle("hidden");
 $("custSearch").oninput=renderCustomerSelect;$("distSearch").oninput=renderDistances;$("autoDetectCustomer").onclick=autoDetectCustomer;
 $("distanceSave").onclick=()=>{let n=db._pendingCustomer,k=parseFloat($("distanceKm").value);if(!n||!isFinite(k)||k<=0)return alert("편도거리를 입력하세요.");customerObj(n).km=k;db._pendingCustomer=null;$("distanceOverlay").classList.add("hidden");save();enterCustomer(n)};
 $("goHome").onclick=goHome;$("goHotel").onclick=goHotel;$("nextCustomerBtn").onclick=()=>{
-  $("custSearch").focus();
-  $("custSearch").scrollIntoView({behavior:"smooth",block:"center"});
+  const p=$("customerPicker");
+  p.classList.toggle("hidden");
+  if(!p.classList.contains("hidden")){
+    setTimeout(()=>{$("custSearch").focus();},50);
+  }
 };
 $("goHomeInline").onclick=goHome;$("goHotelInline").onclick=goHotel;$("stayCustomer").onclick=()=>$("afterOverlay").classList.add("hidden");
 $("quickHome").onclick=goHome;$("quickHotel").onclick=goHotel;
@@ -2755,6 +3064,25 @@ migrateStoredTripAreas();
 render();
 if(db.setup)setTimeout(()=>smartAutoCheck(),700);
 if(db.setup){setTimeout(()=>autoDetectCustomer(),700);}
+
+if($("autoStateTitle")){
+  new MutationObserver(updateSimpleGpsState).observe($("autoStateTitle"),{childList:true,subtree:true,characterData:true});
+}
+
+const GUIDE_KEY="pcd_guide_seen_v1";
+function openGuide(){
+  $("guideOverlay").classList.remove("hidden");
+}
+function closeGuide(){
+  $("guideOverlay").classList.add("hidden");
+  localStorage.setItem(GUIDE_KEY,"1");
+}
+$("openGuide").onclick=openGuide;
+$("closeGuide").onclick=closeGuide;
+$("closeGuideX").onclick=closeGuide;
+$("guideOverlay").onclick=e=>{if(e.target===$("guideOverlay"))closeGuide()};
+if(!localStorage.getItem(GUIDE_KEY)) setTimeout(openGuide,250);
+
 </script>
 </body>
 </html>
