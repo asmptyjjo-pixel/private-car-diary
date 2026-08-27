@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>Private Car Diary</title>
-<meta name="pcd-version" content="2026-08-26-ui-same-font-v11">
+<meta name="pcd-version" content="2026-08-26-company-pdf-v12">
 
 <style>
 :root{
@@ -844,7 +844,7 @@ input,select{font-size:13px!important}
   <div class="metricgrid" style="margin-top:10px"><div class="metric"><span class="tiny">거리</span><strong id="monthKm">0 km</strong></div><div class="metric"><span class="tiny">정산</span><strong id="monthCost">₩0</strong></div><div class="metric"><span class="tiny">행</span><strong id="monthRows">0</strong></div></div>
   <div class="row" style="margin-top:10px">
     <button id="openPast" class="btn secondary grow">지난 출장 추가</button>
-    <button id="csv" class="btn grow">회사 파일 만들기</button>
+    <button id="pdf" class="btn grow">회사 형식 PDF</button><button id="csv" class="btn secondary grow">CSV</button>
   </div>
  </div>
  <div class="card">
@@ -859,6 +859,7 @@ input,select{font-size:13px!important}
  <div class="card">
   <h2>내 정보</h2>
   <label>Name</label><input id="sName">
+  <label>Division</label><input id="sDivision" placeholder="MIC">
   <label>Car No.</label><input id="sCar">
   <label>집 Area</label><input id="sHome"><label>집 기준 시/군</label><input id="sHomeCity" placeholder="예: 화성시">
   <div class="row"><div class="grow"><label>단가</label><input id="sRate" type="number"></div><div class="grow"><label>호텔 근거리 기본거리</label><input id="sHotelKm" type="number"><div class="tiny" style="margin-top:3px">호텔은 고객사 근처로 처리하며 고객사와 같은 지역명으로 기록됩니다.</div></div></div><label>고객사 자동 인식 반경 (m)</label><input id="sRadius" type="number" value="500">
@@ -906,7 +907,7 @@ let db;try{db=JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){db=fresh()
 if(!db.settings.homeCity) db.settings.homeCity="화성시";
 if(!db.dayStatus) db.dayStatus={};
 
-if(!db.settings.radius) db.settings.radius=500;
+if(!db.settings.radius) db.settings.radius=500;if(!db.settings.division)db.settings.division="MIC";
 db.customers.sort(customerSort);
 db.customers=db.customers.map(c=>({lat:null,lng:null,...c}));
 function save(){localStorage.setItem(KEY,JSON.stringify(db));render()}
@@ -1419,7 +1420,7 @@ function render(){
  $("todayList").innerHTML=t.length?t.map(x=>`<div class="item"><div class="tiny">${esc(x.customer)}</div><div class="path">${esc(x.from)} → ${esc(x.to)}</div><div class="row"><b>${x.km} km</b><button class="btn danger small" style="margin-left:auto" onclick="delTrip('${x.id}')">삭제</button></div></div>`).join(""):'<div class="tiny">기록이 없습니다.</div>';
  $("hotelReturnCard").classList.toggle("hidden",db.state.current!=="hotel");
  if(db.state.current==="hotel")$("hotelReturnText").textContent=`호텔 근거리 이동 · ${db.settings.hotelKm} km`;
- $("sName").value=db.settings.name;$("sCar").value=db.settings.car;$("sHome").value=db.settings.home;$("sHomeCity").value=db.settings.homeCity||"화성시";$("sRate").value=db.settings.rate;$("sHotelKm").value=db.settings.hotelKm;$("sRadius").value=db.settings.radius||500;
+ $("sName").value=db.settings.name;$("sDivision").value=db.settings.division||"MIC";$("sCar").value=db.settings.car;$("sHome").value=db.settings.home;$("sHomeCity").value=db.settings.homeCity||"화성시";$("sRate").value=db.settings.rate;$("sHotelKm").value=db.settings.hotelKm;$("sRadius").value=db.settings.radius||500;
  renderCustomerSelect();renderRecent();renderDistances();renderHist();renderMissingDays();
  const hasActive=db.state.current==="customer" && !!db.state.activeCustomer;
  $("activeTripActions").classList.toggle("hidden",!hasActive);
@@ -1437,6 +1438,79 @@ function renderHist(){
 }
 function c(v){let s=String(v??"");return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
 function dl(name,text,type="text/csv;charset=utf-8"){let b=new Blob(["\ufeff",text],{type}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;a.click()}
+function makeCompanyPdf(){
+  const m=$("month").value||today().slice(0,7);
+  const [yy,mm]=m.split("-").map(Number);
+  const monthName=new Date(yy,mm-1,1).toLocaleString("en-US",{month:"short"});
+  const trips=db.trips
+    .filter(x=>x.date.startsWith(m))
+    .sort((a,b)=>a.date.localeCompare(b.date)||(a.createdAt||0)-(b.createdAt||0));
+  const totalKm=trips.reduce((s,x)=>s+Number(x.km||0),0);
+  const rate=Number(db.settings.rate||0);
+  const totalKrw=Math.round(totalKm*rate);
+  const escHtml=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const dateParts=d=>{const p=d.split("-");return {m:Number(p[1]),d:Number(p[2])}};
+
+  const rowHtml=(i,t)=>{
+    if(!t) return `<tr><td>${i}</td><td>&nbsp;&nbsp;/&nbsp;&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>`;
+    const dp=dateParts(t.date);
+    return `<tr><td>${i}</td><td>${dp.m}&nbsp;&nbsp;/&nbsp;&nbsp;${dp.d}</td><td class="customer">${escHtml(t.customer)}</td><td>${escHtml(t.from)}</td><td></td><td>${escHtml(t.to)}</td><td class="km">${Number(t.km||0).toLocaleString()}</td></tr>`;
+  };
+
+  const makeRows=(start,end)=>{
+    let s="";
+    for(let i=start;i<=end;i++) s+=rowHtml(i,trips[i-1]);
+    return s;
+  };
+
+  const header=()=>`<div class="top">
+    <div class="titlebox"><div class="zeiss">ZEISS</div><div class="title">Private Car Drive Diary</div></div>
+    <table class="info">
+      <tr><th>Expense period</th><td>${monthName}</td><td>${yy}</td></tr>
+      <tr><th>Division</th><td colspan="2">${escHtml(db.settings.division||"MIC")}</td></tr>
+      <tr><th>Name</th><td colspan="2">${escHtml(db.settings.name||"")}</td></tr>
+      <tr><th>Car No.</th><td colspan="2">${escHtml(db.settings.car||"")}</td></tr>
+    </table>
+  </div>`;
+
+  const tableHead=`<thead>
+    <tr><th rowspan="2" class="no">No.</th><th rowspan="2" class="date">Date<br>(mm/dd)</th><th rowspan="2" class="cust">Customer</th><th colspan="3">Area (지역)</th><th rowspan="2" class="mileage">Mileage(Km)<br>총 마일리지</th></tr>
+    <tr><th>Departure<br>(출발지)</th><th>Stopover<br>(경유지)</th><th>Arrival<br>(도착지)</th></tr>
+  </thead>`;
+
+  const summary=`<div class="summary-wrap">
+    <table class="summary">
+      <tr><td rowspan="3" class="stotal">S - TOTAL</td><th>총 주행거리 Total mileage(km)(A)</th><td>${totalKm.toLocaleString()}</td></tr>
+      <tr><th class="unit">마일리지단가 Unit(B)</th><td>${rate.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</td></tr>
+      <tr><th>Total mileage KRW(AxB)</th><td>${totalKrw.toLocaleString()}</td></tr>
+      <tr><th colspan="2" class="allowance">개인차량수당지원여부 (Yes or No)<br>Do you get paid car allowance in your salary?</th><td>Yes</td></tr>
+    </table>
+    <table class="sign"><tr><td class="siglabel">SIGNATURE</td><td></td><td class="approve">APPROVED BY</td><td></td></tr></table>
+  </div>`;
+
+  const doc=`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>Private Car Drive Diary ${m}</title>
+  <style>
+    @page{size:A4 portrait;margin:7mm 10mm 7mm 10mm}
+    *{box-sizing:border-box}body{margin:0;color:#111;font-family:Arial,"Noto Sans KR",sans-serif;font-size:8.7px}
+    .page{width:100%;page-break-after:always}.page:last-child{page-break-after:auto}
+    .top{height:29mm;position:relative;display:flex;align-items:flex-end;justify-content:space-between}
+    .titlebox{width:54%;text-align:center;padding-bottom:2mm}.zeiss{width:11mm;height:11mm;margin:0 auto 2mm;background:#0600b8;color:#fff;font-size:5px;font-weight:700;display:flex;align-items:center;justify-content:center}.title{font-size:19px;font-weight:700;letter-spacing:.2px}
+    table{border-collapse:collapse}.info{width:43%;font-size:8px;margin-bottom:1mm}.info th,.info td{border:1.2px solid #111;height:5.2mm;text-align:center;padding:1px}.info th{width:35%;background:#c9f8c9;font-weight:400}.info td{background:#fff}
+    .diary{width:100%;table-layout:fixed;border:1.3px solid #777}.diary th,.diary td{border:1px solid #888;height:4.55mm;padding:1px 3px;vertical-align:middle}.diary thead th{background:#f2f2f2;text-align:center;font-weight:500;height:6.2mm}.diary .no{width:4.5%}.diary .date{width:8%}.diary .cust{width:30%}.diary .mileage{width:13.5%}.diary tbody td:nth-child(1),.diary tbody td:nth-child(2),.diary tbody td:nth-child(7){text-align:center}.diary tbody .customer{white-space:nowrap;overflow:hidden}.diary tbody .km{text-align:right!important;padding-right:5px}
+    .page2 .diary th,.page2 .diary td{height:5mm}
+    .summary-wrap{margin-top:1mm}.summary{width:100%;table-layout:fixed;font-size:8.5px}.summary td,.summary th{border:1.3px solid #555;height:5.8mm;padding:1px 5px;text-align:right}.summary .stotal{width:43%;text-align:center;font-weight:700;font-size:10px}.summary th{width:44%;font-weight:700}.summary .unit{background:#e8e1f2}.summary td:last-child{width:13%;font-weight:700}.summary .allowance{text-align:center;background:#e8e1f2;font-size:7.8px}
+    .sign{width:100%;margin-top:1mm;font-size:8px}.sign td{height:9mm;border:1.3px solid #111}.sign .siglabel{width:13%;text-align:center}.sign td:nth-child(2){width:30%}.sign .approve{width:30%;text-align:center}.sign td:nth-child(4){width:27%}
+    @media print{.no-print{display:none}}
+  </style></head><body>
+  <section class="page page1">${header()}<table class="diary">${tableHead}<tbody>${makeRows(1,43)}</tbody></table></section>
+  <section class="page page2">${header()}<table class="diary">${tableHead}<tbody>${makeRows(44,76)}</tbody></table>${summary}</section>
+  <script>window.onload=()=>setTimeout(()=>window.print(),350)<\/script>
+  </body></html>`;
+
+  const w=window.open("","_blank");
+  if(!w){alert("PDF 창을 열 수 없습니다. 브라우저 팝업을 허용해주세요.");return;}
+  w.document.open();w.document.write(doc);w.document.close();
+}
 function makeCsv(){
  let m=$("month").value||today().slice(0,7),[yy,mm]=m.split("-"),a=db.trips.filter(x=>x.date.startsWith(m)).sort((x,y)=>x.date.localeCompare(y.date)||x.createdAt-y.createdAt),tot=a.reduce((s,x)=>s+Number(x.km),0),mon=new Date(+yy,+mm-1,1).toLocaleString("en-US",{month:"short"});
  let rows=[["Private Car Drive Diary","","","","","","Expense period",mon,yy],["","","","","","","Division","MIC",""],["","","","","","","Name",db.settings.name,""],["","","","","","","Car No.",db.settings.car,""],["","","","","","","","",""],["","","","","","","","",""],["No.","Date\n(mm/dd)","","","Customer","Area (지역)","","","Mileage(Km)\n총 마일리지"],["","","","","","Departure\n(출발지)","Stopover\n(경유지)","Arrival\n(도착지)",""]];
@@ -1485,9 +1559,9 @@ $("distanceSave").onclick=()=>{let n=db._pendingCustomer,k=parseFloat($("distanc
 $("goHome").onclick=goHome;$("goHotel").onclick=goHotel;$("goHomeInline").onclick=goHome;$("goHotelInline").onclick=goHotel;$("stayCustomer").onclick=()=>$("afterOverlay").classList.add("hidden");
 $("quickHome").onclick=goHome;$("quickHotel").onclick=goHotel;
 $("hotelToCustomer").onclick=()=>{let n=db.state.hotelCustomer||db.state.activeCustomer;if(!n)return;addTrip(n,(customerObj(n)?.place||n),(customerObj(n)?.place||n),db.settings.hotelKm,"hotel-return");db.state.current="customer";db.state.activeCustomer=n;save();$("afterCustomer").textContent=n;$("afterOverlay").classList.remove("hidden")};
-$("saveSettings").onclick=()=>{db.settings.name=$("sName").value.trim();db.settings.car=$("sCar").value.trim();db.settings.home=$("sHome").value.trim();db.settings.homeCity=$("sHomeCity").value.trim()||"화성시";db.settings.rate=+$("sRate").value||0;db.settings.hotelKm=+$("sHotelKm").value||20;db.settings.radius=+$("sRadius").value||500;save()};
+$("saveSettings").onclick=()=>{db.settings.name=$("sName").value.trim();db.settings.division=$("sDivision").value.trim()||"MIC";db.settings.car=$("sCar").value.trim();db.settings.home=$("sHome").value.trim();db.settings.homeCity=$("sHomeCity").value.trim()||"화성시";db.settings.rate=+$("sRate").value||0;db.settings.hotelKm=+$("sHotelKm").value||20;db.settings.radius=+$("sRadius").value||500;save()};
 $("addCustomer").onclick=()=>{let n=$("newCustomer").value.trim(),k=parseFloat($("newCustomerKm").value);if(!n)return alert("고객사명을 입력하세요.");if(db.customers.some(c=>c.name===n))return alert("이미 있는 고객사입니다.");db.customers.push({name:n,km:isFinite(k)?k:null,lat:null,lng:null,place:""});db.customers.sort(customerSort);$("newCustomer").value="";$("newCustomerKm").value="";save()};
-$("month").value=today().slice(0,7);$("month").onchange=renderHist;$("csv").onclick=makeCsv;
+$("month").value=today().slice(0,7);$("month").onchange=renderHist;$("pdf").onclick=makeCompanyPdf;$("csv").onclick=makeCsv;
 $("clearTrips").onclick=()=>{if(confirm("출장 기록을 모두 삭제할까요?")){db.trips=[];db.state.current="home";db.state.activeCustomer="";db.state.hotelCustomer="";save()}};
 $("backup").onclick=()=>dl(`Private_Car_Diary_backup_${today()}.json`,JSON.stringify(db,null,2),"application/json;charset=utf-8");
 $("restore").onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);if(!db.settings.radius)db.settings.radius=500;db.customers=db.customers.map(c=>({lat:null,lng:null,place:"",...c})).sort(customerSort);save();alert("복원 완료")}catch(x){alert("복원 실패")}};r.readAsText(f)};
