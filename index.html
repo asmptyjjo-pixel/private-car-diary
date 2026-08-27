@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>Private Car Diary</title>
-<meta name="pcd-version" content="2026-08-27-compact-all-v13">
+<meta name="pcd-version" content="2026-08-27-collapsed-info-v15">
 
 <style>
 :root{
@@ -708,6 +708,78 @@ label{margin:4px 0 2px!important}
   #distanceList .distance-row{padding:3px 4px!important}
 }
 
+
+/* v14 dense UI — labels immediately beside fields, minimal vertical gaps */
+.wrap{max-width:760px!important;padding:5px 6px 64px!important}
+.card{padding:7px!important;margin-bottom:4px!important;border-radius:10px!important}
+h2{margin:0 0 4px!important}
+.row{gap:4px!important}
+.tabs{margin-bottom:4px!important}
+label{margin:0!important}
+.inline-field{
+ display:grid;
+ grid-template-columns:auto minmax(0,1fr);
+ align-items:center;
+ gap:5px;
+ min-width:0;
+}
+.inline-field label{
+ white-space:nowrap;
+ font-weight:700;
+ font-size:11px!important;
+}
+.inline-field input,.inline-field select{
+ min-width:0;
+ min-height:31px!important;
+ padding:5px 7px!important;
+}
+.form-grid-2{gap:4px 7px!important}
+.metricgrid{gap:3px!important}
+.metric{padding:4px 5px!important}
+.notice,.detectbox{padding:5px 6px!important;margin:3px 0!important}
+.item{padding:4px 5px!important;margin:2px 0!important}
+.btn{min-height:31px!important;padding:5px 8px!important}
+.tabs .tab{padding:7px 5px!important}
+table th,table td{padding-top:4px!important;padding-bottom:4px!important}
+.settings-save-row{margin-top:4px!important}
+.inline-help{margin-top:2px!important}
+#distanceList .distance-row{padding:2px 3px!important;margin:1px 0!important;gap:2px!important}
+#distanceList .distance-area-input,#distanceList .distance-km,#distanceList .distance-gps-btn{min-height:27px!important}
+@media(max-width:640px){
+ .wrap{padding:4px 5px 62px!important}
+ .card{padding:6px!important;margin-bottom:3px!important}
+ .form-grid-2{gap:3px 5px!important}
+ .inline-field{gap:4px}
+ .inline-field label{font-size:10.5px!important}
+ .inline-field input,.inline-field select{min-height:30px!important;padding:4px 6px!important}
+ .btn{min-height:30px!important}
+ table th,table td{padding-top:3px!important;padding-bottom:3px!important}
+}
+
+
+/* v15: collapse rarely-used personal settings */
+.info-collapsed-card{padding:5px 7px!important}
+.myinfo-toggle{
+ width:100%;border:0;background:transparent;
+ display:flex;align-items:center;gap:6px;
+ padding:2px 0;min-height:28px;color:var(--text);cursor:pointer;text-align:left;
+}
+.myinfo-toggle strong{font-size:12px;white-space:nowrap}
+.myinfo-summary{
+ min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+ font-size:10.5px;color:var(--muted);font-weight:500;
+}
+.myinfo-edit{font-size:9.5px;color:var(--accent);font-weight:750;white-space:nowrap}
+.myinfo-editor{border-top:1px solid var(--line);margin-top:4px;padding-top:6px}
+.myinfo-editor.hidden{display:none!important}
+@media(max-width:640px){
+ .info-collapsed-card{padding:4px 6px!important}
+ .myinfo-toggle{min-height:26px}
+ .myinfo-toggle strong{font-size:11.5px}
+ .myinfo-summary{font-size:10px}
+ .myinfo-edit{font-size:9px}
+}
+
 </style>
 
 </head>
@@ -892,21 +964,27 @@ label{margin:4px 0 2px!important}
 </section>
 
 <section id="settings" class="view">
-<div class="card"><div class="tiny">처음 한 번만 고객사 지역명과 편도거리를 저장하면 이후 출장 입력은 자동으로 재사용됩니다.</div></div>
- <div class="card">
-  <h2>내 정보</h2>
-  <div class="form-grid-2">
-    <div class="field"><label>Name</label><input id="sName"></div>
-    <div class="field"><label>Division</label><input id="sDivision" placeholder="MIC"></div>
-    <div class="field"><label>Car No.</label><input id="sCar"></div>
-    <div class="field"><label>단가</label><input id="sRate" type="number"></div>
-    <div class="field"><label>집 Area</label><input id="sHome"></div>
-    <div class="field"><label>집 기준 시/군</label><input id="sHomeCity" placeholder="예: 화성시"></div>
-    <div class="field"><label>호텔 근거리 기본거리</label><input id="sHotelKm" type="number"></div>
-    <div class="field"><label>고객사 자동 인식 반경 (m)</label><input id="sRadius" type="number" value="500"></div>
+<div class="card"><div class="tiny">고객사 지역명·편도거리는 한 번 저장하면 자동 재사용됩니다.</div></div>
+ <div class="card info-collapsed-card">
+  <button id="myInfoToggle" class="myinfo-toggle" type="button">
+    <strong>내 정보</strong>
+    <span id="myInfoSummary" class="myinfo-summary">설정 확인</span>
+    <span class="myinfo-edit">수정</span>
+  </button>
+  <div id="myInfoEditor" class="myinfo-editor hidden">
+    <div class="form-grid-2">
+    <div class="field inline-field"><label>Name</label><input id="sName"></div>
+    <div class="field inline-field"><label>Division</label><input id="sDivision" placeholder="MIC"></div>
+    <div class="field inline-field"><label>Car No.</label><input id="sCar"></div>
+    <div class="field inline-field"><label>단가</label><input id="sRate" type="number"></div>
+    <div class="field inline-field"><label>집 Area</label><input id="sHome"></div>
+    <div class="field inline-field"><label>집 기준 시/군</label><input id="sHomeCity" placeholder="예: 화성시"></div>
+    <div class="field inline-field"><label>호텔 근거리 기본거리</label><input id="sHotelKm" type="number"></div>
+    <div class="field inline-field"><label>고객사 자동 인식 반경 (m)</label><input id="sRadius" type="number" value="500"></div>
   </div>
-  <div class="inline-help">호텔은 고객사 근처로 처리하며 같은 지역명으로 기록됩니다.</div>
-  <div class="settings-save-row"><button id="saveSettings" class="btn">저장</button></div>
+    <div class="inline-help">호텔은 고객사 근처로 처리하며 같은 지역명으로 기록됩니다.</div>
+    <div class="settings-save-row"><button id="saveSettings" class="btn">저장</button></div>
+  </div>
  </div>
 
  <div class="card">
@@ -918,8 +996,8 @@ label{margin:4px 0 2px!important}
  <div class="card">
   <h2>고객사 추가</h2>
   <div class="form-grid-2">
-    <div class="field"><label>고객사명</label><input id="newCustomer"></div>
-    <div class="field"><label>편도거리 (선택)</label><input id="newCustomerKm" type="number"></div>
+    <div class="field inline-field"><label>고객사명</label><input id="newCustomer"></div>
+    <div class="field inline-field"><label>편도거리 (선택)</label><input id="newCustomerKm" type="number"></div>
   </div>
   <div class="settings-save-row"><button id="addCustomer" class="btn">추가</button></div>
  </div>
@@ -1456,7 +1534,15 @@ function updateFooterVisibility(){
   const bar=$("footerBar");
   if(bar)bar.classList.toggle("hidden",!(todayActive&&hasActive));
 }
-function render(){
+
+function renderMyInfoSummary(){
+  const el=$("myInfoSummary");
+  if(!el)return;
+  const s=db.settings||{};
+  const parts=[s.name,s.division,s.car,s.home].filter(Boolean);
+  el.textContent=parts.length?parts.join(" · "):"처음 한 번 설정";
+}
+function render(){renderMyInfoSummary();
  renderWorkStatus();
  $("todayDate").textContent=new Date().toLocaleDateString("ko-KR",{month:"long",day:"numeric",weekday:"short"});
  let t=db.trips.filter(x=>x.date===today()),km=t.reduce((s,x)=>s+Number(x.km),0);
@@ -1603,7 +1689,10 @@ $("distanceSave").onclick=()=>{let n=db._pendingCustomer,k=parseFloat($("distanc
 $("goHome").onclick=goHome;$("goHotel").onclick=goHotel;$("goHomeInline").onclick=goHome;$("goHotelInline").onclick=goHotel;$("stayCustomer").onclick=()=>$("afterOverlay").classList.add("hidden");
 $("quickHome").onclick=goHome;$("quickHotel").onclick=goHotel;
 $("hotelToCustomer").onclick=()=>{let n=db.state.hotelCustomer||db.state.activeCustomer;if(!n)return;addTrip(n,(customerObj(n)?.place||n),(customerObj(n)?.place||n),db.settings.hotelKm,"hotel-return");db.state.current="customer";db.state.activeCustomer=n;save();$("afterCustomer").textContent=n;$("afterOverlay").classList.remove("hidden")};
-$("saveSettings").onclick=()=>{db.settings.name=$("sName").value.trim();db.settings.division=$("sDivision").value.trim()||"MIC";db.settings.car=$("sCar").value.trim();db.settings.home=$("sHome").value.trim();db.settings.homeCity=$("sHomeCity").value.trim()||"화성시";db.settings.rate=+$("sRate").value||0;db.settings.hotelKm=+$("sHotelKm").value||20;db.settings.radius=+$("sRadius").value||500;save()};
+$("myInfoToggle").onclick=()=>{
+  $("myInfoEditor").classList.toggle("hidden");
+};
+$("saveSettings").onclick=()=>{db.settings.name=$("sName").value.trim();db.settings.division=$("sDivision").value.trim()||"MIC";db.settings.car=$("sCar").value.trim();db.settings.home=$("sHome").value.trim();db.settings.homeCity=$("sHomeCity").value.trim()||"화성시";db.settings.rate=+$("sRate").value||0;db.settings.hotelKm=+$("sHotelKm").value||20;db.settings.radius=+$("sRadius").value||500;$("myInfoEditor").classList.add("hidden");save()};
 $("addCustomer").onclick=()=>{let n=$("newCustomer").value.trim(),k=parseFloat($("newCustomerKm").value);if(!n)return alert("고객사명을 입력하세요.");if(db.customers.some(c=>c.name===n))return alert("이미 있는 고객사입니다.");db.customers.push({name:n,km:isFinite(k)?k:null,lat:null,lng:null,place:""});db.customers.sort(customerSort);$("newCustomer").value="";$("newCustomerKm").value="";save()};
 $("month").value=today().slice(0,7);$("month").onchange=renderHist;$("pdf").onclick=makeCompanyPdf;$("csv").onclick=makeCsv;
 $("clearTrips").onclick=()=>{if(confirm("출장 기록을 모두 삭제할까요?")){db.trips=[];db.state.current="home";db.state.activeCustomer="";db.state.hotelCustomer="";save()}};
