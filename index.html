@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>Private Car Diary</title>
-<meta name="pcd-version" content="2026-08-27-reorder-history-fix-v39">
+<meta name="pcd-version" content="2026-08-27-customer-delete-v41">
 
 <style>
 :root{
@@ -1930,6 +1930,71 @@ header{
   .guide-step p{font-size:11px}
 }
 
+
+/* v40: customer name editable */
+.distance-name-wrap{
+  min-width:0;
+}
+.customer-name-edit{
+  width:100%;
+  border:0;
+  background:transparent;
+  padding:4px 3px;
+  text-align:left;
+  color:var(--text);
+  font-size:12px;
+  font-weight:800;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  cursor:pointer;
+  border-radius:7px;
+}
+.customer-name-edit:active{
+  background:#eaf6fb;
+}
+.customer-name-edit::after{
+  content:" ✎";
+  color:#0088b5;
+  font-size:9px;
+  font-weight:700;
+}
+@media(max-width:640px){
+  .customer-name-edit{font-size:11.5px}
+}
+
+
+/* v41: customer delete with warning */
+#distanceList .customer-admin-row{
+  grid-template-columns:minmax(0,1.05fr) minmax(0,.9fr) 50px 66px 44px!important;
+}
+.customer-delete-btn{
+  min-width:44px;
+  min-height:29px;
+  border:1px solid #f1caca;
+  border-radius:8px;
+  background:#fff2f2;
+  color:#c23d3d;
+  padding:3px 5px;
+  font-size:9px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.customer-delete-btn:active{
+  background:#ffe4e4;
+}
+@media(max-width:640px){
+  #distanceList .customer-admin-row{
+    grid-template-columns:minmax(0,1fr) minmax(0,.82fr) 46px 60px 40px!important;
+  }
+  .customer-delete-btn{
+    min-width:40px;
+    min-height:27px;
+    font-size:8.5px;
+    padding:2px 4px;
+  }
+}
+
 </style>
 
 </head>
@@ -2547,14 +2612,109 @@ function renderCustomerSelect(){
  const arr=db.customers.filter(c=>c.name.toLowerCase().includes(q)).sort(customerSort).slice(0,8);
  box.innerHTML=arr.length?arr.map(c=>`<button class="btn outline" style="width:100%;text-align:left;margin-bottom:6px" onclick="manualVisit('${encodeURIComponent(c.name)}')">${esc(c.name)}${c.km!=null?` · ${c.km} km`:" · 거리 미등록"}</button>`).join(""):`<div class="tiny">검색 결과가 없습니다.</div>`;
 }
+
+function renameCustomer(oldName,newName){
+  oldName=String(oldName||"").trim();
+  newName=String(newName||"").trim();
+
+  if(!oldName||!newName) return alert("고객사 이름을 입력하세요.");
+  if(oldName===newName) return;
+  if(db.customers.some(c=>c.name===newName)) return alert("같은 이름의 고객사가 이미 있습니다.");
+
+  const c=customerObj(oldName);
+  if(!c) return alert("고객사를 찾을 수 없습니다.");
+
+  // 고객사 마스터명 변경
+  c.name=newName;
+
+  // 기존 출장기록 Customer 필드 변경
+  db.trips.forEach(t=>{
+    if(t.customer===oldName) t.customer=newName;
+  });
+
+  // 현재 상태값 변경
+  if(db.state.activeCustomer===oldName) db.state.activeCustomer=newName;
+  if(db.state.hotelCustomer===oldName) db.state.hotelCustomer=newName;
+  if(db._pendingCustomer===oldName) db._pendingCustomer=newName;
+
+  // 고객사 간 거리 key 변경
+  if(db.customerLegKm){
+    const next={};
+    Object.entries(db.customerLegKm).forEach(([key,val])=>{
+      const parts=key.split("||").map(x=>x===oldName?newName:x).sort();
+      next[parts.join("||")]=val;
+    });
+    db.customerLegKm=next;
+  }
+
+  db.customers.sort(customerSort);
+  save();
+}
+window.editCustomerName=n=>{
+  const oldName=decodeURIComponent(n);
+  const v=prompt("고객사 이름 변경",oldName);
+  if(v===null)return;
+  renameCustomer(oldName,v);
+};
+
+
+function deleteCustomer(name){
+  name=String(name||"").trim();
+  const c=customerObj(name);
+  if(!c)return alert("고객사를 찾을 수 없습니다.");
+
+  const tripCount=db.trips.filter(t=>t.customer===name).length;
+  const active=db.state.activeCustomer===name || db.state.hotelCustomer===name;
+
+  const msg=[
+    `"${name}" 고객사를 삭제할까요?`,
+    "",
+    tripCount?`※ 기존 출장기록 ${tripCount}건은 삭제하지 않고 그대로 유지됩니다.`:"※ 기존 출장기록은 없습니다.",
+    "※ 저장된 GPS, 지역명, 편도거리, 고객사 간 거리값은 삭제됩니다.",
+    active?"※ 현재 이동 중인 고객사입니다. 삭제하면 현재 이동 상태도 초기화됩니다.":"",
+    "",
+    "이 작업은 되돌릴 수 없습니다."
+  ].filter(Boolean).join("\n");
+
+  if(!confirm(msg))return;
+
+  db.customers=db.customers.filter(x=>x.name!==name);
+
+  if(db.state.activeCustomer===name){
+    db.state.activeCustomer="";
+    db.state.current="home";
+  }
+  if(db.state.hotelCustomer===name){
+    db.state.hotelCustomer="";
+    if(db.state.current==="hotel")db.state.current="home";
+  }
+  if(db._pendingCustomer===name)db._pendingCustomer=null;
+
+  if(db.customerLegKm){
+    const next={};
+    Object.entries(db.customerLegKm).forEach(([key,val])=>{
+      const parts=key.split("||");
+      if(parts.includes(name))return;
+      next[key]=val;
+    });
+    db.customerLegKm=next;
+  }
+
+  save();
+}
+window.removeCustomer=n=>deleteCustomer(decodeURIComponent(n));
+
 function renderDistances(){
  const q=$("distSearch").value.trim().toLowerCase();
  const arr=db.customers.filter(c=>c.name.toLowerCase().includes(q)).sort(customerSort);
- $("distanceList").innerHTML=arr.map(c=>`<div class="item distance-row">
-  <div class="distance-name" title="${esc(c.name)}">${esc(c.name)}</div>
+ $("distanceList").innerHTML=arr.map(c=>`<div class="item distance-row customer-admin-row">
+  <div class="distance-name-wrap">
+    <button class="customer-name-edit" onclick="editCustomerName('${encodeURIComponent(c.name)}')" title="고객사 이름 변경">${esc(c.name)}</button>
+  </div>
   <input class="distance-area-input" value="${esc(c.place||"")}" placeholder="지역명 직접 입력" onchange="setCustPlace('${encodeURIComponent(c.name)}',this.value)">
   <input class="distance-km" type="number" value="${c.km??""}" placeholder="km" onchange="setCustKm('${encodeURIComponent(c.name)}',this.value)">
   <button class="btn outline small distance-gps-btn" onclick="saveLoc('${encodeURIComponent(c.name)}')">${c.place?"GPS 갱신":"GPS 자동"}</button>
+  <button class="customer-delete-btn" onclick="removeCustomer('${encodeURIComponent(c.name)}')" title="고객사 삭제">삭제</button>
 </div>`).join("");
 }
 
