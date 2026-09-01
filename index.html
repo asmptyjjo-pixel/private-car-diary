@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>Private Car Diary</title>
-<meta name="pcd-version" content="2026-08-31-hotel-location-v48">
+<meta name="pcd-version" content="2026-09-01-anywhere-origin-v50">
 
 <style>
 :root{
@@ -2213,6 +2213,9 @@ header{
 }
 
 
+
+.origin-line{display:flex;align-items:center;gap:7px;padding:7px 8px;margin-bottom:7px;border-radius:9px;background:#eef8fc;border:1px solid #cce8f2;font-size:11.5px}.origin-line span{color:#61727d}.origin-line strong{flex:1;min-width:0;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.origin-change{border:1px solid #b9d9e7;background:#fff;border-radius:8px;padding:5px 10px;font-weight:800;color:#0877ad}.manual-actions{grid-template-columns:1.25fr .8fr .8fr .8fr!important}@media(max-width:640px){.manual-actions{grid-template-columns:1fr 1fr!important}.manual-actions #nextCustomerBtn{grid-column:1 / -1}}
+
 /* v48: hotel location settings */
 .hotel-gps-visible{
   grid-column:1 / -1!important;
@@ -2424,11 +2427,13 @@ header{
 </button>
 
 <div id="manualPanel" class="hidden manual-panel">
+  <div class="origin-line"><span>현재 출발지</span><strong id="currentOriginLabel">-</strong><button id="changeOriginBtn" class="origin-change" type="button">수정</button></div>
   <div class="manual-question">어디로 이동했나요?</div>
   <div class="manual-actions">
     <button id="nextCustomerBtn" class="btn">고객사 선택</button>
     <button id="goHomeInline" class="btn secondary">집 도착</button>
     <button id="goHotelInline" class="btn secondary">호텔 도착</button>
+    <button id="goOtherInline" class="btn secondary">기타 도착</button>
   </div>
 
   <div id="customerPicker" class="hidden customer-picker">
@@ -2562,7 +2567,7 @@ const today=()=>{let d=new Date();return d.getFullYear()+"-"+String(d.getMonth()
 const money=n=>"₩"+Math.round(n||0).toLocaleString("ko-KR");
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-function fresh(){return {setup:false,settings:{name:"",car:"",home:"",homeCity:"화성시",homeLat:null,homeLng:null,hotelPlace:"",hotelLat:null,hotelLng:null,rate:168,hotelKm:20,radius:500},customers:CUSTOMER_NAMES.map(n=>({name:n,km:null,lat:null,lng:null,place:""})),trips:[],state:{current:"home",activeCustomer:"",hotelCustomer:""}}}
+function fresh(){return {setup:false,settings:{name:"",car:"",home:"",homeCity:"화성시",homeLat:null,homeLng:null,hotelPlace:"",hotelLat:null,hotelLng:null,rate:168,hotelKm:20,radius:500},customers:CUSTOMER_NAMES.map(n=>({name:n,km:null,lat:null,lng:null,place:""})),trips:[],routeKm:{},state:{current:"home",activeCustomer:"",hotelCustomer:"",currentLocation:null}}}
 let db;try{db=JSON.parse(localStorage.getItem(KEY))||fresh()}catch(e){db=fresh()}
 if(!db.settings.homeCity) db.settings.homeCity="화성시"; if(db.settings.homeLat===undefined)db.settings.homeLat=null; if(db.settings.homeLng===undefined)db.settings.homeLng=null; if(db.settings.hotelPlace===undefined)db.settings.hotelPlace=""; if(db.settings.hotelLat===undefined)db.settings.hotelLat=null; if(db.settings.hotelLng===undefined)db.settings.hotelLng=null;
 if(!db.dayStatus) db.dayStatus={};
@@ -2572,6 +2577,58 @@ db.customers.sort(customerSort);
 db.customers=db.customers.map(c=>({lat:null,lng:null,...c}));
 function save(){localStorage.setItem(KEY,JSON.stringify(db));render()}
 function customerObj(name){return db.customers.find(c=>c.name===name)}
+function locationKey(loc){
+ if(!loc)return "";
+ if(loc.type==="home")return "home";
+ if(loc.type==="customer")return "customer:"+(loc.customer||loc.name||"");
+ if(loc.type==="hotel")return "hotel:"+(loc.label||db.settings.hotelPlace||"호텔");
+ return "other:"+(loc.label||"기타");
+}
+function legacyLocation(){
+ if(db.state&&db.state.currentLocation)return db.state.currentLocation;
+ if(db.state?.current==="hotel")return {type:"hotel",label:db.settings.hotelPlace||"호텔",customer:db.state.hotelCustomer||db.state.activeCustomer||""};
+ if(db.state?.current==="customer"&&db.state.activeCustomer){const c=customerObj(db.state.activeCustomer);return {type:"customer",label:c?.place||db.state.activeCustomer,customer:db.state.activeCustomer};}
+ return {type:"home",label:db.settings.home||"집"};
+}
+function currentLocation(){return db.state.currentLocation||legacyLocation()}
+function setCurrentLocation(loc){
+ db.state.currentLocation=loc;
+ if(loc.type==="home"){
+   db.state.current="home";db.state.activeCustomer="";db.state.hotelCustomer="";
+ }else if(loc.type==="hotel"){
+   db.state.current="hotel";db.state.hotelCustomer=loc.customer||db.state.hotelCustomer||"";db.state.activeCustomer=loc.customer||db.state.activeCustomer||"";
+ }else if(loc.type==="customer"){
+   db.state.current="customer";db.state.activeCustomer=loc.customer||"";db.state.hotelCustomer="";
+ }else{
+   db.state.current="other";db.state.activeCustomer="";db.state.hotelCustomer="";
+ }
+}
+function routeKey(a,b){return [locationKey(a),locationKey(b)].sort().join("||")}
+function getSavedRouteKm(a,b){db.routeKm=db.routeKm||{};const v=Number(db.routeKm[routeKey(a,b)]);return isFinite(v)&&v>0?v:null}
+function saveRouteKm(a,b,km){db.routeKm=db.routeKm||{};db.routeKm[routeKey(a,b)]=Number(km)}
+function askRouteKm(a,b,defaultKm=null){
+ const saved=getSavedRouteKm(a,b);if(saved)return saved;
+ const from=a.label||"출발지",to=b.label||"도착지";
+ const hint=defaultKm&&isFinite(Number(defaultKm))?`\n기본값 ${Number(defaultKm)} km`:"";
+ const entered=prompt(`${from} → ${to}\n\n실제 이동거리(km)를 입력하세요.${hint}\n한 번 저장하면 같은 구간은 다음부터 자동으로 사용합니다.`,defaultKm&&isFinite(Number(defaultKm))?String(defaultKm):"");
+ if(entered===null)return null;
+ const km=parseFloat(entered);if(!isFinite(km)||km<=0){alert("올바른 이동거리를 입력하세요.");return null;}
+ saveRouteKm(a,b,km);return km;
+}
+function getCustomerLegKm(origin,name){
+ const c=customerObj(name);const dest={type:"customer",label:c?.place||name,customer:name};
+ if(origin.type==="home"){
+   const km=Number(c?.km);return isFinite(km)&&km>0?km:null;
+ }
+ if(origin.type==="customer"){
+   db.customerLegKm=db.customerLegKm||{};const key=[origin.customer,name].sort().join("||");
+   const old=Number(db.customerLegKm[key]);if(isFinite(old)&&old>0){saveRouteKm(origin,dest,old);return old;}
+ }
+ return askRouteKm(origin,dest,origin.type==="hotel"?Number(db.settings.hotelKm||20):null);
+}
+if(!db.routeKm)db.routeKm={};
+if(!db.state)db.state={current:"home",activeCustomer:"",hotelCustomer:""};
+if(!db.state.currentLocation)db.state.currentLocation=legacyLocation();
 function customerSort(a,b){
   const norm=s=>String(s||"").trim().replace(/[_\s]+/g," ");
   const first=s=>norm(s).charAt(0);
@@ -2672,106 +2729,41 @@ function saveCurrentLocationToCustomer(name, thenEnter=false){
   });
 }
 function autoArriveCustomer(name,distanceM=0){
- const c=customerObj(name);
- if(!c || !c.place) return false;
-
- // Already at this customer: do not create another row.
- if(db.state.current==="customer" && db.state.activeCustomer===name){
+ const c=customerObj(name); if(!c||!c.place)return false;
+ const origin=currentLocation();
+ if(origin.type==="customer"&&origin.customer===name){
    $("autoStateTitle").textContent=`${name} 현재 고객사`;
    $("autoStateSub").textContent=`약 ${Math.round(distanceM)}m · 이미 도착 기록됨`;
    return false;
  }
-
- let from="", km=0, source="auto-arrival";
-
- if(db.state.current==="hotel"){
-   from=db.settings.hotelPlace||"호텔";
-   km=Number(db.settings.hotelKm||20);
-   source="auto-hotel-customer";
- }else if(db.state.current==="customer" && db.state.activeCustomer){
-   const prevName=db.state.activeCustomer;
-   const prev=customerObj(prevName);
-   from=prev?.place||prevName;
-   db.customerLegKm=db.customerLegKm||{};
-   const key=[prevName,name].sort().join("||");
-   km=Number(db.customerLegKm[key]);
-   if(!isFinite(km)||km<=0){
-     $("autoStateTitle").textContent=`${name} 도착 감지`;
-     $("autoStateSub").textContent=`이전 고객사 ${prevName}에서 이동 · 고객사 간 거리 입력 필요`;
-     db._pendingAutoArrival={name,from,key};
-     const entered=prompt(`${prevName} → ${name}\n\n고객사 간 이동거리(km)를 입력하세요.\n한 번 저장하면 다음부터 자동입니다.`);
-     if(entered===null) return false;
-     km=parseFloat(entered);
-     if(!isFinite(km)||km<=0){alert("올바른 이동거리를 입력하세요.");return false;}
-     db.customerLegKm[key]=km;
-   }
-   source="auto-customer-customer";
- }else{
-   // First departure of the day: home is the default starting point.
-   from=db.settings.home||"집";
-   km=Number(c.km);
-   source="auto-home-customer";
- }
-
+ const dest={type:"customer",label:c.place||name,customer:name};
+ let km=getCustomerLegKm(origin,name);
  if(!isFinite(km)||km<=0){
    $("autoStateTitle").textContent=`${name} 도착 감지`;
-   $("autoStateSub").textContent="이 고객사의 이동거리가 등록되지 않았습니다.";
+   $("autoStateSub").textContent="이 구간의 이동거리를 입력해야 합니다.";
    return false;
  }
-
- // Automatic arrival should never create duplicate rows.
- const added=addTrip(name,from,c.place,km,source,today(),true);
- db.state.current="customer";
- db.state.activeCustomer=name;
- db.state.hotelCustomer="";
- localStorage.setItem(KEY,JSON.stringify(db));
- render();
-
+ const added=addTrip(name,origin.label||"출발지",dest.label,km,"auto-arrival",today(),true);
+ setCurrentLocation(dest);localStorage.setItem(KEY,JSON.stringify(db));render();
  const rowNo=db.trips.filter(t=>t.date===today()).length;
  $("autoState").classList.remove("warn");
  $("autoStateTitle").textContent=`${name} 도착 · 자동 기록 완료`;
- $("autoStateSub").textContent=added?`${rowNo}번 행 · ${from} → ${c.place} · ${km} km`:`이미 동일한 이동 기록이 있습니다.`;
+ $("autoStateSub").textContent=added?`${rowNo}번 행 · ${origin.label} → ${dest.label} · ${km} km`:`이미 동일한 이동 기록이 있습니다.`;
  return added;
 }
 
-
 function syncHomeOriginFromGps(lat,lng){
- const hLat=Number(db.settings.homeLat), hLng=Number(db.settings.homeLng);
+ const hLat=Number(db.settings.homeLat),hLng=Number(db.settings.homeLng);
  if(!Number.isFinite(hLat)||!Number.isFinite(hLng))return false;
- const homeRadius=Math.max(100,Number(db.settings.radius)||500);
- if(geoDist(lat,lng,hLat,hLng)<=homeRadius){
-   db.state.current="home";
-   db.state.activeCustomer="";
-   db.state.hotelCustomer="";
-   localStorage.setItem(KEY,JSON.stringify(db));
-   return true;
- }
+ const radius=Math.max(100,Number(db.settings.radius)||500);
+ if(geoDist(lat,lng,hLat,hLng)<=radius){setCurrentLocation({type:"home",label:db.settings.home||"집"});localStorage.setItem(KEY,JSON.stringify(db));return true;}
  return false;
 }
 function resetStaleOriginForNewDay(){
- const todays=db.trips.some(t=>t.date===today());
- if(todays)return;
-
- // 전날 호텔에서 끝났다면 다음 날 시작점도 호텔로 유지
- if(db.state.current==="hotel"){
-   return;
- }
-
- // 전날 집으로 끝났다면 그대로 집에서 시작
- if(db.state.current==="home"){
-   db.state.activeCustomer="";
-   db.state.hotelCustomer="";
-   localStorage.setItem(KEY,JSON.stringify(db));
-   return;
- }
-
- // 고객사 상태로 하루가 끝난 경우는 미완료로 보고 새 날에는 집 출발
- if(db.state.current==="customer"){
-   db.state.current="home";
-   db.state.activeCustomer="";
-   db.state.hotelCustomer="";
-   localStorage.setItem(KEY,JSON.stringify(db));
- }
+ // 날짜가 바뀌어도 마지막 실제 도착지를 그대로 유지한다.
+ // 집/호텔/고객사/기타 어디에서든 다음 이동을 시작할 수 있다.
+ if(!db.state.currentLocation)db.state.currentLocation=legacyLocation();
+ localStorage.setItem(KEY,JSON.stringify(db));
 }
 
 function autoDetectCustomer(){
@@ -2782,10 +2774,12 @@ function autoDetectCustomer(){
  $("autoStateTitle").textContent="현재 위치 확인 중...";$("autoStateSub").textContent="등록 고객사 도착 여부를 확인합니다.";box.classList.remove("warn");
  navigator.geolocation.getCurrentPosition(pos=>{
    const lat=pos.coords.latitude,lng=pos.coords.longitude;
-   syncHomeOriginFromGps(lat,lng);
+   if(syncHomeOriginFromGps(lat,lng)){box.classList.remove("warn");$("autoStateTitle").textContent="현재 위치 · 집";$("autoStateSub").textContent=db.settings.home||"집";return;}
+   const hLat=Number(db.settings.hotelLat),hLng=Number(db.settings.hotelLng),radius=Number(db.settings.radius||500);
+   if(Number.isFinite(hLat)&&Number.isFinite(hLng)&&geoDist(lat,lng,hLat,hLng)<=radius){setCurrentLocation({type:"hotel",label:db.settings.hotelPlace||"호텔",customer:db.state.hotelCustomer||db.state.activeCustomer||""});localStorage.setItem(KEY,JSON.stringify(db));box.classList.remove("warn");$("autoStateTitle").textContent="현재 위치 · 호텔";$("autoStateSub").textContent=db.settings.hotelPlace||"호텔";return;}
    const arr=located.map(c=>({...c,d:geoDist(lat,lng,Number(c.lat),Number(c.lng))})).sort((a,b)=>a.d-b.d);
-   const n=arr[0],radius=Number(db.settings.radius||500);
-   if(!n||n.d>radius){
+   const n=arr[0],customerRadius=Number(db.settings.radius||500);
+   if(!n||n.d>customerRadius){
       box.classList.add("warn");$("autoStateTitle").textContent="등록된 고객사 근처가 아닙니다";$("autoStateSub").textContent=`가장 가까운 고객사: ${n?.name||"-"} · ${n?Math.round(n.d):"-"}m`;
       return;
    }
@@ -2826,68 +2820,61 @@ function selectCustomer(name){
  enterCustomer(name);
 }
 function enterCustomer(name){
- let c=customerObj(name), from, km, source;
- if(db.state.current==="hotel"){
-   from="호텔";
-   km=db.settings.hotelKm;
-   source="hotel-return";
- }else if(db.state.current==="customer" && db.state.activeCustomer){
-   const prev=customerObj(db.state.activeCustomer);
-   from=prev?.place||db.state.activeCustomer;
-   /* Customer-to-customer distance is not the home round-trip distance.
-      Ask once for the actual leg distance so the mileage record stays correct. */
-   const savedKey=[db.state.activeCustomer,name].sort().join("||");
-   db.customerLegKm=db.customerLegKm||{};
-   km=Number(db.customerLegKm[savedKey]);
-   if(!isFinite(km)||km<=0){
-     const entered=prompt(`${db.state.activeCustomer} → ${name}\n\n고객사 간 이동거리(km)를 입력하세요.\n한 번 저장하면 다음부터 자동으로 사용합니다.`);
-     if(entered===null)return;
-     km=parseFloat(entered);
-     if(!isFinite(km)||km<=0)return alert("올바른 이동거리를 입력하세요.");
-     db.customerLegKm[savedKey]=km;
+ const c=customerObj(name);if(!c)return;
+ const origin=currentLocation();const dest={type:"customer",label:c.place||name,customer:name};
+ let km=getCustomerLegKm(origin,name);
+ if(!isFinite(km)||km<=0){
+   if(origin.type==="home"){
+     db._pendingCustomer=name;
+     $("distanceMsg").textContent=`${name}의 집↔고객사 편도거리가 아직 없습니다. 한 번만 입력하면 다음부터 자동입니다.`;
+     $("distanceKm").value="";$("distanceOverlay").classList.remove("hidden");
    }
-   source="customer-to-customer";
- }else{
-   from=db.settings.home||"집";
-   km=c.km;
-   source="outbound";
+   return;
  }
- addTrip(name,from,c.place||name,km,source);
- db.state.current="customer";
- db.state.activeCustomer=name;
- if($("customerPicker"))$("customerPicker").classList.add("hidden"); if($("manualPanel"))$("manualPanel").classList.add("hidden");
- save();
- $("afterCustomer").textContent=name;
- $("afterOverlay").classList.remove("hidden");
+ addTrip(name,origin.label||"출발지",dest.label,km,"manual-customer");
+ setCurrentLocation(dest);
+ if($("customerPicker"))$("customerPicker").classList.add("hidden");if($("manualPanel"))$("manualPanel").classList.add("hidden");
+ save();$("afterCustomer").textContent=name;$("afterOverlay").classList.remove("hidden");
+}
+function changeCurrentOrigin(){
+ const cur=currentLocation();
+ const v=prompt(`현재 출발지를 수정합니다.\n\n입력 예:\n집\n호텔\n고객사명\n기타 지역명\n\n현재: ${cur.label||"-"}`,cur.label||"");
+ if(v===null)return;
+ const s=v.trim();if(!s)return;
+ if(s==="집"||s===String(db.settings.home||"").trim()){setCurrentLocation({type:"home",label:db.settings.home||"집"});save();return;}
+ if(s==="호텔"||s===String(db.settings.hotelPlace||"").trim()){setCurrentLocation({type:"hotel",label:db.settings.hotelPlace||"호텔",customer:db.state.hotelCustomer||""});save();return;}
+ const c=customerObj(s);if(c){setCurrentLocation({type:"customer",label:c.place||c.name,customer:c.name});save();return;}
+ setCurrentLocation({type:"other",label:s});save();
 }
 function goHome(){
- let name=db.state.activeCustomer;if(!name)return alert("먼저 고객사를 선택하세요.");
- let c=customerObj(name); if(!c||c.km==null)return;
- addTrip(name,c.place||name,db.settings.home||"집",c.km,"return-home");
- db.state.current="home";db.state.activeCustomer="";db.state.hotelCustomer="";
- $("afterOverlay").classList.add("hidden");save()
+ const origin=currentLocation();const home={type:"home",label:db.settings.home||"집"};
+ if(origin.type==="home")return alert("현재 위치가 이미 집입니다.");
+ let km=null;
+ if(origin.type==="customer"){
+   const c=customerObj(origin.customer);const v=Number(c?.km);if(isFinite(v)&&v>0)km=v;
+ }
+ if(!km)km=askRouteKm(origin,home,null);if(!km)return;
+ addTrip(origin.customer||"",origin.label||"출발지",home.label,km,"to-home");
+ setCurrentLocation(home);$("afterOverlay").classList.add("hidden");save();
+}
+function ensureHotelLocation(){
+ let label=String(db.settings.hotelPlace||"").trim();
+ if(!label){const entered=prompt("호텔 지역을 입력하세요.\n예: 청주시 흥덕구\n\n호텔에서 설정의 ‘GPS로 호텔 등록’을 사용해도 됩니다.");if(entered===null)return null;label=entered.trim();if(!label)return null;db.settings.hotelPlace=label;}
+ return {type:"hotel",label,customer:currentLocation().customer||db.state.activeCustomer||""};
 }
 function goHotel(){
- let name=db.state.activeCustomer;
- if(!name)return alert("먼저 고객사를 선택하세요.");
-
- const c=customerObj(name);
- let hotelPlace=String(db.settings.hotelPlace||"").trim();
-
- if(!hotelPlace){
-   const entered=prompt("호텔 도착 지역을 입력하세요.\n예: 천안시 성정동\n\n또는 설정에서 GPS로 호텔 위치를 등록할 수 있습니다.");
-   if(entered===null)return;
-   hotelPlace=entered.trim();
-   if(!hotelPlace)return alert("호텔 지역명을 입력하세요.");
-   db.settings.hotelPlace=hotelPlace;
- }
-
- addTrip(name,c?.place||name,hotelPlace,db.settings.hotelKm,"to-hotel");
- db.state.current="hotel";
- db.state.hotelCustomer=name;
- db.state.activeCustomer=name;
- $("afterOverlay").classList.add("hidden");
- save();
+ const origin=currentLocation();const hotel=ensureHotelLocation();if(!hotel)return;
+ if(origin.type==="hotel"&&origin.label===hotel.label)return alert("현재 위치가 이미 이 호텔입니다.");
+ const km=askRouteKm(origin,hotel,Number(db.settings.hotelKm||20));if(!km)return;
+ addTrip(origin.customer||"",origin.label||"출발지",hotel.label,km,"to-hotel");
+ setCurrentLocation(hotel);$("afterOverlay").classList.add("hidden");save();
+}
+function goOther(){
+ const origin=currentLocation();
+ const entered=prompt("도착한 위치를 입력하세요.\n예: 대전역, 청주시 복대동, 교육센터");if(entered===null)return;
+ const label=entered.trim();if(!label)return;
+ const dest={type:"other",label};const km=askRouteKm(origin,dest,null);if(!km)return;
+ addTrip(origin.customer||"",origin.label||"출발지",label,km,"to-other");setCurrentLocation(dest);save();
 }
 function recentCustomerNames(){
  const seen=[];
@@ -3455,6 +3442,7 @@ async function saveHotelGpsNow(){
       if($("sHotelPlace"))$("sHotelPlace").value=area;
     }
 
+    setCurrentLocation({type:"hotel",label:db.settings.hotelPlace||area||"호텔",customer:db.state.activeCustomer||db.state.hotelCustomer||""});
     localStorage.setItem(KEY,JSON.stringify(db));
     render();
 
@@ -3489,6 +3477,7 @@ function render(){setTimeout(updateSimpleGpsState,0);renderMyInfoSummary();
     <button class="btn danger small" onclick="delTrip('${x.id}')">삭제</button>
   </div>
 </div>`).join(""):'<div class="tiny">기록이 없습니다.</div>';
+ if($("currentOriginLabel"))$("currentOriginLabel").textContent=currentLocation().label||"-";
  $("hotelReturnCard").classList.toggle("hidden",db.state.current!=="hotel");
  if(db.state.current==="hotel")$("hotelReturnText").textContent=`${db.settings.hotelPlace||"호텔"} 출발 · ${db.settings.hotelKm} km`;
  $("sName").value=db.settings.name;$("sDivision").value=db.settings.division||"MIC";$("sCar").value=db.settings.car;$("sHome").value=db.settings.home;$("sHomeCity").value=db.settings.homeCity||"화성시"; if($("homeGpsState"))$("homeGpsState").textContent=(db.settings.homeLat!=null&&db.settings.homeLng!=null)?`등록됨 · ${db.settings.home||"집 GPS"}`:"집에서 한 번만 등록";$("sRate").value=db.settings.rate;$("sHotelKm").value=db.settings.hotelKm;$("sRadius").value=db.settings.radius||500; if($("sHotelPlace"))$("sHotelPlace").value=db.settings.hotelPlace||""; if($("hotelGpsState"))$("hotelGpsState").textContent=(db.settings.hotelLat!=null&&db.settings.hotelLng!=null)?`등록됨 · ${db.settings.hotelPlace||"호텔 GPS"}`:"호텔에서 등록 또는 Area 직접 입력";
@@ -3637,9 +3626,9 @@ $("nextCustomerBtn").onclick=()=>{
     setTimeout(()=>{$("custSearch").focus();},50);
   }
 };
-$("goHomeInline").onclick=goHome;$("goHotelInline").onclick=goHotel;$("stayCustomer").onclick=()=>$("afterOverlay").classList.add("hidden");
+$("goHomeInline").onclick=goHome;$("goHotelInline").onclick=goHotel;$("goOtherInline").onclick=goOther;$("changeOriginBtn").onclick=changeCurrentOrigin;$("stayCustomer").onclick=()=>$("afterOverlay").classList.add("hidden");
 $("quickHome").onclick=goHome;$("quickHotel").onclick=goHotel;
-$("hotelToCustomer").onclick=()=>{let n=db.state.hotelCustomer||db.state.activeCustomer;if(!n)return;addTrip(n,db.settings.hotelPlace||"호텔",(customerObj(n)?.place||n),db.settings.hotelKm,"hotel-return");db.state.current="customer";db.state.activeCustomer=n;save();$("afterCustomer").textContent=n;$("afterOverlay").classList.remove("hidden")};
+$("hotelToCustomer").onclick=()=>{$("customerPicker").classList.remove("hidden");$("manualPanel").classList.remove("hidden");};
 $("saveHomeGps").onclick=saveHomeGpsNow;
 $("saveHotelGps").onclick=saveHotelGpsNow;
 $("myInfoToggle").onclick=()=>{
@@ -3648,7 +3637,7 @@ $("myInfoToggle").onclick=()=>{
 $("saveSettings").onclick=()=>{db.settings.name=$("sName").value.trim();db.settings.division=$("sDivision").value.trim()||"MIC";db.settings.car=$("sCar").value.trim();db.settings.home=$("sHome").value.trim();db.settings.homeCity=$("sHomeCity").value.trim()||"화성시";db.settings.rate=+$("sRate").value||0;db.settings.hotelKm=+$("sHotelKm").value||20;db.settings.radius=+$("sRadius").value||500;db.settings.hotelPlace=$("sHotelPlace")?$("sHotelPlace").value.trim():"";$("myInfoEditor").classList.add("hidden");save()};
 $("addCustomer").onclick=()=>{let n=$("newCustomer").value.trim(),k=parseFloat($("newCustomerKm").value);if(!n)return alert("고객사명을 입력하세요.");if(db.customers.some(c=>c.name===n))return alert("이미 있는 고객사입니다.");db.customers.push({name:n,km:isFinite(k)?k:null,lat:null,lng:null,place:""});db.customers.sort(customerSort);$("newCustomer").value="";$("newCustomerKm").value="";save()};
 $("month").value=today().slice(0,7);$("month").onchange=renderHist;$("pdf").onclick=makeCompanyPdf;$("csv").onclick=makeCsv;
-$("clearTrips").onclick=()=>{if(confirm("출장 기록을 모두 삭제할까요?")){db.trips=[];db.state.current="home";db.state.activeCustomer="";db.state.hotelCustomer="";save()}};
+$("clearTrips").onclick=()=>{if(confirm("출장 기록을 모두 삭제할까요?")){db.trips=[];setCurrentLocation({type:"home",label:db.settings.home||"집"});save()}};
 $("backup").onclick=()=>dl(`Private_Car_Diary_backup_${today()}.json`,JSON.stringify(db,null,2),"application/json;charset=utf-8");
 $("restore").onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{db=JSON.parse(r.result);if(!db.settings.radius)db.settings.radius=500;db.customers=db.customers.map(c=>({lat:null,lng:null,place:"",...c})).sort(customerSort);save();alert("복원 완료")}catch(x){alert("복원 실패")}};r.readAsText(f)};
 $("firstSave").onclick=()=>{db.settings.name=$("firstName").value.trim();db.settings.car=$("firstCar").value.trim();db.settings.home=$("firstHome").value.trim();db.settings.rate=+$("firstRate").value||168;db.settings.hotelKm=+$("firstHotelKm").value||20;if(!db.settings.home)return alert("집 Area를 입력하세요.");db.setup=true;$("firstOverlay").classList.add("hidden");save()};
