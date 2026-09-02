@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>Private Car Diary</title>
-<meta name="pcd-version" content="2026-09-01-anywhere-origin-v50">
+<meta name="pcd-version" content="2026-09-02-daily-start-v51">
 
 <style>
 :root{
@@ -2241,6 +2241,13 @@ header{
   text-overflow:ellipsis!important;
 }
 
+
+/* v51 daily start origin */
+.daily-start-card{display:flex;align-items:center;gap:8px;padding:9px 10px;margin:0 0 9px;border:1px solid #bfe0ee;border-radius:11px;background:linear-gradient(90deg,#eef9fd,#f8fcfe)}
+.daily-start-main{min-width:0;flex:1}.daily-start-kicker{font-size:10.5px;font-weight:800;color:#5b7480;margin-bottom:2px}.daily-start-value{font-size:15px;font-weight:900;color:#083f67;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.daily-start-hint{font-size:10.5px;color:#70828b;margin-top:2px}
+.daily-start-actions{display:flex;gap:5px;flex:none}.start-choice{border:1px solid #a8d2e4;background:#fff;color:#0877ad;border-radius:9px;padding:7px 11px;font-weight:900;font-size:11.5px}.start-choice.active{background:#0877ad;color:#fff;border-color:#0877ad}.start-choice:disabled{opacity:.45}
+@media(max-width:640px){.daily-start-card{align-items:stretch;flex-wrap:wrap}.daily-start-main{width:100%}.daily-start-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}.start-choice{width:100%}}
+
 </style>
 
 </head>
@@ -2407,6 +2414,18 @@ header{
 
  <div class="card">
   
+<div id="dailyStartCard" class="daily-start-card">
+  <div class="daily-start-main">
+    <div class="daily-start-kicker">오늘 출발지</div>
+    <div id="dailyStartValue" class="daily-start-value">집</div>
+    <div id="dailyStartHint" class="daily-start-hint">첫 고객사 도착은 GPS로 자동 기록됩니다.</div>
+  </div>
+  <div class="daily-start-actions">
+    <button id="startHomeBtn" class="start-choice" type="button">집</button>
+    <button id="startHotelBtn" class="start-choice" type="button">호텔</button>
+  </div>
+</div>
+
 <div class="drive-simple">
   <div class="drive-main">
     <div class="drive-title">그냥 이동하세요</div>
@@ -2759,10 +2778,90 @@ function syncHomeOriginFromGps(lat,lng){
  if(geoDist(lat,lng,hLat,hLng)<=radius){setCurrentLocation({type:"home",label:db.settings.home||"집"});localStorage.setItem(KEY,JSON.stringify(db));return true;}
  return false;
 }
+function previousTripBefore(dateStr){
+ const arr=db.trips.filter(t=>String(t.date||"")<dateStr).sort((a,b)=>String(a.date).localeCompare(String(b.date))||((Number(a.order)||9999)-(Number(b.order)||9999))||(Number(a.createdAt)||0)-(Number(b.createdAt)||0));
+ return arr.length?arr[arr.length-1]:null;
+}
+function isSamePlaceLabel(a,b){
+ const n=x=>String(x||"").replace(/\s+/g," ").trim();
+ return !!n(a)&&n(a)===n(b);
+}
+function suggestedStartForToday(){
+ const d=new Date(today()+"T00:00:00");
+ const day=d.getDay(); // 1 = Monday
+ if(day===1)return {type:"home",label:db.settings.home||"집",reason:"월요일 기본 출발지는 집입니다."};
+ const prev=previousTripBefore(today());
+ if(prev){
+   if(isSamePlaceLabel(prev.to,db.settings.home||"집"))return {type:"home",label:db.settings.home||"집",reason:"전날 마지막 도착지가 집입니다."};
+   if(db.settings.hotelPlace&&isSamePlaceLabel(prev.to,db.settings.hotelPlace))return {type:"hotel",label:db.settings.hotelPlace,customer:"",reason:"전날 마지막 도착지가 호텔입니다."};
+ }
+ const cur=currentLocation();
+ if(cur.type==="hotel")return {type:"hotel",label:db.settings.hotelPlace||cur.label||"호텔",customer:cur.customer||"",reason:"마지막 위치가 호텔로 저장되어 있습니다."};
+ return {type:"home",label:db.settings.home||"집",reason:"집 출발로 설정했습니다. 필요하면 호텔로 변경하세요."};
+}
+function ensureDailyStartOrigin(){
+ const hasToday=db.trips.some(t=>t.date===today());
+ if(hasToday)return;
+ db.state=db.state||{};
+ if(db.state.dailyStartDate!==today()){
+   const sug=suggestedStartForToday();
+   db.state.dailyStartDate=today();
+   db.state.dailyStartType=sug.type;
+   db.state.dailyStartReason=sug.reason||"";
+   setCurrentLocation(sug);
+   localStorage.setItem(KEY,JSON.stringify(db));
+ }else if(db.state.dailyStartType==="home"){
+   setCurrentLocation({type:"home",label:db.settings.home||"집"});
+ }else if(db.state.dailyStartType==="hotel"){
+   setCurrentLocation({type:"hotel",label:db.settings.hotelPlace||"호텔",customer:db.state.hotelCustomer||""});
+ }
+}
+function setDailyStartOrigin(type){
+ if(db.trips.some(t=>t.date===today())){
+   alert("오늘 첫 이동이 이미 기록되었습니다.\n출발지가 잘못된 경우 기록에서 해당 이동을 수정해 주세요.");
+   return;
+ }
+ if(type==="hotel"){
+   let label=String(db.settings.hotelPlace||"").trim();
+   if(!label){
+     const entered=prompt("오늘 출발할 호텔 지역을 입력하세요.\n예: 천안시 성정동\n\n호텔에서 GPS 등록도 가능합니다.","");
+     if(entered===null)return;
+     label=entered.trim();
+     if(!label)return alert("호텔 지역을 입력하세요.");
+     db.settings.hotelPlace=label;
+   }
+   db.state.dailyStartType="hotel";
+   db.state.dailyStartDate=today();
+   db.state.dailyStartReason="사용자가 오늘 출발지를 호텔로 선택했습니다.";
+   setCurrentLocation({type:"hotel",label:label,customer:db.state.hotelCustomer||""});
+ }else{
+   db.state.dailyStartType="home";
+   db.state.dailyStartDate=today();
+   db.state.dailyStartReason="사용자가 오늘 출발지를 집으로 선택했습니다.";
+   setCurrentLocation({type:"home",label:db.settings.home||"집"});
+ }
+ localStorage.setItem(KEY,JSON.stringify(db));
+ render();
+}
+function renderDailyStart(){
+ const hasToday=db.trips.some(t=>t.date===today());
+ const loc=currentLocation();
+ if($("dailyStartValue"))$("dailyStartValue").textContent=hasToday?`현재 위치 · ${loc.label||"-"}`:(loc.label||"집");
+ if($("dailyStartHint"))$("dailyStartHint").textContent=hasToday?"첫 이동 기록 후에는 마지막 도착지가 다음 출발지가 됩니다.":(db.state.dailyStartReason||"첫 고객사 도착은 GPS로 자동 기록됩니다.");
+ if($("startHomeBtn")){
+   $("startHomeBtn").disabled=hasToday;
+   $("startHomeBtn").classList.toggle("active",!hasToday&&loc.type==="home");
+ }
+ if($("startHotelBtn")){
+   $("startHotelBtn").disabled=hasToday;
+   $("startHotelBtn").classList.toggle("active",!hasToday&&loc.type==="hotel");
+ }
+}
+
 function resetStaleOriginForNewDay(){
- // 날짜가 바뀌어도 마지막 실제 도착지를 그대로 유지한다.
- // 집/호텔/고객사/기타 어디에서든 다음 이동을 시작할 수 있다.
- if(!db.state.currentLocation)db.state.currentLocation=legacyLocation();
+ // v51: 하루 첫 이동 전에는 일일 출발지 규칙을 적용한다.
+ // 월요일은 집, 이후에는 전날 마지막 도착지를 참고하며 집/호텔을 직접 변경할 수 있다.
+ ensureDailyStartOrigin();
  localStorage.setItem(KEY,JSON.stringify(db));
 }
 
@@ -3454,7 +3553,7 @@ async function saveHotelGpsNow(){
   },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
 }
 
-function render(){setTimeout(updateSimpleGpsState,0);renderMyInfoSummary();
+function render(){setTimeout(updateSimpleGpsState,0);renderMyInfoSummary();renderDailyStart();
  renderWorkStatus();
  $("todayDate") && ($("todayDate").textContent=new Date().toLocaleDateString("ko-KR",{month:"long",day:"numeric",weekday:"short"}));
  $("headerTodayDate").textContent=new Date().toLocaleDateString("ko-KR",{month:"long",day:"numeric",weekday:"short"});
@@ -3617,6 +3716,7 @@ $("statusOff").onclick=()=>{setDayStatus("off");$("todayStatusControls").classLi
 
 $("recentToggle").onclick=()=>$("recentPanel").classList.toggle("hidden");
 $("custSearch").oninput=renderCustomerSelect;$("distSearch").oninput=renderDistances;$("autoDetectCustomer").onclick=autoDetectCustomer;
+if($("startHomeBtn"))$("startHomeBtn").onclick=()=>setDailyStartOrigin("home"); if($("startHotelBtn"))$("startHotelBtn").onclick=()=>setDailyStartOrigin("hotel");
 $("distanceSave").onclick=()=>{let n=db._pendingCustomer,k=parseFloat($("distanceKm").value);if(!n||!isFinite(k)||k<=0)return alert("편도거리를 입력하세요.");customerObj(n).km=k;db._pendingCustomer=null;$("distanceOverlay").classList.add("hidden");save();enterCustomer(n)};
 $("goHome").onclick=goHome;$("goHotel").onclick=goHotel;$("manualToggle").onclick=()=>$("manualPanel").classList.toggle("hidden");
 $("nextCustomerBtn").onclick=()=>{
