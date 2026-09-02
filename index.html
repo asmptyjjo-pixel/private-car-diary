@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111827">
+<meta name="theme-color" content="#0069b4">
 <title>Private Car Diary</title>
-<meta name="pcd-version" content="2026-09-02-v52-one-shot-gps">
+<meta name="pcd-version" content="2026-09-02-v53-modern-compact">
 
 <style>
 :root{
@@ -2369,65 +2369,29 @@ header{
       <button id="closeGuideX" class="guide-x" type="button">×</button>
     </div>
 
-    <div class="guide-step">
-      <div class="guide-num">1</div>
-      <div>
-        <b>집 또는 호텔에서 출발</b>
-        <p>도착 후 GPS 버튼을 누르거나 고객사를 직접 선택합니다.</p>
-      </div>
-    </div>
-
-    <div class="guide-step">
-      <div class="guide-num">2</div>
-      <div>
-        <b>고객사 도착 → 선택해서 기록</b>
-        <p>GPS로 가까운 고객사를 찾은 뒤 선택하면 이동 1행이 저장됩니다.</p>
-      </div>
-    </div>
-
-    <div class="guide-step">
-      <div class="guide-num">3</div>
-      <div>
-        <b>다음 목적지만 선택</b>
-        <p><strong>고객사 / 집 / 호텔</strong> 중 다음 이동지만 선택하면 됩니다.</p>
-      </div>
-    </div>
-
-    <div class="guide-note">GPS를 쓰지 않아도 고객사를 직접 선택할 수 있습니다.</div>
+    <div class="guide-step"><div class="guide-num">1</div><div><b>출발지만 확인</b><p>필요할 때 집·호텔을 바꿉니다.</p></div></div>
+    <div class="guide-step"><div class="guide-num">2</div><div><b>고객사에서 위치 확인</b><p>가장 가까운 고객사를 선택하면 기록됩니다.</p></div></div>
+    <div class="guide-step"><div class="guide-num">3</div><div><b>다음 도착지만 선택</b><p>고객사·집·호텔 이동을 이어서 기록합니다.</p></div></div>
     <button id="closeGuide" class="btn guide-start">확인 · 시작하기</button>
   </div>
 </div>
 
-<header><div class="in header-one-line"><div class="brand">Private Car Diary</div><span class="header-today">오늘</span><strong id="headerTodayDate"></strong><button id="openGuide" class="guide-link" type="button">사용법</button></div></header>
+<header><div class="in v53-header"><div><div class="brand">Private Car Diary</div><div class="v53-date"><strong id="headerTodayDate"></strong></div></div><button id="openGuide" class="icon-help" type="button" aria-label="사용법">?</button></div></header>
 
-<div class="wrap">
-<div class="card today-summary-line">
-  
-  <div class="mini-stat"><span>이번달 거리</span><strong id="todayKm">0 km</strong></div>
-  <div class="mini-stat"><span>이번달 정산</span><strong id="todayCost">₩0</strong></div>
-  
- </div>
-
- 
-<div class="card status-compact">
-  <button id="todayStatusToggle" class="status-toggle" type="button">
-    <span>오늘</span>
-    <strong id="todayStatusBadge" class="badge"></strong>
-    <span class="status-chevron">변경</span>
-  </button>
-  <div id="todayStatusControls" class="status-controls hidden"><div class="tiny" style="margin-top:3px"></div>
-  <div class="work-status">
-    <button id="statusWork" class="btn secondary">근무</button>
-    <button id="statusLeave" class="btn secondary">휴가/개인</button>
-    <button id="statusOff" class="btn secondary">비근무</button>
+<div class="wrap v53-wrap">
+  <div class="v53-dashboard">
+    <button id="originQuick" class="v53-origin" type="button"><span>출발</span><strong id="v52Origin">집</strong><b>›</b></button>
+    <div class="v53-month"><span>이번 달</span><strong id="todayKm">0 km</strong><em>·</em><strong id="todayCost">₩0</strong></div>
   </div>
- </div>
-</div>
-</div>
 
-<div class="tabs"><button class="tab active" data-v="today">오늘</button><button class="tab" data-v="history">기록</button><button class="tab" data-v="settings">설정</button></div>
+  <div class="v53-status-line">
+    <button id="todayStatusToggle" class="status-toggle" type="button"><span>오늘 상태</span><strong id="todayStatusBadge" class="badge"></strong><span class="status-chevron">›</span></button>
+    <div id="todayStatusControls" class="status-controls hidden">
+      <div class="work-status"><button id="statusWork" class="btn secondary">근무</button><button id="statusLeave" class="btn secondary">휴가/개인</button><button id="statusOff" class="btn secondary">비근무</button></div>
+    </div>
+  </div>
 
-
+<div class="tabs v53-tabs"><button class="tab active" data-v="today">오늘</button><button class="tab" data-v="history">기록</button><button class="tab" data-v="settings">설정</button></div>
 <section id="today" class="view active">
  <div id="missingDaysCard" class="card hidden missing-compact">
   <button id="missingToggle" class="missing-toggle" type="button">
@@ -2441,41 +2405,30 @@ header{
   </div>
  </div>
 
- <div class="card v52-main-card">
-  <div class="v52-start-row">
-    <span class="v52-row-label">출발지</span>
-    <strong id="v52Origin" class="v52-row-value">집</strong>
-    <div class="v52-actions">
-      <button id="startHomeBtn" class="btn secondary" type="button">집</button>
-      <button id="startHotelBtn" class="btn secondary" type="button">호텔</button>
-      <button id="changeOriginBtn" class="btn secondary" type="button">수정</button>
-    </div>
-  </div>
-  <div class="v52-dest-row">
-    <span class="v52-row-label">도착지</span>
-    <div class="v52-dest-actions">
-      <button id="findCustomerGpsBtn" class="btn">GPS 고객사</button>
-      <button id="manualCustomerBtn" class="btn secondary">고객사 선택</button>
-      <button id="goHomeInline" class="btn secondary">집</button>
-      <button id="goHotelInline" class="btn secondary">호텔</button>
-    </div>
-  </div>
-  <div id="nearbyCustomerPanel" class="hidden">
-    <div id="gpsFindState" class="v52-muted"></div>
-    <div id="nearbyCustomerResults"></div>
-  </div>
-  <div id="manualCustomerPanel" class="hidden">
-    <input id="custSearch" placeholder="고객사 검색">
-    <div id="searchResults"></div>
-  </div>
-  <div id="compatHidden" class="hidden">
-    <button id="autoDetectCustomer"></button><button id="manualToggle"></button><button id="nextCustomerBtn"></button>
-    <button id="goOtherInline"></button><div id="customerPicker"></div><div id="manualPanel"></div>
-    <div id="recentWrap"></div><button id="recentToggle"></button><div id="recentPanel"></div><span id="recentPrimary"></span><div id="recentCustomers"></div>
-    <strong id="currentOriginLabel"></strong><div id="dailyStartValue"></div><div id="dailyStartHint"></div>
-    <div id="autoState"></div><b id="autoStateTitle"></b><span id="autoStateSub"></span>
-    <div id="activeTripActions"></div><span id="activeCustomerText"></span><div id="smartDetectBox"><span id="smartDetectTitle"></span><span id="smartDetectSub"></span></div><span id="simpleGpsState"></span>
-  </div>
+ <div class="card v53-action-card">
+   <button id="findCustomerGpsBtn" class="v53-primary-action" type="button"><span class="pin-dot">⌖</span><span><b>현재 위치에서 고객사 찾기</b><small>도착 후 한 번만 확인</small></span><strong>›</strong></button>
+   <div class="v53-secondary-row">
+     <button id="manualCustomerBtn" type="button">고객사 직접 선택</button>
+     <button id="goHomeInline" type="button">집 도착</button>
+     <button id="goHotelInline" type="button">호텔 도착</button>
+   </div>
+   <div id="nearbyCustomerPanel" class="hidden v53-nearby">
+     <div id="gpsFindState" class="v52-muted"></div>
+     <div id="nearbyCustomerResults"></div>
+   </div>
+   <div id="manualCustomerPanel" class="hidden v53-manual">
+     <input id="custSearch" placeholder="고객사 검색">
+     <div id="searchResults"></div>
+   </div>
+   <div id="compatHidden" class="hidden">
+     <button id="startHomeBtn"></button><button id="startHotelBtn"></button><button id="changeOriginBtn"></button>
+     <button id="autoDetectCustomer"></button><button id="manualToggle"></button><button id="nextCustomerBtn"></button>
+     <button id="goOtherInline"></button><div id="customerPicker"></div><div id="manualPanel"></div>
+     <div id="recentWrap"></div><button id="recentToggle"></button><div id="recentPanel"></div><span id="recentPrimary"></span><div id="recentCustomers"></div>
+     <strong id="currentOriginLabel"></strong><div id="dailyStartValue"></div><div id="dailyStartHint"></div>
+     <div id="autoState"></div><b id="autoStateTitle"></b><span id="autoStateSub"></span>
+     <div id="activeTripActions"></div><span id="activeCustomerText"></span><div id="smartDetectBox"><span id="smartDetectTitle"></span><span id="smartDetectSub"></span></div><span id="simpleGpsState"></span>
+   </div>
  </div>
 
  <div id="unfinishedCard" class="card hidden">
@@ -2493,7 +2446,7 @@ header{
   <button id="hotelToCustomer" class="btn" style="width:100%;margin-top:8px">호텔 → 고객사 자동 추가</button>
  </div>
 
- <div class="card"><div class="row"><h2 class="grow" style="margin:0">오늘 기록</h2><span class="tiny">자동 저장</span></div><div id="todayList"></div></div>
+ <div class="card v53-timeline-card"><div class="v53-section-head"><h2>오늘 이동</h2><span id="todayTripCount"></span></div><div id="todayList" class="v53-timeline"></div></div>
 </section>
 
 <section id="history" class="view">
@@ -2514,7 +2467,7 @@ header{
 </section>
 
 <section id="settings" class="view">
-<div class="card"><div class="tiny">고객사 지역명·편도거리는 한 번 저장하면 자동 재사용됩니다.</div></div>
+
  <div class="card info-collapsed-card">
   <button id="myInfoToggle" class="myinfo-toggle" type="button">
     <strong>내 정보</strong>
@@ -2574,6 +2527,7 @@ header{
 </section>
 </div>
 
+</div>
 <div id="footerBar" class="footer hidden"><div class="in"><button id="quickHome" class="btn secondary">집으로 복귀</button><button id="quickHotel" class="btn">호텔로 이동</button></div></div>
 
 <script>
@@ -2886,7 +2840,7 @@ function findNearbyCustomersOnce(){
  navigator.geolocation.getCurrentPosition(pos=>{
    const lat=pos.coords.latitude,lng=pos.coords.longitude;
    const arr=located.map(c=>({...c,d:geoDist(lat,lng,Number(c.lat),Number(c.lng))})).sort((a,b)=>a.d-b.d).slice(0,5);
-   state.textContent=arr.length?"가까운 고객사를 선택하세요.":"가까운 고객사가 없습니다.";
+   state.textContent=arr.length?"가장 가까운 고객사를 확인하세요.":"가까운 고객사가 없습니다.";
    results.innerHTML=arr.map(c=>`<button class="v52-result" type="button" onclick="chooseGpsCustomer('${encodeURIComponent(c.name)}')"><strong>${esc(c.name)}</strong><span>${c.d<1000?Math.round(c.d)+' m':(c.d/1000).toFixed(1)+' km'}</span></button>`).join("");
  },e=>{
    state.textContent="위치를 확인하지 못했습니다.";
@@ -3583,6 +3537,7 @@ function render(){setTimeout(updateSimpleGpsState,0);renderMyInfoSummary();rende
  $("todayKm").textContent=monthKm+" km";
  $("todayCost").textContent=money(monthKm*db.settings.rate);
  if($("todayRows"))$("todayRows").textContent=mt.length;
+ if($("todayTripCount"))$("todayTripCount").textContent=t.length?`${t.length}개 이동`:"";
  $("todayList").innerHTML=t.length?t.map((x,i)=>`<div class="item trip-order-row">
   <div class="trip-order-main">
     <div class="tiny">${esc(x.customer)}</div>
@@ -3679,7 +3634,44 @@ function makeCompanyPdf(){
     .summary-wrap{margin-top:1mm}.summary{width:100%;table-layout:fixed;font-size:8.5px}.summary td,.summary th{border:1.3px solid #555;height:5.8mm;padding:1px 5px;text-align:right}.summary .stotal{width:43%;text-align:center;font-weight:700;font-size:10px}.summary th{width:44%;font-weight:700}.summary .unit{background:#e8e1f2}.summary td:last-child{width:13%;font-weight:700}.summary .allowance{text-align:center;background:#e8e1f2;font-size:7.8px}
     .sign{width:100%;margin-top:1mm;font-size:8px}.sign td{height:9mm;border:1.3px solid #111}.sign .siglabel{width:13%;text-align:center}.sign td:nth-child(2){width:30%}.sign .approve{width:30%;text-align:center}.sign td:nth-child(4){width:27%}
     @media print{.no-print{display:none}}
-  </style></head><body>
+  
+/* v53 — modern compact, one action per line */
+:root{--zeiss:#0069b4;--zeiss2:#00a6d6;--ink:#102033;--sub:#6f7d8b;--canvas:#f4f7fa;--hair:#e3eaf0}
+body{background:var(--canvas);color:var(--ink);font-size:14px;line-height:1.35}
+header{background:rgba(255,255,255,.96);border-bottom:1px solid var(--hair)}
+.v53-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px!important}
+.v53-header .brand{font-size:18px!important;font-weight:800;letter-spacing:-.025em}
+.v53-date{font-size:11px;color:var(--sub);margin-top:2px}.icon-help{width:32px;height:32px;border-radius:50%;border:1px solid var(--hair);background:#fff;color:var(--zeiss);font-weight:850}
+.v53-wrap{max-width:720px;padding:10px 10px 84px!important}
+.v53-dashboard{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:8px;margin-bottom:8px}
+.v53-origin,.v53-month{min-height:58px;border:1px solid var(--hair);border-radius:16px;background:#fff;box-shadow:0 5px 18px rgba(37,69,92,.05)}
+.v53-origin{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;padding:0 14px;color:var(--ink);text-align:left}
+.v53-origin span,.v53-month span{font-size:10px;color:var(--sub);font-weight:700}.v53-origin strong{font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v53-origin b{font-size:22px;color:#9aabba}
+.v53-month{display:flex;align-items:center;justify-content:center;gap:5px;padding:0 10px;white-space:nowrap}.v53-month strong{font-size:13px}.v53-month em{font-style:normal;color:#bdc7d0}
+.v53-status-line{border:1px solid var(--hair);border-radius:13px;background:#fff;margin-bottom:8px;overflow:hidden}.v53-status-line .status-toggle{min-height:40px;padding:0 12px}.v53-status-line .status-controls{padding:0 8px 8px}
+.v53-tabs{position:fixed!important;left:50%;transform:translateX(-50%);bottom:0;z-index:80;width:min(720px,100%);margin:0!important;padding:6px 10px calc(6px + env(safe-area-inset-bottom))!important;border-radius:0!important;background:rgba(255,255,255,.97)!important;border-top:1px solid var(--hair);display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
+.v53-tabs .tab{height:46px;border-radius:12px!important;color:#7b8996!important;font-size:12px!important}.v53-tabs .tab.active{background:#eef7fc!important;color:var(--zeiss)!important;box-shadow:none!important;font-weight:850}
+.v53-action-card{padding:8px!important;border-radius:18px!important;box-shadow:0 7px 24px rgba(37,69,92,.055)!important}
+.v53-primary-action{width:100%;min-height:68px;border:0;border-radius:14px;background:linear-gradient(135deg,var(--zeiss),#007fbe);color:#fff;display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px;padding:0 14px;text-align:left;box-shadow:0 8px 20px rgba(0,105,180,.18)}
+.v53-primary-action .pin-dot{font-size:24px}.v53-primary-action b{display:block;font-size:16px;letter-spacing:-.02em}.v53-primary-action small{display:block;font-size:10px;opacity:.78;margin-top:2px}.v53-primary-action>strong{font-size:22px;font-weight:500}
+.v53-secondary-row{display:grid;grid-template-columns:1.4fr .8fr .8fr;gap:6px;margin-top:7px}.v53-secondary-row button{min-height:38px;border:1px solid var(--hair);border-radius:11px;background:#f9fbfc;color:#405366;font-size:11px;font-weight:750;padding:0 8px;white-space:nowrap}
+.v53-nearby,.v53-manual{margin-top:8px;padding-top:8px;border-top:1px solid var(--hair)}
+#nearbyCustomerResults{display:grid;gap:6px;margin-top:6px}.v52-result{border:1px solid var(--hair)!important;border-radius:12px!important;background:#fff!important;padding:10px 12px!important;min-height:46px!important}.v52-result:first-child{border:2px solid var(--zeiss)!important;background:#f4fbff!important}.v52-result:first-child strong{color:var(--zeiss);font-size:14px}.v52-result:first-child:before{content:'가장 가까움';display:block;font-size:9px;font-weight:800;color:var(--zeiss);margin-bottom:2px}
+.v53-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}.v53-section-head h2{margin:0!important;font-size:14px!important}.v53-section-head span{font-size:10px;color:var(--sub)}
+.v53-timeline-card{padding:12px!important;border-radius:18px!important;box-shadow:0 7px 24px rgba(37,69,92,.045)!important}
+#todayList .trip-order-row{position:relative;border:0!important;border-radius:0!important;border-bottom:1px solid #eef2f5!important;margin:0!important;padding:10px 0 10px 22px!important;background:transparent!important;display:flex!important;align-items:center!important;gap:8px!important}
+#todayList .trip-order-row:before{content:'';position:absolute;left:5px;top:16px;width:8px;height:8px;border-radius:50%;background:var(--zeiss2);box-shadow:0 0 0 4px #e7f7fc}#todayList .trip-order-row:not(:last-child):after{content:'';position:absolute;left:8.5px;top:25px;bottom:-6px;width:1px;background:#d7e8ef}
+#todayList .trip-order-main{flex:1;min-width:0}#todayList .trip-order-main .tiny{font-size:9px!important;color:#7f8d98!important}#todayList .trip-order-main .path{font-size:13px!important;font-weight:800!important;margin-top:1px}#todayList .trip-order-main b{font-size:12px!important;color:var(--zeiss)!important}
+#todayList .trip-order-actions{display:flex!important;gap:3px!important;opacity:.18;transition:opacity .15s}#todayList .trip-order-row:focus-within .trip-order-actions,#todayList .trip-order-row:hover .trip-order-actions{opacity:1}.trip-order-actions .order-btn,.trip-order-actions .btn{width:28px!important;min-width:28px!important;height:28px!important;min-height:28px!important;padding:0!important;border-radius:9px!important;font-size:9px!important}.trip-order-actions .btn{font-size:0!important}.trip-order-actions .btn:after{content:'×';font-size:14px}
+.card{border-color:var(--hair)!important;box-shadow:0 4px 16px rgba(37,69,92,.035)!important}.btn{background:var(--zeiss)}.btn.secondary{background:#f1f5f8;color:#405366}.btn.outline{border-color:var(--hair)}
+#missingDaysCard,#unfinishedCard,#hotelReturnCard{border-radius:14px!important}.missing-toggle{min-height:38px!important}.badge{background:#e8f3fa!important;color:var(--zeiss)!important}
+#history .card:first-child,#settings .card{border-radius:16px!important}
+#history .metricgrid{grid-template-columns:1fr 1fr!important}#history .metricgrid .metric:nth-child(3){display:none}
+#settings .card>.tiny:only-child{display:none}
+@media(max-width:520px){
+ body{font-size:13px!important}.v53-wrap{padding:8px 8px 78px!important}.v53-dashboard{grid-template-columns:1.08fr .92fr;gap:6px}.v53-origin,.v53-month{min-height:54px;border-radius:14px}.v53-origin{padding:0 11px}.v53-origin strong{font-size:15px}.v53-month{flex-wrap:wrap;align-content:center;gap:2px 4px}.v53-month span{width:100%;text-align:center;line-height:1}.v53-month strong{font-size:11px}.v53-primary-action{min-height:64px}.v53-primary-action b{font-size:14px}.v53-secondary-row{grid-template-columns:1.35fr .8fr .8fr}.v53-secondary-row button{font-size:10px!important;padding:0 5px!important}.v53-tabs .tab{height:42px!important}.v53-timeline-card{padding:10px!important}
+}
+</style></head><body>
   <section class="page page1">${header()}<table class="diary">${tableHead}<tbody>${makeRows(1,43)}</tbody></table></section>
   <section class="page page2">${header()}<table class="diary">${tableHead}<tbody>${makeRows(44,76)}</tbody></table>${summary}</section>
   <script>window.onload=()=>setTimeout(()=>window.print(),350)<\/script>
@@ -3736,6 +3728,7 @@ $("statusOff").onclick=()=>{setDayStatus("off");$("todayStatusControls").classLi
 $("recentToggle").onclick=()=>$("recentPanel").classList.toggle("hidden");
 $("custSearch").oninput=renderCustomerSelect;$("distSearch").oninput=renderDistances; if($("findCustomerGpsBtn"))$("findCustomerGpsBtn").onclick=findNearbyCustomersOnce; if($("manualCustomerBtn"))$("manualCustomerBtn").onclick=toggleManualCustomerPicker;
 if($("startHomeBtn"))$("startHomeBtn").onclick=()=>setDailyStartOrigin("home"); if($("startHotelBtn"))$("startHotelBtn").onclick=()=>setDailyStartOrigin("hotel");
+if($("originQuick"))$("originQuick").onclick=changeCurrentOrigin;
 $("distanceSave").onclick=()=>{let n=db._pendingCustomer,k=parseFloat($("distanceKm").value);if(!n||!isFinite(k)||k<=0)return alert("편도거리를 입력하세요.");customerObj(n).km=k;db._pendingCustomer=null;$("distanceOverlay").classList.add("hidden");save();enterCustomer(n)};
 $("goHome").onclick=goHome;$("goHotel").onclick=goHotel;
 $("goHomeInline").onclick=goHome;$("goHotelInline").onclick=goHotel;$("goOtherInline").onclick=goOther;$("changeOriginBtn").onclick=changeCurrentOrigin;$("stayCustomer").onclick=()=>$("afterOverlay").classList.add("hidden");
