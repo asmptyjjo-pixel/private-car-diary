@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
 <title>Private Car Diary</title>
-<meta name="pcd-version" content="2026-09-02-v69-history-fix">
+<meta name="pcd-version" content="2026-09-02-v70-delete-row-fix">
 
 <style>
 :root{
@@ -2840,6 +2840,54 @@ input,select,textarea{
     padding:0 6px!important;
     font-size:10.5px!important;
   }
+}
+</style>
+
+
+<style id="v70-today-action-row-fix">
+/* 실제 오늘 기록 DOM은 .item.trip-order-row 이므로 직접 적용 */
+#todayList .trip-order-row{
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+#todayList .trip-order-actions{
+  display:grid!important;
+  grid-template-columns:32px 32px 44px 44px!important;
+  gap:4px!important;
+  align-items:center!important;
+  justify-content:end!important;
+}
+#todayList .trip-order-actions .order-btn,
+#todayList .trip-order-actions .btn{
+  width:100%!important;
+  min-width:0!important;
+  height:32px!important;
+  min-height:32px!important;
+  margin:0!important;
+  padding:0!important;
+  border-radius:8px!important;
+  font-size:11px!important;
+  line-height:32px!important;
+  white-space:nowrap!important;
+}
+#todayList .trip-order-actions .order-btn{
+  font-size:17px!important;
+}
+@media(max-width:390px){
+  #todayList .trip-order-row{gap:5px!important}
+  #todayList .trip-order-actions{
+    grid-template-columns:29px 29px 40px 40px!important;
+    gap:3px!important;
+  }
+  #todayList .trip-order-actions .order-btn,
+  #todayList .trip-order-actions .btn{
+    height:30px!important;
+    min-height:30px!important;
+    line-height:30px!important;
+    font-size:10px!important;
+  }
+  #todayList .trip-order-actions .order-btn{font-size:16px!important}
 }
 </style>
 
