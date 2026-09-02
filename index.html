@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0069b4">
+<meta name="theme-color" content="#111827">
 <title>Private Car Diary</title>
-<meta name="pcd-version" content="2026-09-02-v53-modern-compact">
+<meta name="pcd-version" content="2026-09-02-v67-direct-next-customer">
 
 <style>
 :root{
@@ -2282,6 +2282,482 @@ header{
 
 </style>
 
+
+<style id="v60-customer-first-style">
+.v60-main-card{padding:13px 14px!important}
+.v60-customer-row,.v60-current-row{display:flex;align-items:center;gap:9px;min-height:46px}
+.v60-customer-row{padding-bottom:9px;border-bottom:1px solid #e7eef3}
+.v60-current-row{padding-top:9px}
+.v60-label{width:58px;flex:0 0 58px;font-size:12px;font-weight:850;color:#365367}
+.v60-actions{display:flex;gap:7px;flex:1;min-width:0}
+.v60-actions .btn{flex:1;min-height:38px!important;font-size:12px!important;padding:7px 10px!important}
+.v60-current-place{flex:1;min-width:0;font-size:14px;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v60-origin-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.v60-origin-grid .btn{min-height:46px}
+.v60-next-grid{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:7px;margin-top:12px}
+.v60-next-grid .btn{min-height:44px}
+.v60-next-bottom{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+.v60-next-bottom .btn{min-height:40px}
+#todayList .trip-order-actions .edit-now{border-color:#b8d5e6!important;color:#0a6fae!important;background:#f7fbfd!important}
+@media(max-width:430px){
+ .v60-label{width:52px;flex-basis:52px;font-size:11px}
+ .v60-actions .btn{font-size:11px!important;padding-left:6px!important;padding-right:6px!important}
+ .v60-next-grid{grid-template-columns:1fr 1fr 1.25fr}
+ .v60-next-grid .btn{font-size:11px!important;padding:6px!important}
+}
+</style>
+
+
+<style id="v61-consistency">
+:root{
+  --v61-bg:#f4f7f9;
+  --v61-card:#ffffff;
+  --v61-text:#162536;
+  --v61-muted:#6f8291;
+  --v61-line:#e4ebef;
+  --v61-blue:#0879b9;
+  --v61-blue-soft:#edf7fc;
+  --v61-radius:16px;
+  --v61-gap:10px;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--v61-bg)!important;
+  color:var(--v61-text)!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR","Apple SD Gothic Neo",Arial,sans-serif!important;
+  font-size:14px!important;
+  line-height:1.45!important;
+}
+.v61-header{
+  background:#fff!important;
+  border-bottom:1px solid var(--v61-line)!important;
+  box-shadow:none!important;
+}
+.v61-header-inner{
+  min-height:54px!important;
+  padding:0 16px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+}
+.v61-brand{
+  font-size:13px!important;
+  font-weight:750!important;
+  color:#40566a!important;
+  letter-spacing:-.01em!important;
+  white-space:nowrap!important;
+}
+.v61-header-right{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+#headerTodayDate{
+  font-size:15px!important;
+  font-weight:800!important;
+  color:var(--v61-text)!important;
+}
+.v61-help{
+  width:28px!important;height:28px!important;
+  padding:0!important;
+  border:1px solid var(--v61-line)!important;
+  border-radius:50%!important;
+  background:#fff!important;
+  color:#6a7b88!important;
+  font-size:13px!important;
+  font-weight:800!important;
+}
+.v61-top-wrap{
+  padding:10px 12px 0!important;
+  max-width:720px!important;
+  margin:0 auto!important;
+}
+.v61-summary{
+  margin:0!important;
+  padding:11px 12px!important;
+  min-height:64px!important;
+  border-radius:var(--v61-radius)!important;
+  display:grid!important;
+  grid-template-columns:1fr 1px 1fr 1px .78fr!important;
+  align-items:center!important;
+  gap:9px!important;
+  box-shadow:none!important;
+  border:1px solid var(--v61-line)!important;
+}
+.v61-summary-stat{
+  min-width:0!important;
+  text-align:center!important;
+}
+.v61-summary-stat span,.v61-status-button span{
+  display:block!important;
+  margin:0 0 2px!important;
+  color:var(--v61-muted)!important;
+  font-size:11px!important;
+  font-weight:650!important;
+  line-height:1.25!important;
+}
+.v61-summary-stat strong{
+  display:block!important;
+  font-size:16px!important;
+  font-weight:800!important;
+  line-height:1.25!important;
+  white-space:nowrap!important;
+}
+.v61-summary-divider{
+  height:28px!important;
+  background:var(--v61-line)!important;
+}
+.v61-status-button{
+  border:0!important;
+  background:transparent!important;
+  padding:0!important;
+  min-height:38px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.v61-status-button .badge{
+  margin:0!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  padding:2px 7px!important;
+  line-height:1.35!important;
+}
+.v61-status-controls{
+  margin:8px 0 0!important;
+  padding:8px!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,1fr)!important;
+  gap:7px!important;
+  border:1px solid var(--v61-line)!important;
+  box-shadow:none!important;
+}
+.tabs{
+  position:static!important;
+  transform:none!important;
+  width:auto!important;
+  max-width:696px!important;
+  height:auto!important;
+  margin:10px auto!important;
+  padding:4px!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,1fr)!important;
+  gap:4px!important;
+  border:1px solid var(--v61-line)!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+}
+.tabs .tab,.tab{
+  min-height:40px!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:transparent!important;
+  color:#667887!important;
+  font-size:13px!important;
+  font-weight:750!important;
+  padding:0 8px!important;
+  box-shadow:none!important;
+}
+.tabs .tab.active,.tab.active{
+  background:var(--v61-blue)!important;
+  color:#fff!important;
+  box-shadow:none!important;
+}
+.view{
+  max-width:720px!important;
+  margin:0 auto!important;
+  padding:0 12px 22px!important;
+}
+.view>.card,#today>.card{
+  margin:0 0 var(--v61-gap)!important;
+  padding:14px!important;
+  border:1px solid var(--v61-line)!important;
+  border-radius:var(--v61-radius)!important;
+  box-shadow:none!important;
+  background:var(--v61-card)!important;
+}
+.v60-main-card{padding:14px!important}
+.v60-customer-row,.v60-current-row{
+  min-height:42px!important;
+  gap:8px!important;
+}
+.v60-customer-row{padding-bottom:10px!important}
+.v60-current-row{padding-top:10px!important}
+.v60-label{
+  width:58px!important;
+  flex:0 0 58px!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  color:#4d6679!important;
+}
+.v60-current-place{
+  font-size:14px!important;
+  font-weight:750!important;
+}
+.btn{
+  min-height:40px!important;
+  padding:0 12px!important;
+  border-radius:10px!important;
+  font-size:13px!important;
+  font-weight:750!important;
+  line-height:1.2!important;
+  box-shadow:none!important;
+}
+.btn.small{min-height:34px!important;font-size:12px!important;padding:0 10px!important}
+.v60-actions{gap:7px!important}
+.v60-actions .btn{
+  min-height:40px!important;
+  font-size:13px!important;
+  padding:0 10px!important;
+}
+.v61-section-title,h2{
+  margin:0 0 12px!important;
+  font-size:16px!important;
+  line-height:1.3!important;
+  font-weight:800!important;
+  color:var(--v61-text)!important;
+}
+label{
+  display:block!important;
+  margin:10px 0 5px!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  color:#52697a!important;
+}
+input,select,textarea{
+  min-height:40px!important;
+  border-radius:10px!important;
+  font-size:14px!important;
+  padding:8px 10px!important;
+}
+.tiny{
+  font-size:11px!important;
+  line-height:1.35!important;
+  color:var(--v61-muted)!important;
+}
+.row{gap:8px!important}
+.v61-record-card{padding:14px!important}
+#todayList .trip{
+  padding:10px 0!important;
+  margin:0!important;
+  border:0!important;
+  border-bottom:1px solid var(--v61-line)!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+#todayList .trip:last-child{border-bottom:0!important;padding-bottom:0!important}
+.v61-missing-card{
+  padding:12px 14px!important;
+}
+.missing-toggle{
+  min-height:38px!important;
+  font-size:13px!important;
+}
+.metricgrid{
+  gap:8px!important;
+}
+.metric{
+  padding:10px!important;
+  border-radius:12px!important;
+}
+.metric strong{font-size:16px!important}
+.overlay .box{
+  border-radius:18px!important;
+  padding:16px!important;
+}
+.overlay .big{
+  font-size:17px!important;
+  font-weight:800!important;
+  margin-bottom:8px!important;
+}
+.v60-origin-grid,.v60-next-grid,.v60-next-bottom{gap:8px!important}
+@media(max-width:430px){
+  .v61-header-inner{padding:0 12px!important}
+  .v61-top-wrap{padding:8px 10px 0!important}
+  .view{padding:0 10px 18px!important}
+  .tabs{margin:8px 10px 10px!important}
+  .v61-summary{grid-template-columns:1fr 1px 1fr 1px .72fr!important;padding:10px 8px!important;gap:6px!important}
+  .v61-summary-stat span,.v61-status-button span{font-size:10px!important}
+  .v61-summary-stat strong{font-size:15px!important}
+  .v60-label{width:54px!important;flex-basis:54px!important}
+}
+</style>
+
+
+<style id="v62-priority-style">
+.v62-summary{
+  margin:0!important;
+  padding:11px 12px!important;
+  min-height:60px!important;
+  border-radius:16px!important;
+  display:grid!important;
+  grid-template-columns:1fr 1px 1fr!important;
+  align-items:center!important;
+  gap:10px!important;
+  border:1px solid #e4ebef!important;
+  background:#fff!important;
+  box-shadow:none!important;
+}
+.v62-summary-stat{text-align:center!important;min-width:0!important}
+.v62-summary-stat span{
+  display:block!important;
+  margin-bottom:2px!important;
+  color:#6f8291!important;
+  font-size:11px!important;
+  font-weight:650!important;
+}
+.v62-summary-stat strong{
+  display:block!important;
+  font-size:16px!important;
+  font-weight:800!important;
+  line-height:1.25!important;
+  white-space:nowrap!important;
+}
+.v62-summary-divider{height:28px!important;background:#e4ebef!important}
+.v62-attention{
+  margin:0 0 10px!important;
+  padding:10px 12px!important;
+  border:1px solid #d9e8f1!important;
+  border-radius:12px!important;
+  background:#f7fbfd!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  font-size:12px!important;
+  color:#35566a!important;
+}
+.v62-attention.hidden{display:none!important}
+.v62-attention span{flex:1!important;min-width:0!important}
+.v62-attention button{
+  border:0!important;
+  background:transparent!important;
+  color:#0879b9!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  padding:4px 0!important;
+}
+.v62-export-row{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+}
+.v62-export-row>span{
+  font-size:13px!important;
+  font-weight:750!important;
+  color:#40566a!important;
+}
+.v62-export-row>div{display:flex!important;gap:6px!important}
+</style>
+
+
+<style id="v63-three-step-style">
+.v63-flow-card{padding:0!important;overflow:hidden!important}
+.v63-step{
+  display:grid!important;
+  grid-template-columns:34px 1fr!important;
+  gap:10px!important;
+  padding:14px!important;
+  border-bottom:1px solid #e4ebef!important;
+}
+.v63-step:last-of-type{border-bottom:0!important}
+.v63-step-no{
+  width:28px!important;height:28px!important;
+  border-radius:50%!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  background:#edf7fc!important;color:#0879b9!important;
+  font-size:13px!important;font-weight:850!important;
+}
+.v63-step-body{min-width:0!important}
+.v63-step-title{
+  font-size:14px!important;
+  font-weight:800!important;
+  line-height:28px!important;
+  margin-bottom:7px!important;
+}
+.v63-step-actions{
+  display:grid!important;
+  grid-template-columns:repeat(3,1fr)!important;
+  gap:7px!important;
+}
+.v63-step:first-child .v63-step-actions{grid-template-columns:1fr 1fr!important}
+.v63-step-actions .btn{
+  width:100%!important;
+  min-width:0!important;
+  min-height:38px!important;
+  padding:0 7px!important;
+  font-size:12px!important;
+}
+.v63-selected{
+  margin-top:7px!important;
+  min-height:18px!important;
+  font-size:12px!important;
+  color:#6f8291!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+#nearbyCustomerPanel,#manualCustomerPanel{
+  margin:0 14px 12px 58px!important;
+}
+@media(max-width:400px){
+ .v63-step{grid-template-columns:30px 1fr!important;padding:12px 11px!important;gap:8px!important}
+ .v63-step-no{width:26px!important;height:26px!important}
+ .v63-step-title{line-height:26px!important}
+ .v63-step-actions{gap:5px!important}
+ .v63-step-actions .btn{font-size:11px!important;padding:0 5px!important}
+ #nearbyCustomerPanel,#manualCustomerPanel{margin-left:49px!important;margin-right:11px!important}
+}
+</style>
+
+
+<style id="v65-compact-flow-style">
+.v63-step{
+  grid-template-columns:26px 1fr!important;
+  gap:7px!important;
+  padding:9px 11px!important;
+}
+.v63-step-no{
+  width:22px!important;height:22px!important;
+  font-size:11px!important;
+}
+.v63-step-title{
+  font-size:13px!important;
+  line-height:22px!important;
+  margin-bottom:5px!important;
+}
+.v63-step-actions{gap:5px!important}
+.v63-step-actions .btn{
+  min-height:32px!important;
+  height:32px!important;
+  padding:0 6px!important;
+  border-radius:8px!important;
+  font-size:11px!important;
+}
+.v63-selected{
+  margin-top:4px!important;
+  min-height:0!important;
+  font-size:11px!important;
+  line-height:1.3!important;
+}
+.v63-selected.hidden{display:none!important}
+#nearbyCustomerPanel,#manualCustomerPanel{
+  margin:0 11px 9px 44px!important;
+}
+@media(max-width:400px){
+ .v63-step{grid-template-columns:24px 1fr!important;padding:8px 9px!important;gap:6px!important}
+ .v63-step-no{width:20px!important;height:20px!important;font-size:10px!important}
+ .v63-step-title{font-size:12px!important;line-height:20px!important}
+ .v63-step-actions .btn{height:30px!important;min-height:30px!important;font-size:10.5px!important}
+ #nearbyCustomerPanel,#manualCustomerPanel{margin-left:39px!important;margin-right:9px!important}
+}
+</style>
+
+
 </head>
 <body>
 
@@ -2306,18 +2782,36 @@ header{
  </div>
 </div>
 
-<div id="afterOverlay" class="overlay hidden">
- <div class="box">
-  <div class="big">다음 이동은?</div>
-  <p id="afterCustomer" class="path"></p>
-  <div class="choice">
-    <button id="goHome" class="btn">집으로 이동</button>
-    <button id="goHotel" class="btn secondary">호텔로 이동</button>
+
+<div id="originOverlay" class="overlay hidden">
+ <div class="box v60-origin-box">
+  <div class="big">출발지 선택</div>
+  <p id="originVisitCustomer" class="path"></p>
+  <div class="v60-origin-grid">
+    <button id="originHomeBtn" class="btn" type="button">집</button>
+    <button id="originHotelBtn" class="btn secondary" type="button">호텔</button>
+    <button id="originPreviousBtn" class="btn secondary" type="button">이전 위치</button>
+    <button id="originCustomBtn" class="btn secondary" type="button">기타 / 수정</button>
   </div>
-  <button id="stayCustomer" class="btn outline" style="width:100%;margin-top:8px">아직 고객사에 있음</button>
+  <button id="originCancelBtn" class="btn outline" type="button" style="width:100%;margin-top:8px">취소</button>
  </div>
 </div>
 
+<div id="afterOverlay" class="overlay hidden">
+ <div class="box">
+  <div class="big">다음 이동</div>
+  <p id="afterCustomer" class="path"></p>
+  <div class="v60-next-grid">
+    <button id="goHome" class="btn" type="button">집</button>
+    <button id="goHotel" class="btn secondary" type="button">호텔</button>
+    <button id="nextCustomerChoice" class="btn secondary" type="button">고객사</button>
+  </div>
+  <div class="v60-next-bottom">
+    <button id="editLastTripBtn" class="btn outline" type="button">방금 기록 수정</button>
+    <button id="stayCustomer" class="btn outline" type="button">나중에</button>
+  </div>
+ </div>
+</div>
 
 <div id="pastOverlay" class="overlay hidden">
  <div class="box">
@@ -2369,66 +2863,139 @@ header{
       <button id="closeGuideX" class="guide-x" type="button">×</button>
     </div>
 
-    <div class="guide-step"><div class="guide-num">1</div><div><b>출발지만 확인</b><p>필요할 때 집·호텔을 바꿉니다.</p></div></div>
-    <div class="guide-step"><div class="guide-num">2</div><div><b>고객사에서 위치 확인</b><p>가장 가까운 고객사를 선택하면 기록됩니다.</p></div></div>
-    <div class="guide-step"><div class="guide-num">3</div><div><b>다음 도착지만 선택</b><p>고객사·집·호텔 이동을 이어서 기록합니다.</p></div></div>
+    <div class="guide-step">
+      <div class="guide-num">1</div>
+      <div>
+        <b>집 또는 호텔에서 출발</b>
+        <p>도착 후 GPS 버튼을 누르거나 고객사를 직접 선택합니다.</p>
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-num">2</div>
+      <div>
+        <b>고객사 도착 → 선택해서 기록</b>
+        <p>GPS로 가까운 고객사를 찾은 뒤 선택하면 이동 1행이 저장됩니다.</p>
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-num">3</div>
+      <div>
+        <b>다음 목적지만 선택</b>
+        <p><strong>고객사 / 집 / 호텔</strong> 중 다음 이동지만 선택하면 됩니다.</p>
+      </div>
+    </div>
+
+    <div class="guide-note">GPS를 쓰지 않아도 고객사를 직접 선택할 수 있습니다.</div>
     <button id="closeGuide" class="btn guide-start">확인 · 시작하기</button>
   </div>
 </div>
 
-<header><div class="in v53-header"><div><div class="brand">Private Car Diary</div><div class="v53-date"><strong id="headerTodayDate"></strong></div></div><button id="openGuide" class="icon-help" type="button" aria-label="사용법">?</button></div></header>
-
-<div class="wrap v53-wrap">
-  <div class="v53-dashboard">
-    <button id="originQuick" class="v53-origin" type="button"><span>출발</span><strong id="v52Origin">집</strong><b>›</b></button>
-    <div class="v53-month"><span>이번 달</span><strong id="todayKm">0 km</strong><em>·</em><strong id="todayCost">₩0</strong></div>
+<header class="v61-header">
+  <div class="in v61-header-inner">
+    <div class="v61-brand">Private Car Diary</div>
+    <div class="v61-header-right">
+      <strong id="headerTodayDate"></strong>
+      <button id="openGuide" class="v61-help" type="button">?</button>
+    </div>
   </div>
+</header>
 
-  <div class="v53-status-line">
-    <button id="todayStatusToggle" class="status-toggle" type="button"><span>오늘 상태</span><strong id="todayStatusBadge" class="badge"></strong><span class="status-chevron">›</span></button>
-    <div id="todayStatusControls" class="status-controls hidden">
-      <div class="work-status"><button id="statusWork" class="btn secondary">근무</button><button id="statusLeave" class="btn secondary">휴가/개인</button><button id="statusOff" class="btn secondary">비근무</button></div>
+<div class="wrap v61-top-wrap">
+  <div class="card v62-summary">
+    <div class="v62-summary-stat">
+      <span>이번 달 거리</span>
+      <strong id="todayKm">0 km</strong>
+    </div>
+    <div class="v62-summary-divider"></div>
+    <div class="v62-summary-stat">
+      <span>이번 달 정산</span>
+      <strong id="todayCost">₩0</strong>
     </div>
   </div>
 
-<div class="tabs v53-tabs"><button class="tab active" data-v="today">오늘</button><button class="tab" data-v="history">기록</button><button class="tab" data-v="settings">설정</button></div>
-<section id="today" class="view active">
- <div id="missingDaysCard" class="card hidden missing-compact">
-  <button id="missingToggle" class="missing-toggle" type="button">
-    <strong>미기록 평일</strong>
-    <span id="missingCount" class="badge"></span>
-    <span class="grow"></span>
-    <span>보기</span>
-  </button>
-  <div id="missingPanel" class="hidden">
-    <div class="row" style="margin-top:5px"><div id="missingDays" class="grow"></div><button id="openPastFromToday" class="btn small">지난 출장 입력</button></div>
+  <div id="todayStatusControls" class="hidden" aria-hidden="true">
+    <button id="statusWork" type="button">근무</button>
+    <button id="statusLeave" type="button">휴가/개인</button>
+    <button id="statusOff" type="button">비근무</button>
+    <strong id="todayStatusBadge"></strong>
+    <button id="todayStatusToggle" type="button"></button>
   </div>
+</div>
+</div>
+</div>
+
+<div class="tabs"><button class="tab active" data-v="today">오늘</button><button class="tab" data-v="history">기록</button><button class="tab" data-v="settings">설정</button></div>
+
+
+<section id="today" class="view active">
+ <div id="v62Attention" class="v62-attention hidden">
+   <span id="v62AttentionText"></span>
+   <button id="v62AttentionAction" type="button">확인</button>
  </div>
 
- <div class="card v53-action-card">
-   <button id="findCustomerGpsBtn" class="v53-primary-action" type="button"><span class="pin-dot">⌖</span><span><b>현재 위치에서 고객사 찾기</b><small>도착 후 한 번만 확인</small></span><strong>›</strong></button>
-   <div class="v53-secondary-row">
-     <button id="manualCustomerBtn" type="button">고객사 직접 선택</button>
-     <button id="goHomeInline" type="button">집 도착</button>
-     <button id="goHotelInline" type="button">호텔 도착</button>
-   </div>
-   <div id="nearbyCustomerPanel" class="hidden v53-nearby">
-     <div id="gpsFindState" class="v52-muted"></div>
-     <div id="nearbyCustomerResults"></div>
-   </div>
-   <div id="manualCustomerPanel" class="hidden v53-manual">
-     <input id="custSearch" placeholder="고객사 검색">
-     <div id="searchResults"></div>
-   </div>
-   <div id="compatHidden" class="hidden">
-     <button id="startHomeBtn"></button><button id="startHotelBtn"></button><button id="changeOriginBtn"></button>
-     <button id="autoDetectCustomer"></button><button id="manualToggle"></button><button id="nextCustomerBtn"></button>
-     <button id="goOtherInline"></button><div id="customerPicker"></div><div id="manualPanel"></div>
-     <div id="recentWrap"></div><button id="recentToggle"></button><div id="recentPanel"></div><span id="recentPrimary"></span><div id="recentCustomers"></div>
-     <strong id="currentOriginLabel"></strong><div id="dailyStartValue"></div><div id="dailyStartHint"></div>
-     <div id="autoState"></div><b id="autoStateTitle"></b><span id="autoStateSub"></span>
-     <div id="activeTripActions"></div><span id="activeCustomerText"></span><div id="smartDetectBox"><span id="smartDetectTitle"></span><span id="smartDetectSub"></span></div><span id="simpleGpsState"></span>
-   </div>
+</div>
+
+ <div class="card v63-flow-card">
+  <div class="v63-step">
+    <div class="v63-step-no">1</div>
+    <div class="v63-step-body">
+      <div class="v63-step-title">고객사 선택</div>
+      <div class="v63-step-actions">
+        <button id="manualCustomerBtn" class="btn secondary" type="button">입력</button>
+        <button id="findCustomerGpsBtn" class="btn" type="button">GPS</button>
+      </div>
+      <div id="v63CustomerValue" class="v63-selected hidden"></div>
+    </div>
+  </div>
+
+  <div id="nearbyCustomerPanel" class="hidden">
+    <div id="gpsFindState" class="v52-muted"></div>
+    <div id="nearbyCustomerResults"></div>
+  </div>
+  <div id="manualCustomerPanel" class="hidden">
+    <input id="custSearch" placeholder="고객사 검색">
+    <div id="searchResults"></div>
+  </div>
+
+  <div class="v63-step">
+    <div class="v63-step-no">2</div>
+    <div class="v63-step-body">
+      <div class="v63-step-title">출발지 선택</div>
+      <div class="v63-step-actions">
+        <button id="v63OriginHome" class="btn secondary" type="button">집</button>
+        <button id="v63OriginHotel" class="btn secondary" type="button">호텔</button>
+        <button id="changeOriginBtn" class="btn secondary" type="button">기타</button>
+      </div>
+      <div id="v60CurrentPlace" class="v63-selected hidden"></div>
+    </div>
+  </div>
+
+  <div class="v63-step">
+    <div class="v63-step-no">3</div>
+    <div class="v63-step-body">
+      <div class="v63-step-title">다음 목적지</div>
+      <div class="v63-step-actions">
+        <button id="goHomeInline" class="btn secondary" type="button">집</button>
+        <button id="goHotelInline" class="btn secondary" type="button">호텔</button>
+        <button id="nextCustomerBtn" class="btn secondary" type="button">고객사</button>
+      </div>
+      <div id="v63EndValue" class="v63-selected hidden"></div>
+    </div>
+  </div>
+  </div>
+
+  <div id="compatHidden" class="hidden">
+    <button id="startHomeBtn"></button><button id="startHotelBtn"></button>
+    <button id="autoDetectCustomer"></button><button id="manualToggle"></button>
+    <button id="goHotelInlineCompat"></button><button id="goOtherInline"></button>
+    <div id="customerPicker"></div><div id="manualPanel"></div>
+    <div id="recentWrap"></div><button id="recentToggle"></button><div id="recentPanel"></div><span id="recentPrimary"></span><div id="recentCustomers"></div>
+    <strong id="currentOriginLabel"></strong><strong id="v52Origin"></strong><div id="dailyStartValue"></div><div id="dailyStartHint"></div>
+    <div id="autoState"></div><b id="autoStateTitle"></b><span id="autoStateSub"></span>
+    <div id="activeTripActions"></div><span id="activeCustomerText"></span><div id="smartDetectBox"><span id="smartDetectTitle"></span><span id="smartDetectSub"></span></div><span id="simpleGpsState"></span>
+  </div>
  </div>
 
  <div id="unfinishedCard" class="card hidden">
@@ -2446,12 +3013,31 @@ header{
   <button id="hotelToCustomer" class="btn" style="width:100%;margin-top:8px">호텔 → 고객사 자동 추가</button>
  </div>
 
- <div class="card v53-timeline-card"><div class="v53-section-head"><h2>오늘 이동</h2><span id="todayTripCount"></span></div><div id="todayList" class="v53-timeline"></div></div>
+ <div class="card v61-record-card"><div class="v61-section-title">오늘 기록</div><div id="todayList"></div></div>
 </section>
 
 <section id="history" class="view">
+ <div id="missingDaysCard" class="card hidden v61-missing-card">
+  <button id="missingToggle" class="missing-toggle" type="button">
+    <strong>미기록 평일</strong>
+    <span id="missingCount" class="badge"></span>
+    <span class="grow"></span>
+    <span>보기</span>
+  </button>
+  <div id="missingPanel" class="hidden">
+    <div class="row" style="margin-top:5px"><div id="missingDays" class="grow"></div>
+ <div class="card v62-export-row">
+   <span>월말 제출</span>
+   <div>
+     <button id="v62PdfShortcut" class="btn secondary small" type="button">PDF</button>
+     <button id="v62CsvShortcut" class="btn secondary small" type="button">CSV</button>
+   </div>
+ </div>
+<button id="openPastFromToday" class="btn small">지난 출장 입력</button></div>
+  </div>
+
  <div class="card">
-  <div class="row"><h2 class="grow" style="margin:0">월별 정산</h2><span class="tiny">지난 출장 추가 · 수정 · 회사 파일</span></div>
+  <div class="v61-section-title">월별 정산</div>
   <label>월</label><input id="month" type="month">
   <div class="metricgrid" style="margin-top:10px"><div class="metric"><span class="tiny">거리</span><strong id="monthKm">0 km</strong></div><div class="metric"><span class="tiny">정산</span><strong id="monthCost">₩0</strong></div><div class="metric"><span class="tiny">행</span><strong id="monthRows">0</strong></div></div>
   <div class="row" style="margin-top:10px">
@@ -2467,7 +3053,7 @@ header{
 </section>
 
 <section id="settings" class="view">
-
+<div class="card"><div class="tiny">고객사 지역명·편도거리는 한 번 저장하면 자동 재사용됩니다.</div></div>
  <div class="card info-collapsed-card">
   <button id="myInfoToggle" class="myinfo-toggle" type="button">
     <strong>내 정보</strong>
@@ -2527,7 +3113,6 @@ header{
 </section>
 </div>
 
-</div>
 <div id="footerBar" class="footer hidden"><div class="in"><button id="quickHome" class="btn secondary">집으로 복귀</button><button id="quickHotel" class="btn">호텔로 이동</button></div></div>
 
 <script>
@@ -2795,9 +3380,8 @@ function renderDailyStart(){
 }
 
 function resetStaleOriginForNewDay(){
- // v51: 하루 첫 이동 전에는 일일 출발지 규칙을 적용한다.
- // 월요일은 집, 이후에는 전날 마지막 도착지를 참고하며 집/호텔을 직접 변경할 수 있다.
- ensureDailyStartOrigin();
+ // v60: 출발지는 고객사를 먼저 선택한 뒤 사용자가 결정한다.
+ // 마지막 실제 위치는 추천값으로만 보존한다.
  localStorage.setItem(KEY,JSON.stringify(db));
 }
 
@@ -2840,7 +3424,7 @@ function findNearbyCustomersOnce(){
  navigator.geolocation.getCurrentPosition(pos=>{
    const lat=pos.coords.latitude,lng=pos.coords.longitude;
    const arr=located.map(c=>({...c,d:geoDist(lat,lng,Number(c.lat),Number(c.lng))})).sort((a,b)=>a.d-b.d).slice(0,5);
-   state.textContent=arr.length?"가장 가까운 고객사를 확인하세요.":"가까운 고객사가 없습니다.";
+   state.textContent=arr.length?"가까운 고객사를 선택하세요.":"가까운 고객사가 없습니다.";
    results.innerHTML=arr.map(c=>`<button class="v52-result" type="button" onclick="chooseGpsCustomer('${encodeURIComponent(c.name)}')"><strong>${esc(c.name)}</strong><span>${c.d<1000?Math.round(c.d)+' m':(c.d/1000).toFixed(1)+' km'}</span></button>`).join("");
  },e=>{
    state.textContent="위치를 확인하지 못했습니다.";
@@ -3537,7 +4121,6 @@ function render(){setTimeout(updateSimpleGpsState,0);renderMyInfoSummary();rende
  $("todayKm").textContent=monthKm+" km";
  $("todayCost").textContent=money(monthKm*db.settings.rate);
  if($("todayRows"))$("todayRows").textContent=mt.length;
- if($("todayTripCount"))$("todayTripCount").textContent=t.length?`${t.length}개 이동`:"";
  $("todayList").innerHTML=t.length?t.map((x,i)=>`<div class="item trip-order-row">
   <div class="trip-order-main">
     <div class="tiny">${esc(x.customer)}</div>
@@ -3547,6 +4130,7 @@ function render(){setTimeout(updateSimpleGpsState,0);renderMyInfoSummary();rende
   <div class="trip-order-actions">
     <button class="order-btn" onclick="moveTrip('${x.id}',-1)" ${i===0?"disabled":""}>↑</button>
     <button class="order-btn" onclick="moveTrip('${x.id}',1)" ${i===t.length-1?"disabled":""}>↓</button>
+    <button class="btn outline small edit-now" onclick="openEdit('${x.id}')">수정</button>
     <button class="btn danger small" onclick="delTrip('${x.id}')">삭제</button>
   </div>
 </div>`).join(""):'<div class="tiny">기록이 없습니다.</div>';
@@ -3634,48 +4218,35 @@ function makeCompanyPdf(){
     .summary-wrap{margin-top:1mm}.summary{width:100%;table-layout:fixed;font-size:8.5px}.summary td,.summary th{border:1.3px solid #555;height:5.8mm;padding:1px 5px;text-align:right}.summary .stotal{width:43%;text-align:center;font-weight:700;font-size:10px}.summary th{width:44%;font-weight:700}.summary .unit{background:#e8e1f2}.summary td:last-child{width:13%;font-weight:700}.summary .allowance{text-align:center;background:#e8e1f2;font-size:7.8px}
     .sign{width:100%;margin-top:1mm;font-size:8px}.sign td{height:9mm;border:1.3px solid #111}.sign .siglabel{width:13%;text-align:center}.sign td:nth-child(2){width:30%}.sign .approve{width:30%;text-align:center}.sign td:nth-child(4){width:27%}
     @media print{.no-print{display:none}}
-  
-/* v53 — modern compact, one action per line */
-:root{--zeiss:#0069b4;--zeiss2:#00a6d6;--ink:#102033;--sub:#6f7d8b;--canvas:#f4f7fa;--hair:#e3eaf0}
-body{background:var(--canvas);color:var(--ink);font-size:14px;line-height:1.35}
-header{background:rgba(255,255,255,.96);border-bottom:1px solid var(--hair)}
-.v53-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px!important}
-.v53-header .brand{font-size:18px!important;font-weight:800;letter-spacing:-.025em}
-.v53-date{font-size:11px;color:var(--sub);margin-top:2px}.icon-help{width:32px;height:32px;border-radius:50%;border:1px solid var(--hair);background:#fff;color:var(--zeiss);font-weight:850}
-.v53-wrap{max-width:720px;padding:10px 10px 84px!important}
-.v53-dashboard{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:8px;margin-bottom:8px}
-.v53-origin,.v53-month{min-height:58px;border:1px solid var(--hair);border-radius:16px;background:#fff;box-shadow:0 5px 18px rgba(37,69,92,.05)}
-.v53-origin{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;padding:0 14px;color:var(--ink);text-align:left}
-.v53-origin span,.v53-month span{font-size:10px;color:var(--sub);font-weight:700}.v53-origin strong{font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v53-origin b{font-size:22px;color:#9aabba}
-.v53-month{display:flex;align-items:center;justify-content:center;gap:5px;padding:0 10px;white-space:nowrap}.v53-month strong{font-size:13px}.v53-month em{font-style:normal;color:#bdc7d0}
-.v53-status-line{border:1px solid var(--hair);border-radius:13px;background:#fff;margin-bottom:8px;overflow:hidden}.v53-status-line .status-toggle{min-height:40px;padding:0 12px}.v53-status-line .status-controls{padding:0 8px 8px}
-.v53-tabs{position:fixed!important;left:50%;transform:translateX(-50%);bottom:0;z-index:80;width:min(720px,100%);margin:0!important;padding:6px 10px calc(6px + env(safe-area-inset-bottom))!important;border-radius:0!important;background:rgba(255,255,255,.97)!important;border-top:1px solid var(--hair);display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:6px!important}
-.v53-tabs .tab{height:46px;border-radius:12px!important;color:#7b8996!important;font-size:12px!important}.v53-tabs .tab.active{background:#eef7fc!important;color:var(--zeiss)!important;box-shadow:none!important;font-weight:850}
-.v53-action-card{padding:8px!important;border-radius:18px!important;box-shadow:0 7px 24px rgba(37,69,92,.055)!important}
-.v53-primary-action{width:100%;min-height:68px;border:0;border-radius:14px;background:linear-gradient(135deg,var(--zeiss),#007fbe);color:#fff;display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px;padding:0 14px;text-align:left;box-shadow:0 8px 20px rgba(0,105,180,.18)}
-.v53-primary-action .pin-dot{font-size:24px}.v53-primary-action b{display:block;font-size:16px;letter-spacing:-.02em}.v53-primary-action small{display:block;font-size:10px;opacity:.78;margin-top:2px}.v53-primary-action>strong{font-size:22px;font-weight:500}
-.v53-secondary-row{display:grid;grid-template-columns:1.4fr .8fr .8fr;gap:6px;margin-top:7px}.v53-secondary-row button{min-height:38px;border:1px solid var(--hair);border-radius:11px;background:#f9fbfc;color:#405366;font-size:11px;font-weight:750;padding:0 8px;white-space:nowrap}
-.v53-nearby,.v53-manual{margin-top:8px;padding-top:8px;border-top:1px solid var(--hair)}
-#nearbyCustomerResults{display:grid;gap:6px;margin-top:6px}.v52-result{border:1px solid var(--hair)!important;border-radius:12px!important;background:#fff!important;padding:10px 12px!important;min-height:46px!important}.v52-result:first-child{border:2px solid var(--zeiss)!important;background:#f4fbff!important}.v52-result:first-child strong{color:var(--zeiss);font-size:14px}.v52-result:first-child:before{content:'가장 가까움';display:block;font-size:9px;font-weight:800;color:var(--zeiss);margin-bottom:2px}
-.v53-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}.v53-section-head h2{margin:0!important;font-size:14px!important}.v53-section-head span{font-size:10px;color:var(--sub)}
-.v53-timeline-card{padding:12px!important;border-radius:18px!important;box-shadow:0 7px 24px rgba(37,69,92,.045)!important}
-#todayList .trip-order-row{position:relative;border:0!important;border-radius:0!important;border-bottom:1px solid #eef2f5!important;margin:0!important;padding:10px 0 10px 22px!important;background:transparent!important;display:flex!important;align-items:center!important;gap:8px!important}
-#todayList .trip-order-row:before{content:'';position:absolute;left:5px;top:16px;width:8px;height:8px;border-radius:50%;background:var(--zeiss2);box-shadow:0 0 0 4px #e7f7fc}#todayList .trip-order-row:not(:last-child):after{content:'';position:absolute;left:8.5px;top:25px;bottom:-6px;width:1px;background:#d7e8ef}
-#todayList .trip-order-main{flex:1;min-width:0}#todayList .trip-order-main .tiny{font-size:9px!important;color:#7f8d98!important}#todayList .trip-order-main .path{font-size:13px!important;font-weight:800!important;margin-top:1px}#todayList .trip-order-main b{font-size:12px!important;color:var(--zeiss)!important}
-#todayList .trip-order-actions{display:flex!important;gap:3px!important;opacity:.18;transition:opacity .15s}#todayList .trip-order-row:focus-within .trip-order-actions,#todayList .trip-order-row:hover .trip-order-actions{opacity:1}.trip-order-actions .order-btn,.trip-order-actions .btn{width:28px!important;min-width:28px!important;height:28px!important;min-height:28px!important;padding:0!important;border-radius:9px!important;font-size:9px!important}.trip-order-actions .btn{font-size:0!important}.trip-order-actions .btn:after{content:'×';font-size:14px}
-.card{border-color:var(--hair)!important;box-shadow:0 4px 16px rgba(37,69,92,.035)!important}.btn{background:var(--zeiss)}.btn.secondary{background:#f1f5f8;color:#405366}.btn.outline{border-color:var(--hair)}
-#missingDaysCard,#unfinishedCard,#hotelReturnCard{border-radius:14px!important}.missing-toggle{min-height:38px!important}.badge{background:#e8f3fa!important;color:var(--zeiss)!important}
-#history .card:first-child,#settings .card{border-radius:16px!important}
-#history .metricgrid{grid-template-columns:1fr 1fr!important}#history .metricgrid .metric:nth-child(3){display:none}
-#settings .card>.tiny:only-child{display:none}
-@media(max-width:520px){
- body{font-size:13px!important}.v53-wrap{padding:8px 8px 78px!important}.v53-dashboard{grid-template-columns:1.08fr .92fr;gap:6px}.v53-origin,.v53-month{min-height:54px;border-radius:14px}.v53-origin{padding:0 11px}.v53-origin strong{font-size:15px}.v53-month{flex-wrap:wrap;align-content:center;gap:2px 4px}.v53-month span{width:100%;text-align:center;line-height:1}.v53-month strong{font-size:11px}.v53-primary-action{min-height:64px}.v53-primary-action b{font-size:14px}.v53-secondary-row{grid-template-columns:1.35fr .8fr .8fr}.v53-secondary-row button{font-size:10px!important;padding:0 5px!important}.v53-tabs .tab{height:42px!important}.v53-timeline-card{padding:10px!important}
-}
-</style></head><body>
+  </style>
+<style id="v59-clean-design">
+:root{--v58-ink:#0b1726;--v58-muted:#6d7d91;--v58-line:#e6edf4;--v58-blue:#0877d1;--v58-cyan:#19b8e5;--v58-bg:#f4f8fb;--v58-card:#fff;--v58-radius:22px}
+*{box-sizing:border-box} html,body{background:var(--v58-bg)!important;color:var(--v58-ink)!important} body{padding-bottom:96px!important;font-family:Inter,"Pretendard","Noto Sans KR",system-ui,-apple-system,sans-serif!important;-webkit-font-smoothing:antialiased}
+header{background:rgba(255,255,255,.92)!important;border:0!important;box-shadow:0 1px 0 rgba(13,34,57,.06)!important;position:sticky!important;top:0!important;z-index:70!important;backdrop-filter:blur(18px)}
+header .in{max-width:720px!important;padding:16px 18px!important}.header-one-line{display:flex!important;align-items:center!important;gap:10px!important}.brand{font-size:18px!important;font-weight:900!important;letter-spacing:-.04em!important;color:var(--v58-ink)!important}.brand:before{content:"";display:inline-block;width:26px;height:26px;margin-right:9px;vertical-align:-7px;border-radius:9px;background:linear-gradient(145deg,#0a7dd5,#25c4e6);box-shadow:0 7px 17px rgba(0,126,208,.24)}.header-today{margin-left:auto!important;font-size:11px!important;font-weight:800!important;color:#8a98a8!important}.header-one-line #headerTodayDate{font-size:13px!important;color:#27384a!important}.guide-link{display:grid!important;place-items:center!important;width:30px!important;height:30px!important;padding:0!important;border:1px solid #e4ebf1!important;border-radius:10px!important;background:#f7fafc!important;color:#536579!important;font-size:0!important}.guide-link:after{content:"?";font-size:13px;font-weight:900}
+.wrap{display:none!important}.tabs{position:fixed!important;left:50%!important;bottom:12px!important;transform:translateX(-50%)!important;width:min(calc(100% - 24px),696px)!important;height:68px!important;display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:4px!important;padding:6px!important;background:rgba(12,25,40,.94)!important;border:1px solid rgba(255,255,255,.13)!important;border-radius:24px!important;box-shadow:0 18px 45px rgba(8,24,40,.25)!important;z-index:100!important;backdrop-filter:blur(20px)}.tab{border:0!important;border-radius:18px!important;background:transparent!important;color:#aebac8!important;font-size:13px!important;font-weight:800!important;box-shadow:none!important}.tab.active{background:#fff!important;color:#0b1726!important;box-shadow:0 7px 18px rgba(0,0,0,.18)!important}
+.view{max-width:720px!important;margin:0 auto!important;padding:14px 14px 32px!important}.view:not(.active){display:none!important}.card{border:1px solid rgba(17,48,76,.07)!important;background:#fff!important;border-radius:20px!important;box-shadow:0 10px 28px rgba(25,58,88,.06)!important}
+#firstGuide{display:none!important}
+/* clean summary: no decorative vehicle/road hero */
+/* missing */
+#missingDaysCard{margin:0 0 12px!important;padding:0!important;box-shadow:none!important;background:transparent!important;border:0!important}.missing-toggle{width:100%!important;padding:12px 14px!important;border-radius:16px!important;border:1px solid #e6edf4!important;background:#fff!important;color:#243447!important;box-shadow:0 7px 18px rgba(24,57,87,.045)!important}.missing-toggle strong{font-size:12px!important}.missing-toggle .badge{font-size:11px!important;background:#e7f7fc!important;color:#067da8!important;border-radius:999px!important;padding:5px 8px!important}
+/* trip action */
+.v52-main-card{padding:17px!important;border-radius:24px!important;background:#fff!important;margin-bottom:12px!important}.v52-start-row,.v52-dest-row{display:grid!important;grid-template-columns:76px minmax(0,1fr) auto!important;align-items:center!important;gap:9px!important;padding:0!important;border:0!important}.v52-dest-row{margin-top:14px!important;padding-top:14px!important;border-top:1px solid var(--v58-line)!important;grid-template-columns:76px minmax(0,1fr)!important}.v52-row-label{font-size:10px!important;font-weight:900!important;letter-spacing:.09em!important;color:#8796a7!important;text-transform:uppercase}.v52-row-value{font-size:17px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}.v52-actions{display:flex!important;gap:5px!important}.v52-actions .btn{height:36px!important;min-width:42px!important;padding:0 11px!important;border-radius:11px!important;font-size:11px!important}.v52-dest-actions{display:grid!important;grid-template-columns:1.45fr 1.15fr .72fr .82fr!important;gap:6px!important}.v52-dest-actions .btn{height:46px!important;padding:0 8px!important;border-radius:13px!important;font-size:11px!important;white-space:nowrap!important}.v52-dest-actions #findCustomerGpsBtn{background:linear-gradient(135deg,#087bd1,#12b6de)!important;border:0!important;color:#fff!important;box-shadow:0 9px 19px rgba(6,128,196,.22)!important}.btn{font-family:inherit!important;font-weight:800!important}.btn.secondary{background:#f3f7fa!important;border:1px solid #e1e9f0!important;color:#223448!important;box-shadow:none!important}
+#nearbyCustomerPanel,#manualCustomerPanel{margin-top:12px!important;padding:12px!important;background:#f5f9fc!important;border-radius:15px!important}.v52-muted{color:#718195!important;font-size:11px!important}
+/* timeline */
+#today>.card:last-child{padding:18px!important;border-radius:24px!important;margin-bottom:0!important}#today>.card:last-child h2{font-size:19px!important;letter-spacing:-.04em!important}#today>.card:last-child .tiny{color:#98a5b2!important;font-size:10px!important}#todayList{margin-top:12px!important}#todayList .trip-row,#todayList .move-row,#todayList>div{border-radius:14px!important}
+/* history/settings visual cleanup */
+#history .card,#settings .card{padding:17px!important;margin-bottom:10px!important}#history h2,#settings h2{font-size:18px!important;letter-spacing:-.035em!important}input,select,textarea{border:1px solid #dfe8ef!important;border-radius:12px!important;background:#f8fafc!important;min-height:43px!important;color:#16283a!important;box-shadow:none!important}input:focus,select:focus,textarea:focus{outline:2px solid rgba(8,124,209,.13)!important;border-color:#3ba5df!important}.metricgrid{gap:8px!important}.metric{border-radius:16px!important;background:#f4f8fb!important;border:1px solid #e8eef3!important}.scroll{overflow:auto!important}table{font-size:11px!important}th{color:#738295!important;background:#f6f9fb!important}
+/* desktop/mobile */
+@media(max-width:520px){header .in{padding:14px 14px!important}.view{padding:12px 10px 26px!important}.v58-hero{min-height:226px;padding:19px;border-radius:25px}.v58-hero .metric-main strong{font-size:44px}.v52-main-card{padding:14px!important}.v52-start-row{grid-template-columns:61px minmax(0,1fr) auto!important}.v52-dest-row{grid-template-columns:61px minmax(0,1fr)!important}.v52-dest-actions{grid-template-columns:1.5fr 1.05fr .68fr .75fr!important;gap:5px!important}.v52-dest-actions .btn{font-size:10.5px!important;padding:0 5px!important}.v52-actions .btn{padding:0 8px!important}.tabs{bottom:8px!important}}
+</style>
+</head><body>
   <section class="page page1">${header()}<table class="diary">${tableHead}<tbody>${makeRows(1,43)}</tbody></table></section>
   <section class="page page2">${header()}<table class="diary">${tableHead}<tbody>${makeRows(44,76)}</tbody></table>${summary}</section>
   <script>window.onload=()=>setTimeout(()=>window.print(),350)<\/script>
-  </body></html>`;
+  
+
+</body></html>`;
 
   const w=window.open("","_blank");
   if(!w){alert("PDF 창을 열 수 없습니다. 브라우저 팝업을 허용해주세요.");return;}
@@ -3728,7 +4299,6 @@ $("statusOff").onclick=()=>{setDayStatus("off");$("todayStatusControls").classLi
 $("recentToggle").onclick=()=>$("recentPanel").classList.toggle("hidden");
 $("custSearch").oninput=renderCustomerSelect;$("distSearch").oninput=renderDistances; if($("findCustomerGpsBtn"))$("findCustomerGpsBtn").onclick=findNearbyCustomersOnce; if($("manualCustomerBtn"))$("manualCustomerBtn").onclick=toggleManualCustomerPicker;
 if($("startHomeBtn"))$("startHomeBtn").onclick=()=>setDailyStartOrigin("home"); if($("startHotelBtn"))$("startHotelBtn").onclick=()=>setDailyStartOrigin("hotel");
-if($("originQuick"))$("originQuick").onclick=changeCurrentOrigin;
 $("distanceSave").onclick=()=>{let n=db._pendingCustomer,k=parseFloat($("distanceKm").value);if(!n||!isFinite(k)||k<=0)return alert("편도거리를 입력하세요.");customerObj(n).km=k;db._pendingCustomer=null;$("distanceOverlay").classList.add("hidden");save();enterCustomer(n)};
 $("goHome").onclick=goHome;$("goHotel").onclick=goHotel;
 $("goHomeInline").onclick=goHome;$("goHotelInline").onclick=goHotel;$("goOtherInline").onclick=goOther;$("changeOriginBtn").onclick=changeCurrentOrigin;$("stayCustomer").onclick=()=>$("afterOverlay").classList.add("hidden");
@@ -3778,6 +4348,411 @@ if($("autoStateTitle")){
 }
 setTimeout(simplifyAutoState,0);
 
+</script>
+
+
+<script id="v60-customer-first-flow">
+(function(){
+  function pendingCustomer(){ return db._pendingVisitCustomer || ""; }
+  function pendingOrigin(){ return db._pendingVisitOrigin || null; }
+
+  function showOriginPicker(name){
+    db._pendingVisitCustomer = name;
+    db._pendingVisitOrigin = null;
+    var c = customerObj(name);
+    $("originVisitCustomer").textContent = (c?.name || name) + (c?.place ? " · " + c.place : "");
+    var prev = currentLocation();
+    $("originPreviousBtn").textContent = prev?.label ? ("이전 위치 · " + prev.label) : "이전 위치";
+    $("originOverlay").classList.remove("hidden");
+  }
+
+  function chooseOrigin(loc){
+    if(!loc || !pendingCustomer()) return;
+    db._pendingVisitOrigin = loc;
+    $("originOverlay").classList.add("hidden");
+    finalizeVisit();
+  }
+
+  function hotelOrigin(){
+    var label = String(db.settings.hotelPlace || "").trim();
+    if(!label){
+      var v = prompt("출발한 호텔 지역을 입력하세요.\n예: 천안시 성정동", "");
+      if(v===null) return null;
+      label = v.trim();
+      if(!label) return null;
+      db.settings.hotelPlace = label;
+    }
+    return {type:"hotel",label:label,customer:db.state.hotelCustomer||""};
+  }
+
+  function customOrigin(){
+    var v = prompt("출발지를 입력하세요.\n예: 대전역, 교육센터, 고객사명", "");
+    if(v===null) return null;
+    var label = v.trim();
+    if(!label) return null;
+    if(label==="집" || label===String(db.settings.home||"").trim()) return {type:"home",label:db.settings.home||"집"};
+    if(label==="호텔" || label===String(db.settings.hotelPlace||"").trim()) return hotelOrigin();
+    var c = customerObj(label);
+    if(c) return {type:"customer",label:c.place||c.name,customer:c.name};
+    return {type:"other",label:label};
+  }
+
+  function finalizeVisit(){
+    var name = pendingCustomer(), origin = pendingOrigin();
+    if(!name || !origin) return;
+    var c = customerObj(name);
+    if(!c) return;
+    var dest = {type:"customer",label:c.place||name,customer:name};
+    var km = getCustomerLegKm(origin,name);
+
+    if(!isFinite(km) || km<=0){
+      if(origin.type==="home"){
+        db._pendingCustomer = name;
+        db._distancePurpose = "v60Visit";
+        $("distanceMsg").textContent = name + "의 집↔고객사 편도거리를 입력하세요.";
+        $("distanceKm").value = "";
+        $("distanceOverlay").classList.remove("hidden");
+      }
+      return;
+    }
+
+    var ok = addTrip(name, origin.label||"출발지", dest.label, km, "customer-first");
+    if(!ok) return;
+
+    setCurrentLocation(dest);
+    db._pendingVisitCustomer = "";
+    db._pendingVisitOrigin = null;
+    db._distancePurpose = "";
+    $("manualCustomerPanel").classList.add("hidden");
+    $("nearbyCustomerPanel").classList.add("hidden");
+    localStorage.setItem(KEY,JSON.stringify(db));
+    render();
+    $("afterCustomer").textContent = name + " 도착 · 다음 이동을 선택하세요.";
+    $("afterOverlay").classList.remove("hidden");
+  }
+
+  // Customer is selected first. Do not record anything yet.
+  selectCustomer = function(name){
+    var c = customerObj(name);
+    if(!c) return;
+    if(!c.place){
+      alert(name + "\n\n지역명이 아직 없습니다.\n설정에서 고객사 GPS 또는 지역명을 등록하세요.");
+      return;
+    }
+    db.state.activeCustomer = name;
+    $("manualCustomerPanel").classList.add("hidden");
+    $("nearbyCustomerPanel").classList.add("hidden");
+    showOriginPicker(name);
+  };
+  window.selectCustomer = selectCustomer;
+
+  // Existing GPS result function calls selectCustomer(), so GPS and manual now share the same flow.
+  window.chooseGpsCustomer = function(encoded){
+    var name = decodeURIComponent(encoded);
+    $("nearbyCustomerPanel").classList.add("hidden");
+    selectCustomer(name);
+  };
+
+  $("originHomeBtn").onclick = function(){
+    chooseOrigin({type:"home",label:db.settings.home||"집"});
+  };
+  $("originHotelBtn").onclick = function(){
+    var loc = hotelOrigin(); if(loc) chooseOrigin(loc);
+  };
+  $("originPreviousBtn").onclick = function(){
+    var loc = currentLocation();
+    if(!loc || !loc.label) return;
+    chooseOrigin({...loc});
+  };
+  $("originCustomBtn").onclick = function(){
+    var loc = customOrigin(); if(loc) chooseOrigin(loc);
+  };
+  $("originCancelBtn").onclick = function(){
+    db._pendingVisitCustomer = "";
+    db._pendingVisitOrigin = null;
+    $("originOverlay").classList.add("hidden");
+  };
+
+  // Override distance-save behavior so a home-origin customer-first visit continues correctly.
+  $("distanceSave").onclick = function(){
+    var n = db._pendingCustomer, k = parseFloat($("distanceKm").value);
+    if(!n || !isFinite(k) || k<=0) return alert("편도거리를 입력하세요.");
+    var c = customerObj(n);
+    if(c) c.km = k;
+    db._pendingCustomer = null;
+    $("distanceOverlay").classList.add("hidden");
+    localStorage.setItem(KEY,JSON.stringify(db));
+    if(db._distancePurpose==="v60Visit"){
+      finalizeVisit();
+    }else{
+      enterCustomer(n);
+    }
+  };
+
+  $("nextCustomerChoice").onclick = function(){
+    $("afterOverlay").classList.add("hidden");
+    toggleManualCustomerPicker();
+  };
+
+  $("editLastTripBtn").onclick = function(){
+    var arr = tripsForDateOrdered(today());
+    if(!arr.length) return;
+    $("afterOverlay").classList.add("hidden");
+    openEdit(arr[arr.length-1].id);
+  };
+
+  // Keep current place visible, but it is never a required first step.
+  var oldRender = render;
+  render = function(){
+    oldRender();
+    var loc = currentLocation();
+    if($("v60CurrentPlace")) $("v60CurrentPlace").textContent = loc?.label || "-";
+  };
+  window.render = render;
+  render();
+})();
+</script>
+
+<script id="v62-priority-runtime">
+(function(){
+  function unresolvedTrip(){
+    try{
+      var arr = tripsForDateOrdered(today());
+      return arr.find(function(t){return !isFinite(Number(t.km)) || Number(t.km)<=0;});
+    }catch(e){return null}
+  }
+  function hasTodayTrips(){
+    try{return tripsForDateOrdered(today()).length>0}catch(e){return false}
+  }
+  function refreshV62Attention(){
+    var box=document.getElementById("v62Attention"), txt=document.getElementById("v62AttentionText"), act=document.getElementById("v62AttentionAction");
+    if(!box||!txt||!act)return;
+    var bad=unresolvedTrip();
+    if(bad){
+      txt.textContent="거리 미등록 기록이 있습니다.";
+      act.textContent="수정";
+      act.onclick=function(){openEdit(bad.id)};
+      box.classList.remove("hidden");
+      return;
+    }
+    box.classList.add("hidden");
+  }
+  var oldRender=render;
+  render=function(){oldRender();refreshV62Attention()};
+  window.render=render;
+
+  var pdf=document.getElementById("v62PdfShortcut");
+  if(pdf)pdf.onclick=function(){
+    var b=document.getElementById("pdfBtn")||document.querySelector('[onclick*="makeCompanyPdf"]');
+    if(b&&b.click)b.click(); else if(typeof makeCompanyPdf==="function")makeCompanyPdf();
+  };
+  var csv=document.getElementById("v62CsvShortcut");
+  if(csv)csv.onclick=function(){
+    var b=document.getElementById("csvBtn")||document.querySelector('[onclick*="exportCsv"]');
+    if(b&&b.click)b.click(); else if(typeof exportCsv==="function")exportCsv();
+  };
+  refreshV62Attention();
+})();
+</script>
+
+<script id="v66-multi-customer-runtime">
+(function(){
+  db._v66 = db._v66 || {customer:"",origin:null,firstTripId:"",awaitingNextCustomer:false};
+
+  function save(){localStorage.setItem(KEY,JSON.stringify(db))}
+  function showValue(id,text){
+    var el=document.getElementById(id);
+    if(!el)return;
+    if(text){el.textContent=text;el.classList.remove("hidden")}
+    else{el.textContent="";el.classList.add("hidden")}
+  }
+  function refresh66(){
+    var st=db._v66||{};
+    showValue("v63CustomerValue",st.customer||"");
+    showValue("v60CurrentPlace",st.origin?.label||"");
+    showValue("v63EndValue","");
+  }
+
+  function removeFirstLegIfChanging(){
+    var id=db._v66.firstTripId;
+    if(!id)return;
+    var idx=db.trips.findIndex(function(t){return t.id===id});
+    if(idx>=0)db.trips.splice(idx,1);
+    db._v66.firstTripId="";
+    try{normalizeTripOrder(today())}catch(e){}
+  }
+
+  function getLegKm(fromLoc,toLoc,customerName){
+    if(fromLoc.type==="home"){
+      var c=customerObj(customerName);
+      return Number(c?.km||0);
+    }
+    if(fromLoc.type==="customer"){
+      var k=getCustomerLegKm(fromLoc,customerName);
+      return Number(k||0);
+    }
+    try{
+      var k2=getCustomerLegKm(fromLoc,customerName);
+      return Number(k2||0);
+    }catch(e){return 0}
+  }
+
+  function finalizeFirstLeg(){
+    var st=db._v66;
+    if(!st.customer||!st.origin)return false;
+    var c=customerObj(st.customer);
+    if(!c)return false;
+
+    var dest={type:"customer",label:c.place||st.customer,customer:st.customer};
+    var km=getLegKm(st.origin,dest,st.customer);
+
+    if(!isFinite(km)||km<=0){
+      if(st.origin.type==="home"){
+        db._pendingCustomer=st.customer;
+        db._distancePurpose="v66FirstLeg";
+        document.getElementById("distanceMsg").textContent=st.customer+"의 집↔고객사 편도거리를 입력하세요.";
+        document.getElementById("distanceKm").value="";
+        document.getElementById("distanceOverlay").classList.remove("hidden");
+        return false;
+      }
+      var k=parseFloat(prompt((st.origin.label||"출발지")+" → "+st.customer+" 거리를 입력하세요. (km)",""));
+      if(!isFinite(k)||k<=0)return false;
+      try{setRouteKm(st.origin,dest,k)}catch(e){}
+      km=k;
+    }
+
+    removeFirstLegIfChanging();
+    var before=Date.now();
+    var ok=addTrip(st.customer,st.origin.label||"출발지",dest.label,km,"v66-first");
+    if(!ok)return false;
+
+    var candidates=db.trips.filter(function(t){
+      return t.date===today() &&
+             t.customer===st.customer &&
+             t.from===(st.origin.label||"출발지") &&
+             t.to===dest.label &&
+             t.createdAt>=before-1000;
+    }).sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0)});
+    if(candidates[0])st.firstTripId=candidates[0].id;
+
+    setCurrentLocation(dest);
+    save();refresh66();render();
+    return true;
+  }
+
+  function selectVisitCustomer(name){
+    var c=customerObj(name);
+    if(!c)return;
+    if(!c.place){
+      alert(name+"\n\n지역명이 아직 없습니다.\n설정에서 고객사 GPS 또는 지역명을 등록하세요.");
+      return;
+    }
+
+    // When selecting a next customer from step 3, current customer is the origin.
+    if(db._v66.awaitingNextCustomer){
+      var prev=currentLocation();
+      db._v66={customer:name,origin:prev,firstTripId:"",awaitingNextCustomer:false};
+      document.getElementById("manualCustomerPanel")?.classList.add("hidden");
+      document.getElementById("nearbyCustomerPanel")?.classList.add("hidden");
+      save();refresh66();
+      finalizeFirstLeg(); // immediately creates Customer A -> Customer B
+      return;
+    }
+
+    // Normal step 1 customer selection.
+    if(db._v66.customer && db._v66.customer!==name){
+      removeFirstLegIfChanging();
+      db._v66.origin=null;
+    }
+    db._v66.customer=name;
+    document.getElementById("manualCustomerPanel")?.classList.add("hidden");
+    document.getElementById("nearbyCustomerPanel")?.classList.add("hidden");
+    save();refresh66();
+  }
+
+  selectCustomer=selectVisitCustomer;
+  window.selectCustomer=selectVisitCustomer;
+  window.chooseGpsCustomer=function(encoded){selectVisitCustomer(decodeURIComponent(encoded))};
+
+  function setOrigin(loc){
+    if(!db._v66.customer){alert("먼저 1번 고객사를 선택하세요.");return}
+    db._v66.origin=loc;
+    save();refresh66();
+    finalizeFirstLeg(); // step 1 + 2 => first leg immediately
+  }
+
+  document.getElementById("v63OriginHome").onclick=function(){
+    setOrigin({type:"home",label:db.settings.home||"집"});
+  };
+  document.getElementById("v63OriginHotel").onclick=function(){
+    var label=String(db.settings.hotelPlace||"").trim();
+    if(!label){
+      var v=prompt("출발한 호텔 지역을 입력하세요.","");
+      if(v===null||!v.trim())return;
+      label=v.trim();db.settings.hotelPlace=label;
+    }
+    setOrigin({type:"hotel",label:label,customer:db.state.hotelCustomer||""});
+  };
+  document.getElementById("changeOriginBtn").onclick=function(){
+    if(!db._v66.customer){alert("먼저 1번 고객사를 선택하세요.");return}
+    var v=prompt("출발지를 입력하세요.","");
+    if(v===null||!v.trim())return;
+    setOrigin({type:"other",label:v.trim()});
+  };
+
+  function ensureReady(){
+    if(!db._v66.customer){alert("먼저 1번 고객사를 선택하세요.");return false}
+    if(!db._v66.origin){alert("2번 출발지를 선택하세요.");return false}
+    if(!db._v66.firstTripId && !finalizeFirstLeg())return false;
+    return true;
+  }
+
+  function finishToHome(){
+    if(!ensureReady())return;
+    goHome();
+    db._v66={customer:"",origin:null,firstTripId:"",awaitingNextCustomer:false};
+    save();refresh66();render();
+  }
+  function finishToHotel(){
+    if(!ensureReady())return;
+    goHotel();
+    db._v66={customer:"",origin:null,firstTripId:"",awaitingNextCustomer:false};
+    save();refresh66();render();
+  }
+  function prepareNextCustomer(){
+    if(!ensureReady())return;
+    db._v66.awaitingNextCustomer=true;
+    save();refresh66();
+    // 고객사 버튼을 누르면 중간 선택 없이 바로 고객사 입력 목록을 연다.
+    toggleManualCustomerPicker();
+  }
+
+  document.getElementById("goHomeInline").onclick=finishToHome;
+  document.getElementById("goHotelInline").onclick=finishToHotel;
+  document.getElementById("nextCustomerBtn").onclick=prepareNextCustomer;
+
+  // Distance save continuation
+  document.getElementById("distanceSave").onclick=function(){
+    var n=db._pendingCustomer,k=parseFloat(document.getElementById("distanceKm").value);
+    if(!n||!isFinite(k)||k<=0)return alert("편도거리를 입력하세요.");
+    var c=customerObj(n);
+    if(c)c.km=k;
+    db._pendingCustomer=null;
+    document.getElementById("distanceOverlay").classList.add("hidden");
+    if(db._distancePurpose==="v66FirstLeg"){
+      db._distancePurpose="";
+      save();
+      finalizeFirstLeg();
+    }else{
+      enterCustomer(n);
+    }
+  };
+
+  var oldRender=render;
+  render=function(){oldRender();refresh66()};
+  window.render=render;
+  refresh66();
+})();
 </script>
 </body>
 </html>
